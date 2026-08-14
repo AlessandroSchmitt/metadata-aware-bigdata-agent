@@ -1,0 +1,18 @@
+{
+  "station_id": "72505394728",
+  "station_name": "NY CITY CENTRAL PARK, NY US",
+  "target_period": {
+    "start": "2024-01-01 00:00:00",
+    "end": "2024-02-01 00:00:00"
+  },
+  "hourly_selection": {
+    "preferred_report_type": "FM-15",
+    "fallback": "latest observation within the hour"
+  },
+  "precipitation": {
+    "trace_token": "T",
+    "trace_numeric_value": null,
+    "trace_counts_as_precipitation": true,
+    "missing_counts_as_zero": false
+  }
+}

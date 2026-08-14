@@ -1,0 +1,35 @@
+{
+  "station_id": "72505394728",
+  "station_name": "NY CITY CENTRAL PARK, NY US",
+  "period": {
+    "start": "2024-01-01 00:00:00",
+    "end": "2024-02-01 00:00:00"
+  },
+  "raw_january_rows": 1108,
+  "report_type_counts": {
+    "FM-15": 743,
+    "FM-16": 333,
+    "SOD  ": 31,
+    "SOM  ": 1
+  },
+  "raw_distinct_hours": 743,
+  "hours_with_multiple_reports": 190,
+  "selection": {
+    "selected_observations": 743,
+    "preferred_fm15": 743,
+    "fallback": 0
+  },
+  "coverage": {
+    "expected_hours": 744,
+    "curated_rows": 744,
+    "observed_hours": 743,
+    "missing_observation_hours": 1
+  },
+  "precipitation": {
+    "known_hours": 743,
+    "rainy_hours": 167,
+    "dry_hours": 576,
+    "trace_hours": 50,
+    "unknown_hours": 1
+  }
+}
