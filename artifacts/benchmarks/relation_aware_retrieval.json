@@ -1,0 +1,97 @@
+{
+  "question": "What was the average trip distance for Yellow Taxi trips during rainy hours in January 2024? Return exactly one column named average_trip_distance.",
+  "dense_top_k": 5,
+  "dense_embedding": {
+    "prompt_eval_count": 34,
+    "wall_time_seconds": 0.3539183259999845
+  },
+  "lexical": {
+    "datasets": [
+      "yellow_taxi"
+    ],
+    "concepts": [
+      "precipitation_status",
+      "trip_distance"
+    ],
+    "rules": [
+      "rainy_hour"
+    ]
+  },
+  "selection": {
+    "datasets": [
+      "weather_hourly",
+      "yellow_taxi"
+    ],
+    "columns": [
+      "weather_hourly.has_precipitation",
+      "weather_hourly.weather_hour",
+      "yellow_taxi.Airport_fee",
+      "yellow_taxi.tolls_amount",
+      "yellow_taxi.tpep_pickup_datetime",
+      "yellow_taxi.trip_distance"
+    ],
+    "concepts": [
+      "pickup_datetime",
+      "precipitation_status",
+      "trip_distance",
+      "weather_hour"
+    ],
+    "relationships": [
+      "yellow_pickup_weather_hour"
+    ],
+    "rules": [
+      "rainy_hour"
+    ]
+  },
+  "gold_evaluation": {
+    "required": [
+      "column:weather_hourly.has_precipitation",
+      "column:weather_hourly.weather_hour",
+      "column:yellow_taxi.tpep_pickup_datetime",
+      "column:yellow_taxi.trip_distance",
+      "dataset:weather_hourly",
+      "dataset:yellow_taxi",
+      "relationship:yellow_pickup_weather_hour",
+      "rule:rainy_hour"
+    ],
+    "retrieved": [
+      "column:weather_hourly.has_precipitation",
+      "column:weather_hourly.weather_hour",
+      "column:yellow_taxi.Airport_fee",
+      "column:yellow_taxi.tolls_amount",
+      "column:yellow_taxi.tpep_pickup_datetime",
+      "column:yellow_taxi.trip_distance",
+      "dataset:weather_hourly",
+      "dataset:yellow_taxi",
+      "relationship:yellow_pickup_weather_hour",
+      "rule:rainy_hour"
+    ],
+    "hits": [
+      "column:weather_hourly.has_precipitation",
+      "column:weather_hourly.weather_hour",
+      "column:yellow_taxi.tpep_pickup_datetime",
+      "column:yellow_taxi.trip_distance",
+      "dataset:weather_hourly",
+      "dataset:yellow_taxi",
+      "relationship:yellow_pickup_weather_hour",
+      "rule:rainy_hour"
+    ],
+    "missing": [],
+    "extras": [
+      "column:yellow_taxi.Airport_fee",
+      "column:yellow_taxi.tolls_amount"
+    ],
+    "recall": 1.0,
+    "precision": 0.8,
+    "f1": 0.888888888888889
+  },
+  "context": {
+    "characters": 1895,
+    "words": 223,
+    "lines": 37,
+    "full_catalog_characters": 8600,
+    "full_catalog_words": 930,
+    "character_reduction_percent": 77.96511627906978,
+    "word_reduction_percent": 76.0215053763441
+  }
+}

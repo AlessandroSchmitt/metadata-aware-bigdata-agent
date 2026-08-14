@@ -1,0 +1,37 @@
+=== RETRIEVED METADATA ===
+Question: What was the average trip distance for Yellow Taxi trips during rainy hours in January 2024? Return exactly one column named average_trip_distance.
+
+=== RELEVANT DATASETS ===
+
+DATASET weather_hourly
+description: Hourly weather representation for NYC Central Park during January 2024, derived from NOAA Local Climatological Data.
+granularity: one row per clock hour
+primary_time_column: weather_hour
+selected_columns:
+- has_precipitation:boolean -> semantic=precipitation_status
+- weather_hour:timestamp_ntz -> semantic=weather_hour
+
+DATASET yellow_taxi
+description: Curated Yellow Taxi trips for January 2024. Original TLC column names are preserved.
+granularity: one row per taxi trip
+primary_time_column: tpep_pickup_datetime
+selected_columns:
+- Airport_fee:double
+- tolls_amount:double
+- tpep_pickup_datetime:timestamp_ntz -> semantic=pickup_datetime
+- trip_distance:double -> semantic=trip_distance
+
+=== RELEVANT SEMANTIC CONCEPTS ===
+- pickup_datetime: Date and time when a taxi trip begins. | aliases=pickup time, trip start
+- precipitation_status: Three-valued precipitation status: true means precipitation occurred, false means dry, null means unknown. | aliases=rain, rainy, wet weather
+- trip_distance: Recorded distance of a taxi trip in miles. | aliases=distance
+- weather_hour: Clock-hour bucket represented by an hourly weather record.
+
+=== REQUIRED RELATIONSHIPS ===
+- yellow_pickup_weather_hour: date_trunc('hour', yellow_taxi.tpep_pickup_datetime) = weather_hourly.weather_hour
+  meaning: Aligns a Yellow Taxi pickup timestamp with the corresponding hourly NYC weather bucket.
+
+=== RELEVANT SEMANTIC RULES ===
+- rainy_hour: weather_hourly.has_precipitation = TRUE
+  meaning: An hour is rainy when NOAA indicates measurable or trace precipitation.
+  result_semantics: Includes trace precipitation. Missing weather is not classified as rainy.
