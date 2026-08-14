@@ -1,0 +1,20 @@
+{
+  "target_period": {
+    "year": 2024,
+    "month": 1,
+    "start": "2024-01-01 00:00:00",
+    "end": "2024-02-01 00:00:00"
+  },
+  "quality_rules": {
+    "require_pickup_timestamp": true,
+    "require_dropoff_timestamp": true,
+    "require_dropoff_after_pickup": true,
+    "require_valid_pickup_zone": true,
+    "require_valid_dropoff_zone": true,
+    "min_trip_distance": 0.0,
+    "max_trip_distance": 1000.0
+  },
+  "preserve_original_column_names": true,
+  "preserve_zero_distance": true,
+  "preserve_negative_monetary_values": true
+}

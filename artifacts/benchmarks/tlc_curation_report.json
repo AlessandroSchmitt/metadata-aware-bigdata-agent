@@ -1,0 +1,53 @@
+{
+  "period": {
+    "year": 2024,
+    "month": 1,
+    "start": "2024-01-01 00:00:00",
+    "end": "2024-02-01 00:00:00"
+  },
+  "quality_rules": {
+    "require_pickup_timestamp": true,
+    "require_dropoff_timestamp": true,
+    "require_dropoff_after_pickup": true,
+    "require_valid_pickup_zone": true,
+    "require_valid_dropoff_zone": true,
+    "min_trip_distance": 0.0,
+    "max_trip_distance": 1000.0
+  },
+  "yellow_taxi": {
+    "input_rows": 2964624,
+    "output_rows": 2963713,
+    "removed_rows": 911,
+    "removed_percentage": 0.03072902330953268,
+    "rule_violations": {
+      "pickup_in_target_period": 18,
+      "dropoff_not_null": 0,
+      "dropoff_after_pickup": 870,
+      "valid_pickup_zone": 0,
+      "valid_dropoff_zone": 0,
+      "valid_trip_distance": 23
+    }
+  },
+  "green_taxi": {
+    "input_rows": 56551,
+    "output_rows": 56429,
+    "removed_rows": 122,
+    "removed_percentage": 0.21573446977064947,
+    "rule_violations": {
+      "pickup_in_target_period": 2,
+      "dropoff_not_null": 0,
+      "dropoff_after_pickup": 76,
+      "valid_pickup_zone": 0,
+      "valid_dropoff_zone": 0,
+      "valid_trip_distance": 46
+    }
+  },
+  "taxi_zones": {
+    "rows": 265,
+    "distinct_location_ids": 265
+  },
+  "schema_preservation": {
+    "yellow": true,
+    "green": true
+  }
+}
