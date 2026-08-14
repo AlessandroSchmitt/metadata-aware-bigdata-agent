@@ -5,7 +5,6 @@
     "period": "January 2024",
     "description": "Controlled benchmark for comparing Full Catalog, Relation-Aware Retrieval, and Relation-Aware Retrieval with validation and one-shot repair."
   },
-
   "queries": [
     {
       "id": "Q01",
@@ -20,7 +19,6 @@
         "column:yellow_taxi.trip_distance"
       ]
     },
-
     {
       "id": "Q02",
       "category": "single_source_filter_aggregation",
@@ -34,7 +32,6 @@
         "column:green_taxi.trip_distance"
       ]
     },
-
     {
       "id": "Q03",
       "category": "geographic_pickup_join",
@@ -53,7 +50,6 @@
         "relationship:yellow_pickup_zone"
       ]
     },
-
     {
       "id": "Q04",
       "category": "geographic_dropoff_join",
@@ -72,7 +68,6 @@
         "relationship:green_dropoff_zone"
       ]
     },
-
     {
       "id": "Q05",
       "category": "cross_service_comparison",
@@ -89,7 +84,6 @@
         "column:green_taxi.trip_distance"
       ]
     },
-
     {
       "id": "Q06",
       "category": "weather_temporal_join",
@@ -109,7 +103,6 @@
         "rule:rainy_hour"
       ]
     },
-
     {
       "id": "Q07",
       "category": "weather_semantic_rule",
@@ -128,7 +121,6 @@
         "rule:dry_hour"
       ]
     },
-
     {
       "id": "Q08",
       "category": "three_source_query",
@@ -153,7 +145,6 @@
         "rule:rainy_hour"
       ]
     },
-
     {
       "id": "Q09",
       "category": "weather_only",
@@ -169,7 +160,6 @@
         "rule:rainy_hour"
       ]
     },
-
     {
       "id": "Q10",
       "category": "temporal_grouping",
@@ -186,7 +176,8 @@
         "column:weather_hourly.weather_hour",
         "column:weather_hourly.has_precipitation",
         "relationship:yellow_pickup_weather_hour",
-        "rule:rainy_hour"
+        "rule:rainy_hour",
+        "rule:yellow_pickup_hour_of_day"
       ]
     }
   ]

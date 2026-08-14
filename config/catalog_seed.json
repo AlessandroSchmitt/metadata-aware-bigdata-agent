@@ -4,7 +4,6 @@
     "version": "1.0",
     "description": "Metadata catalog for cross-source analysis of NYC taxi mobility, taxi zones, and hourly weather."
   },
-
   "datasets": [
     {
       "name": "yellow_taxi",
@@ -63,7 +62,6 @@
       "notes": "FM-15 routine observations are preferred. Trace precipitation is represented as precipitation_trace=true and has_precipitation=true without inventing a numeric precipitation amount. Missing weather observations remain unknown."
     }
   ],
-
   "semantic_concepts": [
     {
       "name": "pickup_datetime",
@@ -164,41 +162,160 @@
       "name": "visibility",
       "category": "weather",
       "description": "Observed visibility in miles."
+    },
+    {
+      "name": "hour_of_day",
+      "category": "temporal",
+      "description": "Integer clock hour of day from 0 to 23, independent of calendar date."
     }
   ],
-
   "column_semantics": [
-    ["yellow_taxi", "tpep_pickup_datetime", "pickup_datetime"],
-    ["green_taxi", "lpep_pickup_datetime", "pickup_datetime"],
-    ["yellow_taxi", "tpep_dropoff_datetime", "dropoff_datetime"],
-    ["green_taxi", "lpep_dropoff_datetime", "dropoff_datetime"],
-    ["yellow_taxi", "PULocationID", "pickup_zone_id"],
-    ["green_taxi", "PULocationID", "pickup_zone_id"],
-    ["yellow_taxi", "DOLocationID", "dropoff_zone_id"],
-    ["green_taxi", "DOLocationID", "dropoff_zone_id"],
-    ["taxi_zones", "LocationID", "taxi_zone_id"],
-    ["taxi_zones", "Zone", "zone_name"],
-    ["taxi_zones", "Borough", "borough"],
-    ["yellow_taxi", "trip_distance", "trip_distance"],
-    ["green_taxi", "trip_distance", "trip_distance"],
-    ["yellow_taxi", "passenger_count", "passenger_count"],
-    ["green_taxi", "passenger_count", "passenger_count"],
-    ["yellow_taxi", "fare_amount", "fare_amount"],
-    ["green_taxi", "fare_amount", "fare_amount"],
-    ["yellow_taxi", "tip_amount", "tip_amount"],
-    ["green_taxi", "tip_amount", "tip_amount"],
-    ["yellow_taxi", "total_amount", "total_amount"],
-    ["green_taxi", "total_amount", "total_amount"],
-    ["weather_hourly", "weather_hour", "weather_hour"],
-    ["weather_hourly", "temperature_f", "temperature"],
-    ["weather_hourly", "relative_humidity", "relative_humidity"],
-    ["weather_hourly", "precipitation_in", "precipitation_amount"],
-    ["weather_hourly", "precipitation_trace", "precipitation_trace"],
-    ["weather_hourly", "has_precipitation", "precipitation_status"],
-    ["weather_hourly", "wind_speed_mph", "wind_speed"],
-    ["weather_hourly", "visibility_miles", "visibility"]
+    [
+      "yellow_taxi",
+      "tpep_pickup_datetime",
+      "pickup_datetime"
+    ],
+    [
+      "green_taxi",
+      "lpep_pickup_datetime",
+      "pickup_datetime"
+    ],
+    [
+      "yellow_taxi",
+      "tpep_dropoff_datetime",
+      "dropoff_datetime"
+    ],
+    [
+      "green_taxi",
+      "lpep_dropoff_datetime",
+      "dropoff_datetime"
+    ],
+    [
+      "yellow_taxi",
+      "PULocationID",
+      "pickup_zone_id"
+    ],
+    [
+      "green_taxi",
+      "PULocationID",
+      "pickup_zone_id"
+    ],
+    [
+      "yellow_taxi",
+      "DOLocationID",
+      "dropoff_zone_id"
+    ],
+    [
+      "green_taxi",
+      "DOLocationID",
+      "dropoff_zone_id"
+    ],
+    [
+      "taxi_zones",
+      "LocationID",
+      "taxi_zone_id"
+    ],
+    [
+      "taxi_zones",
+      "Zone",
+      "zone_name"
+    ],
+    [
+      "taxi_zones",
+      "Borough",
+      "borough"
+    ],
+    [
+      "yellow_taxi",
+      "trip_distance",
+      "trip_distance"
+    ],
+    [
+      "green_taxi",
+      "trip_distance",
+      "trip_distance"
+    ],
+    [
+      "yellow_taxi",
+      "passenger_count",
+      "passenger_count"
+    ],
+    [
+      "green_taxi",
+      "passenger_count",
+      "passenger_count"
+    ],
+    [
+      "yellow_taxi",
+      "fare_amount",
+      "fare_amount"
+    ],
+    [
+      "green_taxi",
+      "fare_amount",
+      "fare_amount"
+    ],
+    [
+      "yellow_taxi",
+      "tip_amount",
+      "tip_amount"
+    ],
+    [
+      "green_taxi",
+      "tip_amount",
+      "tip_amount"
+    ],
+    [
+      "yellow_taxi",
+      "total_amount",
+      "total_amount"
+    ],
+    [
+      "green_taxi",
+      "total_amount",
+      "total_amount"
+    ],
+    [
+      "weather_hourly",
+      "weather_hour",
+      "weather_hour"
+    ],
+    [
+      "weather_hourly",
+      "temperature_f",
+      "temperature"
+    ],
+    [
+      "weather_hourly",
+      "relative_humidity",
+      "relative_humidity"
+    ],
+    [
+      "weather_hourly",
+      "precipitation_in",
+      "precipitation_amount"
+    ],
+    [
+      "weather_hourly",
+      "precipitation_trace",
+      "precipitation_trace"
+    ],
+    [
+      "weather_hourly",
+      "has_precipitation",
+      "precipitation_status"
+    ],
+    [
+      "weather_hourly",
+      "wind_speed_mph",
+      "wind_speed"
+    ],
+    [
+      "weather_hourly",
+      "visibility_miles",
+      "visibility"
+    ]
   ],
-
   "relationships": [
     {
       "name": "yellow_pickup_zone",
@@ -267,35 +384,143 @@
       "description": "Aligns a Green Taxi pickup timestamp with the corresponding hourly NYC weather bucket."
     }
   ],
-
   "aliases": [
-    ["dataset", "yellow_taxi", "yellow cab"],
-    ["dataset", "yellow_taxi", "yellow taxis"],
-    ["dataset", "green_taxi", "green cab"],
-    ["dataset", "green_taxi", "boro taxi"],
-    ["dataset", "taxi_zones", "taxi areas"],
-    ["dataset", "weather_hourly", "weather"],
-
-    ["concept", "pickup_datetime", "pickup time"],
-    ["concept", "pickup_datetime", "trip start"],
-    ["concept", "dropoff_datetime", "dropoff time"],
-    ["concept", "dropoff_datetime", "trip end"],
-    ["concept", "pickup_zone_id", "pickup location"],
-    ["concept", "dropoff_zone_id", "dropoff location"],
-    ["concept", "zone_name", "taxi zone"],
-    ["concept", "borough", "borough name"],
-    ["concept", "trip_distance", "distance"],
-    ["concept", "passenger_count", "passengers"],
-    ["concept", "precipitation_status", "rain"],
-    ["concept", "precipitation_status", "rainy"],
-    ["concept", "precipitation_status", "wet weather"],
-    ["concept", "precipitation_amount", "rainfall"],
-    ["concept", "temperature", "temperature"],
-    ["concept", "relative_humidity", "humidity"],
-    ["concept", "wind_speed", "wind"],
-    ["concept", "visibility", "visibility"]
+    [
+      "dataset",
+      "yellow_taxi",
+      "yellow cab"
+    ],
+    [
+      "dataset",
+      "yellow_taxi",
+      "yellow taxis"
+    ],
+    [
+      "dataset",
+      "green_taxi",
+      "green cab"
+    ],
+    [
+      "dataset",
+      "green_taxi",
+      "boro taxi"
+    ],
+    [
+      "dataset",
+      "taxi_zones",
+      "taxi areas"
+    ],
+    [
+      "dataset",
+      "weather_hourly",
+      "weather"
+    ],
+    [
+      "concept",
+      "pickup_datetime",
+      "pickup time"
+    ],
+    [
+      "concept",
+      "pickup_datetime",
+      "trip start"
+    ],
+    [
+      "concept",
+      "dropoff_datetime",
+      "dropoff time"
+    ],
+    [
+      "concept",
+      "dropoff_datetime",
+      "trip end"
+    ],
+    [
+      "concept",
+      "pickup_zone_id",
+      "pickup location"
+    ],
+    [
+      "concept",
+      "dropoff_zone_id",
+      "dropoff location"
+    ],
+    [
+      "concept",
+      "zone_name",
+      "taxi zone"
+    ],
+    [
+      "concept",
+      "borough",
+      "borough name"
+    ],
+    [
+      "concept",
+      "trip_distance",
+      "distance"
+    ],
+    [
+      "concept",
+      "passenger_count",
+      "passengers"
+    ],
+    [
+      "concept",
+      "precipitation_status",
+      "rain"
+    ],
+    [
+      "concept",
+      "precipitation_status",
+      "rainy"
+    ],
+    [
+      "concept",
+      "precipitation_status",
+      "wet weather"
+    ],
+    [
+      "concept",
+      "precipitation_amount",
+      "rainfall"
+    ],
+    [
+      "concept",
+      "temperature",
+      "temperature"
+    ],
+    [
+      "concept",
+      "relative_humidity",
+      "humidity"
+    ],
+    [
+      "concept",
+      "wind_speed",
+      "wind"
+    ],
+    [
+      "concept",
+      "visibility",
+      "visibility"
+    ],
+    [
+      "concept",
+      "hour_of_day",
+      "hour of day"
+    ],
+    [
+      "concept",
+      "hour_of_day",
+      "clock hour"
+    ],
+    [
+      "concept",
+      "hour_of_day",
+      "clock hour of day"
+    ]
   ],
-
   "semantic_rules": [
     {
       "name": "rainy_hour",
@@ -312,18 +537,32 @@
       "result_semantics": "Missing precipitation status is not interpreted as dry."
     },
     {
-      "name": "yellow_pickup_hour",
+      "name": "yellow_pickup_weather_bucket",
       "dataset": "yellow_taxi",
-      "description": "Hourly time bucket for a Yellow Taxi pickup.",
+      "description": "Hourly timestamp bucket for a Yellow Taxi pickup, used for alignment with hourly weather.",
       "sql_expression": "date_trunc('hour', yellow_taxi.tpep_pickup_datetime)",
-      "result_semantics": "Used to align Yellow Taxi trips with hourly weather."
+      "result_semantics": "Returns a timestamp truncated to the hour. It is not the integer clock hour of day."
     },
     {
-      "name": "green_pickup_hour",
+      "name": "green_pickup_weather_bucket",
       "dataset": "green_taxi",
-      "description": "Hourly time bucket for a Green Taxi pickup.",
+      "description": "Hourly timestamp bucket for a Green Taxi pickup, used for alignment with hourly weather.",
       "sql_expression": "date_trunc('hour', green_taxi.lpep_pickup_datetime)",
-      "result_semantics": "Used to align Green Taxi trips with hourly weather."
+      "result_semantics": "Returns a timestamp truncated to the hour. It is not the integer clock hour of day."
+    },
+    {
+      "name": "yellow_pickup_hour_of_day",
+      "dataset": "yellow_taxi",
+      "description": "Extracts the integer clock hour of day from a Yellow Taxi pickup timestamp.",
+      "sql_expression": "hour(yellow_taxi.tpep_pickup_datetime)",
+      "result_semantics": "Returns an integer from 0 to 23. Use this for grouping pickups by clock hour across different dates."
+    },
+    {
+      "name": "green_pickup_hour_of_day",
+      "dataset": "green_taxi",
+      "description": "Extracts the integer clock hour of day from a Green Taxi pickup timestamp.",
+      "sql_expression": "hour(green_taxi.lpep_pickup_datetime)",
+      "result_semantics": "Returns an integer from 0 to 23. Use this for grouping pickups by clock hour across different dates."
     }
   ]
 }

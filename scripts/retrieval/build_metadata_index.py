@@ -76,10 +76,9 @@ for entity_type in sorted(counts):
     )
 
 
-if len(documents) != 100:
+if not documents:
     raise RuntimeError(
-        f"Expected 100 metadata documents, "
-        f"found {len(documents)}."
+        "No metadata documents were generated."
     )
 
 
@@ -325,7 +324,7 @@ print(
 reopened.close()
 
 
-if reopened_count != 100:
+if reopened_count != len(documents):
     raise RuntimeError(
         "Persistent index validation failed."
     )

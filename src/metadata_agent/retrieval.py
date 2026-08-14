@@ -380,6 +380,94 @@ class RelationAwareMetadataRetriever:
             for dataset, column in matches
         }
 
+    def _relationship_relevance(
+        self,
+        relationship,
+        question,
+    ):
+        """
+        Score a relationship against the natural-language
+        question.
+
+        This is used only when multiple relationships connect
+        the same pair of datasets, for example pickup-zone and
+        dropoff-zone relationships.
+
+        The score uses relationship metadata and the semantic
+        concepts of its physical endpoint columns.
+        """
+
+        query_tokens = self._tokens(
+            question
+        )
+
+        candidate_parts = [
+            relationship["name"],
+            relationship["description"],
+        ]
+
+        references = (
+            self._expression_columns(
+                relationship[
+                    "source_expression"
+                ]
+            )
+            |
+            self._expression_columns(
+                relationship[
+                    "target_expression"
+                ]
+            )
+        )
+
+        for reference in references:
+            concept = (
+                self.column_to_concept.get(
+                    reference
+                )
+            )
+
+            if concept:
+                candidate_parts.append(
+                    concept
+                )
+
+        candidate_tokens = self._tokens(
+            " ".join(candidate_parts)
+        )
+
+        # Generic tokens that do not distinguish parallel
+        # relations such as pickup vs dropoff.
+        stop_tokens = {
+            "yellow",
+            "green",
+            "taxi",
+            "zone",
+            "weather",
+            "hour",
+            "trip",
+            "location",
+            "id",
+            "record",
+            "relationship",
+            "map",
+            "connect",
+            "correspond",
+            "the",
+            "to",
+            "of",
+            "and",
+            "a",
+            "an",
+        }
+
+        overlap = (
+            query_tokens
+            & candidate_tokens
+        ) - stop_tokens
+
+        return len(overlap)
+
     # -----------------------------------------------------
     # Expansion
     # -----------------------------------------------------
@@ -407,17 +495,38 @@ class RelationAwareMetadataRetriever:
         )
 
         # ---------------------------------------------
-        # Dense dataset anchors first.
+        # Dense dataset anchors.
+        #
+        # Explicit lexical dataset mentions have higher
+        # precision than dense dataset hits. If the user
+        # explicitly names one or more datasets, unrelated
+        # dense dataset hits are not imported automatically.
+        #
+        # Additional datasets may still be discovered later
+        # through semantic concepts, rules and relationships.
         # ---------------------------------------------
+
+        lexical_datasets = set(
+            lexical["datasets"]
+        )
 
         for point in dense_points:
             if (
                 point["entity_type"]
                 == "dataset"
             ):
-                selected_datasets.add(
+                dataset_name = (
                     point["entity_key"]
                 )
+
+                if (
+                    not lexical_datasets
+                    or dataset_name
+                    in lexical_datasets
+                ):
+                    selected_datasets.add(
+                        dataset_name
+                    )
 
         # ---------------------------------------------
         # Dense columns are kept only when they
@@ -459,17 +568,64 @@ class RelationAwareMetadataRetriever:
                 )
 
             elif entity_type == "rule":
-                selected_rules.add(
+                rule = self.rules[
                     entity_key
+                ]
+
+                rule_dataset = (
+                    rule["dataset"]
                 )
+
+                # Explicit dataset mentions in the user
+                # question have precedence over dense
+                # rule hits from parallel datasets.
+                #
+                # Example:
+                # "Yellow Taxi ... clock hour"
+                # must not import the analogous Green
+                # hour-of-day rule merely because its
+                # embedding is semantically similar.
+                #
+                # Rules already grounded lexically are
+                # preserved independently.
+                if (
+                    not lexical_datasets
+                    or rule_dataset is None
+                    or rule_dataset
+                    in lexical_datasets
+                    or entity_key
+                    in lexical["rules"]
+                ):
+                    selected_rules.add(
+                        entity_key
+                    )
 
             elif (
                 entity_type
                 == "relationship"
             ):
-                selected_relationships.add(
-                    entity_key
+                relationship = (
+                    self.relationships[
+                        entity_key
+                    ]
                 )
+
+                source_dataset = (
+                    relationship[
+                        "source_dataset"
+                    ]
+                )
+
+                # Apply the same explicit-dataset
+                # preference to dense relationship hits.
+                if (
+                    not lexical_datasets
+                    or source_dataset
+                    in lexical_datasets
+                ):
+                    selected_relationships.add(
+                        entity_key
+                    )
 
         # ---------------------------------------------
         # Expand semantic concepts into physical
@@ -592,44 +748,101 @@ class RelationAwareMetadataRetriever:
         # ---------------------------------------------
         # Relationship-aware expansion.
         #
-        # Once two datasets are relevant, include
-        # validated relations between them.
+        # If exactly one relationship connects a relevant
+        # dataset pair, include it.
+        #
+        # If multiple relationships connect the same pair,
+        # prefer the relation whose metadata best matches the
+        # question (e.g. pickup vs dropoff). If there is no
+        # discriminative evidence, preserve all candidates
+        # rather than risking recall loss.
         # ---------------------------------------------
 
-        changed = True
+        relationship_groups = (
+            defaultdict(list)
+        )
 
-        while changed:
-            changed = False
+        for (
+            relationship_name,
+            relationship,
+        ) in self.relationships.items():
 
-            for (
-                relationship_name,
-                relationship,
-            ) in self.relationships.items():
+            source = relationship[
+                "source_dataset"
+            ]
 
-                source = relationship[
-                    "source_dataset"
-                ]
+            target = relationship[
+                "target_dataset"
+            ]
 
-                target = relationship[
-                    "target_dataset"
-                ]
+            if (
+                source in selected_datasets
+                and target in selected_datasets
+            ):
+                pair = tuple(
+                    sorted(
+                        (source, target)
+                    )
+                )
 
-                if (
-                    source
-                    in selected_datasets
-                    and target
-                    in selected_datasets
-                ):
-                    if (
-                        relationship_name
-                        not in
-                        selected_relationships
-                    ):
+                relationship_groups[
+                    pair
+                ].append(
+                    (
+                        relationship_name,
+                        relationship,
+                    )
+                )
+
+        for candidates in (
+            relationship_groups.values()
+        ):
+            if len(candidates) == 1:
+                selected_relationships.add(
+                    candidates[0][0]
+                )
+
+                continue
+
+            scored = [
+                (
+                    self._relationship_relevance(
+                        relationship,
+                        question,
+                    ),
+                    relationship_name,
+                )
+                for (
+                    relationship_name,
+                    relationship,
+                )
+                in candidates
+            ]
+
+            best_score = max(
+                score
+                for score, _
+                in scored
+            )
+
+            if best_score > 0:
+                for (
+                    score,
+                    relationship_name,
+                ) in scored:
+                    if score == best_score:
                         selected_relationships.add(
                             relationship_name
                         )
 
-                        changed = True
+            else:
+                for (
+                    relationship_name,
+                    _,
+                ) in candidates:
+                    selected_relationships.add(
+                        relationship_name
+                    )
 
         # ---------------------------------------------
         # Join endpoint expansion.
@@ -716,10 +929,30 @@ class RelationAwareMetadataRetriever:
         question,
         selection,
     ):
+        """
+        Render a SQL-safe metadata context.
+
+        Internal semantic identifiers remain available to the
+        retrieval layer, but are deliberately hidden from the
+        Text-to-SQL model whenever they could be mistaken for
+        physical SQL identifiers.
+
+        The LLM sees:
+        - physical Spark table names;
+        - physical column names;
+        - natural-language meanings;
+        - executable join conditions;
+        - executable semantic SQL expressions/predicates.
+
+        It does NOT see internal relationship names, rule names,
+        semantic-concept identifiers, or aliases as candidate SQL
+        identifiers.
+        """
+
         lines = []
 
         lines.append(
-            "=== RETRIEVED METADATA ==="
+            "=== SQL-SAFE RETRIEVED METADATA ==="
         )
 
         lines.append(
@@ -728,7 +961,65 @@ class RelationAwareMetadataRetriever:
 
         lines.append("")
         lines.append(
-            "=== RELEVANT DATASETS ==="
+            "=== SQL GENERATION CONSTRAINTS ==="
+        )
+
+        lines.append(
+            "- Only DATASET names shown below are "
+            "Spark table identifiers."
+        )
+
+        lines.append(
+            "- Only names under PHYSICAL COLUMNS "
+            "are physical column identifiers."
+        )
+
+        lines.append(
+            "- PHYSICAL COLUMN names are fully "
+            "qualified as dataset.column; use those "
+            "exact physical identifiers in SQL."
+        )
+
+        lines.append(
+            "- Column names requested by the user for "
+            "the result are output aliases unless they "
+            "exactly match a listed PHYSICAL COLUMN."
+        )
+
+        lines.append(
+            "- Text following 'meaning:' is "
+            "documentation, not an SQL identifier."
+        )
+
+        lines.append(
+            "- JOIN CONDITION lines are executable "
+            "SQL conditions; use them directly when "
+            "the described relationship is required."
+        )
+
+        lines.append(
+            "- SQL EXPRESSION/PREDICATE lines are "
+            "executable SQL fragments; use them "
+            "directly when their described meaning "
+            "matches the question."
+        )
+
+        lines.append(
+            "- The registered yellow_taxi, green_taxi, "
+            "and weather_hourly views already contain "
+            "only January 2024 records."
+        )
+
+        lines.append(
+            "- Do not add a January 2024 date predicate "
+            "unless the question asks for a narrower "
+            "time range."
+        )
+
+        lines.append("")
+        lines.append(
+            "=== RELEVANT DATASETS AND "
+            "PHYSICAL COLUMNS ==="
         )
 
         for dataset_name in sorted(
@@ -753,16 +1044,8 @@ class RelationAwareMetadataRetriever:
                 f"{dataset['granularity']}"
             )
 
-            if dataset[
-                "primary_time_column"
-            ]:
-                lines.append(
-                    f"primary_time_column: "
-                    f"{dataset['primary_time_column']}"
-                )
-
             lines.append(
-                "selected_columns:"
+                "PHYSICAL COLUMNS:"
             )
 
             dataset_columns = [
@@ -781,59 +1064,39 @@ class RelationAwareMetadataRetriever:
                     key
                 ]
 
-                text = (
-                    f"- {column['name']}:"
+                lines.append(
+                    f"- {dataset_name}."
+                    f"{column['name']}:"
                     f"{column['data_type']}"
                 )
 
+                concept_name = column[
+                    "semantic_concept"
+                ]
+
                 if (
-                    column[
-                        "semantic_concept"
-                    ]
+                    concept_name
+                    and concept_name
+                    in self.concepts
                 ):
-                    text += (
-                        " -> semantic="
-                        f"{column['semantic_concept']}"
+                    concept = self.concepts[
+                        concept_name
+                    ]
+
+                    lines.append(
+                        f"  meaning: "
+                        f"{concept['description']}"
                     )
 
-                lines.append(text)
-
         lines.append("")
         lines.append(
-            "=== RELEVANT SEMANTIC CONCEPTS ==="
+            "=== VALID SQL JOIN CONDITIONS ==="
         )
 
-        for concept_name in sorted(
-            selection["concepts"]
-        ):
-            concept = self.concepts[
-                concept_name
-            ]
-
-            aliases = (
-                self.catalog.aliases_for(
-                    "concept",
-                    concept_name,
-                )
+        if not selection["relationships"]:
+            lines.append(
+                "- None required."
             )
-
-            text = (
-                f"- {concept_name}: "
-                f"{concept['description']}"
-            )
-
-            if aliases:
-                text += (
-                    " | aliases="
-                    + ", ".join(aliases)
-                )
-
-            lines.append(text)
-
-        lines.append("")
-        lines.append(
-            "=== REQUIRED RELATIONSHIPS ==="
-        )
 
         for relationship_name in sorted(
             selection["relationships"]
@@ -845,7 +1108,7 @@ class RelationAwareMetadataRetriever:
             )
 
             lines.append(
-                f"- {relationship_name}: "
+                f"- JOIN CONDITION: "
                 f"{relationship['source_expression']} "
                 f"= "
                 f"{relationship['target_expression']}"
@@ -858,8 +1121,14 @@ class RelationAwareMetadataRetriever:
 
         lines.append("")
         lines.append(
-            "=== RELEVANT SEMANTIC RULES ==="
+            "=== RELEVANT SQL "
+            "EXPRESSIONS / PREDICATES ==="
         )
+
+        if not selection["rules"]:
+            lines.append(
+                "- None required."
+            )
 
         for rule_name in sorted(
             selection["rules"]
@@ -869,7 +1138,7 @@ class RelationAwareMetadataRetriever:
             ]
 
             lines.append(
-                f"- {rule_name}: "
+                f"- SQL EXPRESSION/PREDICATE: "
                 f"{rule['sql_expression']}"
             )
 
@@ -882,7 +1151,7 @@ class RelationAwareMetadataRetriever:
                 "result_semantics"
             ]:
                 lines.append(
-                    f"  result_semantics: "
+                    f"  result: "
                     f"{rule['result_semantics']}"
                 )
 

@@ -2,24 +2,24 @@
   "collection": "metadata_catalog",
   "embedding_model": "embeddinggemma",
   "vector_dimension": 768,
-  "document_count": 100,
+  "document_count": 103,
   "documents_by_type": {
     "column": 66,
-    "concept": 20,
+    "concept": 21,
     "dataset": 4,
     "relationship": 6,
-    "rule": 4
+    "rule": 6
   },
   "embedding": {
     "batch_size": 20,
-    "prompt_eval_count": 6226,
-    "wall_time_seconds_sum": 26.386658619999707,
-    "api_duration_seconds_sum": 26.328834593000003
+    "prompt_eval_count": 6472,
+    "wall_time_seconds_sum": 27.03830274699976,
+    "api_duration_seconds_sum": 26.923254985
   },
   "qdrant": {
-    "stored_points": 100,
-    "persistent_points": 100,
-    "write_time_seconds": 0.3717082329999357,
+    "stored_points": 103,
+    "persistent_points": 103,
+    "write_time_seconds": 0.3716588870001942,
     "storage_path": ".qdrant/metadata_catalog"
   }
 }

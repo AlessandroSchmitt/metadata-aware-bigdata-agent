@@ -103,11 +103,17 @@ feedback.
 Rules:
 
 - Correct the existing query with the smallest reasonable change.
+- Apply only changes justified by the validation feedback and supplied metadata.
+- Do not modify identifiers that are already valid unless required by the reported error.
 - Generate valid Spark SQL.
-- Use only tables and columns present in the metadata.
-- Respect the provided cross-source relationships.
+- Use only physical tables and physical columns present in the metadata.
+- Semantic concept names and aliases are metadata labels, not SQL column names.
+- Relationship names and JOIN RULE names are metadata identifiers, not tables.
+- Never place a relationship or JOIN RULE name in FROM or JOIN.
+- Use the supplied physical join condition when a relationship is needed.
 - Respect semantic SQL rules.
 - Preserve the meaning of the original user question.
+- Explicitly alias requested output expressions with the exact requested name and casing.
 - The final output columns must be exactly: {expected}
 - Return SQL only.
 - Do not use markdown.

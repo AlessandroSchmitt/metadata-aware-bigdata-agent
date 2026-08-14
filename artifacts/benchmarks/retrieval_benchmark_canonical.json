@@ -7,17 +7,17 @@
   },
   "configuration": {
     "dense_top_k": 5,
-    "full_catalog_characters": 8600,
-    "full_catalog_words": 930
+    "full_catalog_characters": 9498,
+    "full_catalog_words": 1056
   },
   "summary": {
     "queries": 10,
     "perfect_recall_queries": 10,
     "macro_recall": 1.0,
-    "macro_precision": 0.6081818181818182,
-    "macro_f1": 0.7500840336134453,
-    "mean_context_reduction_percent": 80.82674418604651,
-    "mean_retrieval_seconds": 0.6831363231999148
+    "macro_precision": 0.6832395382395382,
+    "macro_f1": 0.802615815556992,
+    "mean_context_reduction_percent": 76.2560539060855,
+    "mean_retrieval_seconds": 0.7972529051000038
   },
   "records": [
     {
@@ -107,11 +107,11 @@
       "recall": 1.0,
       "precision": 0.5,
       "f1": 0.6666666666666666,
-      "context_characters": 678,
-      "context_words": 87,
-      "character_reduction_percent": 92.11627906976744,
-      "word_reduction_percent": 90.64516129032259,
-      "retrieval_seconds": 3.4816044300000613,
+      "context_characters": 1587,
+      "context_words": 229,
+      "character_reduction_percent": 83.29121920404296,
+      "word_reduction_percent": 78.31439393939394,
+      "retrieval_seconds": 4.768348938000145,
       "embedding_prompt_tokens": 31
     },
     {
@@ -204,11 +204,11 @@
       "recall": 1.0,
       "precision": 0.4,
       "f1": 0.5714285714285715,
-      "context_characters": 812,
-      "context_words": 106,
-      "character_reduction_percent": 90.55813953488372,
-      "word_reduction_percent": 88.6021505376344,
-      "retrieval_seconds": 0.3993804079996153,
+      "context_characters": 1672,
+      "context_words": 243,
+      "character_reduction_percent": 82.39629395662244,
+      "word_reduction_percent": 76.98863636363636,
+      "retrieval_seconds": 0.35563900400029524,
       "embedding_prompt_tokens": 34
     },
     {
@@ -286,7 +286,6 @@
           "zone_name"
         ],
         "relationships": [
-          "yellow_dropoff_zone",
           "yellow_pickup_zone"
         ],
         "rules": []
@@ -310,17 +309,16 @@
       "missing": [],
       "extras": [
         "column:yellow_taxi.DOLocationID",
-        "column:yellow_taxi.tolls_amount",
-        "relationship:yellow_dropoff_zone"
+        "column:yellow_taxi.tolls_amount"
       ],
       "recall": 1.0,
-      "precision": 0.6666666666666666,
-      "f1": 0.8,
-      "context_characters": 1567,
-      "context_words": 196,
-      "character_reduction_percent": 81.77906976744185,
-      "word_reduction_percent": 78.92473118279571,
-      "retrieval_seconds": 0.3985819370000172,
+      "precision": 0.75,
+      "f1": 0.8571428571428571,
+      "context_characters": 2177,
+      "context_words": 304,
+      "character_reduction_percent": 77.07938513371236,
+      "word_reduction_percent": 71.21212121212122,
+      "retrieval_seconds": 0.37379360699969766,
       "embedding_prompt_tokens": 41
     },
     {
@@ -386,7 +384,6 @@
         ],
         "columns": [
           "green_taxi.DOLocationID",
-          "green_taxi.PULocationID",
           "green_taxi.VendorID",
           "green_taxi.mta_tax",
           "green_taxi.tolls_amount",
@@ -396,12 +393,10 @@
         "concepts": [
           "borough",
           "dropoff_zone_id",
-          "pickup_zone_id",
           "taxi_zone_id"
         ],
         "relationships": [
-          "green_dropoff_zone",
-          "green_pickup_zone"
+          "green_dropoff_zone"
         ],
         "rules": []
       },
@@ -423,20 +418,18 @@
       ],
       "missing": [],
       "extras": [
-        "column:green_taxi.PULocationID",
         "column:green_taxi.VendorID",
         "column:green_taxi.mta_tax",
-        "column:green_taxi.tolls_amount",
-        "relationship:green_pickup_zone"
+        "column:green_taxi.tolls_amount"
       ],
       "recall": 1.0,
-      "precision": 0.5454545454545454,
-      "f1": 0.7058823529411764,
-      "context_characters": 1589,
-      "context_words": 200,
-      "character_reduction_percent": 81.52325581395348,
-      "word_reduction_percent": 78.49462365591397,
-      "retrieval_seconds": 0.34036750399991433,
+      "precision": 0.6666666666666666,
+      "f1": 0.8,
+      "context_characters": 2129,
+      "context_words": 297,
+      "character_reduction_percent": 77.58475468519688,
+      "word_reduction_percent": 71.875,
+      "retrieval_seconds": 0.3253927250002562,
       "embedding_prompt_tokens": 36
     },
     {
@@ -533,11 +526,11 @@
       "recall": 1.0,
       "precision": 0.6666666666666666,
       "f1": 0.8,
-      "context_characters": 1015,
-      "context_words": 130,
-      "character_reduction_percent": 88.19767441860465,
-      "word_reduction_percent": 86.02150537634408,
-      "retrieval_seconds": 0.40939240399984556,
+      "context_characters": 1920,
+      "context_words": 278,
+      "character_reduction_percent": 79.78521794061908,
+      "word_reduction_percent": 73.67424242424244,
+      "retrieval_seconds": 0.42615912199971717,
       "embedding_prompt_tokens": 48
     },
     {
@@ -653,11 +646,11 @@
       "recall": 1.0,
       "precision": 0.8,
       "f1": 0.888888888888889,
-      "context_characters": 1895,
-      "context_words": 223,
-      "character_reduction_percent": 77.96511627906978,
-      "word_reduction_percent": 76.0215053763441,
-      "retrieval_seconds": 0.439237988000059,
+      "context_characters": 2589,
+      "context_words": 341,
+      "character_reduction_percent": 72.74162981680354,
+      "word_reduction_percent": 67.70833333333333,
+      "retrieval_seconds": 0.33247600599997895,
       "embedding_prompt_tokens": 34
     },
     {
@@ -771,11 +764,11 @@
       "recall": 1.0,
       "precision": 0.6363636363636364,
       "f1": 0.7777777777777778,
-      "context_characters": 1857,
-      "context_words": 219,
-      "character_reduction_percent": 78.40697674418604,
-      "word_reduction_percent": 76.45161290322581,
-      "retrieval_seconds": 0.32668088299988085,
+      "context_characters": 2555,
+      "context_words": 337,
+      "character_reduction_percent": 73.09959991577173,
+      "word_reduction_percent": 68.08712121212122,
+      "retrieval_seconds": 0.3694906420000734,
       "embedding_prompt_tokens": 28
     },
     {
@@ -834,34 +827,27 @@
           "precipitation_status"
         ],
         "rules": [
-          "rainy_hour",
-          "yellow_pickup_hour"
+          "rainy_hour"
         ]
       },
       "selection": {
         "datasets": [
-          "green_taxi",
           "taxi_zones",
           "weather_hourly",
           "yellow_taxi"
         ],
         "columns": [
-          "green_taxi.DOLocationID",
-          "green_taxi.PULocationID",
-          "green_taxi.lpep_pickup_datetime",
           "taxi_zones.Borough",
           "taxi_zones.LocationID",
           "weather_hourly.has_precipitation",
           "weather_hourly.weather_hour",
           "yellow_taxi.Airport_fee",
-          "yellow_taxi.DOLocationID",
           "yellow_taxi.PULocationID",
           "yellow_taxi.tolls_amount",
           "yellow_taxi.tpep_pickup_datetime"
         ],
         "concepts": [
           "borough",
-          "dropoff_zone_id",
           "pickup_datetime",
           "pickup_zone_id",
           "precipitation_status",
@@ -869,16 +855,11 @@
           "weather_hour"
         ],
         "relationships": [
-          "green_dropoff_zone",
-          "green_pickup_weather_hour",
-          "green_pickup_zone",
-          "yellow_dropoff_zone",
           "yellow_pickup_weather_hour",
           "yellow_pickup_zone"
         ],
         "rules": [
-          "rainy_hour",
-          "yellow_pickup_hour"
+          "rainy_hour"
         ]
       },
       "gold": [
@@ -911,27 +892,17 @@
       ],
       "missing": [],
       "extras": [
-        "column:green_taxi.DOLocationID",
-        "column:green_taxi.PULocationID",
-        "column:green_taxi.lpep_pickup_datetime",
         "column:yellow_taxi.Airport_fee",
-        "column:yellow_taxi.DOLocationID",
-        "column:yellow_taxi.tolls_amount",
-        "dataset:green_taxi",
-        "relationship:green_dropoff_zone",
-        "relationship:green_pickup_weather_hour",
-        "relationship:green_pickup_zone",
-        "relationship:yellow_dropoff_zone",
-        "rule:yellow_pickup_hour"
+        "column:yellow_taxi.tolls_amount"
       ],
       "recall": 1.0,
-      "precision": 0.5,
-      "f1": 0.6666666666666666,
-      "context_characters": 3885,
-      "context_words": 449,
-      "character_reduction_percent": 54.825581395348834,
-      "word_reduction_percent": 51.72043010752688,
-      "retrieval_seconds": 0.35134054999980435,
+      "precision": 0.8571428571428571,
+      "f1": 0.923076923076923,
+      "context_characters": 3129,
+      "context_words": 411,
+      "character_reduction_percent": 67.05622236260265,
+      "word_reduction_percent": 61.07954545454546,
+      "retrieval_seconds": 0.35083979299997736,
       "embedding_prompt_tokens": 39
     },
     {
@@ -1030,11 +1001,11 @@
       "recall": 1.0,
       "precision": 0.6666666666666666,
       "f1": 0.8,
-      "context_characters": 1183,
-      "context_words": 139,
-      "character_reduction_percent": 86.24418604651163,
-      "word_reduction_percent": 85.05376344086022,
-      "retrieval_seconds": 0.3130536190001294,
+      "context_characters": 2031,
+      "context_words": 271,
+      "character_reduction_percent": 78.61655085281112,
+      "word_reduction_percent": 74.33712121212122,
+      "retrieval_seconds": 0.29343061299960027,
       "embedding_prompt_tokens": 29
     },
     {
@@ -1061,6 +1032,14 @@
         },
         {
           "rank": 3,
+          "score": 0.5438855141888856,
+          "entity_type": "rule",
+          "entity_key": "yellow_pickup_hour_of_day",
+          "dataset": "yellow_taxi",
+          "text": "Semantic SQL rule: yellow_pickup_hour_of_day. Dataset: yellow_taxi. Meaning: Extracts the integer clock hour of day from a Yellow Taxi pickup timestamp. SQL expression: hour(yellow_taxi.tpep_pickup_datetime). Result semantics: Returns an integer from 0 to 23. Use this for grouping pickups by clock hour across different dates."
+        },
+        {
+          "rank": 4,
           "score": 0.5270806281083436,
           "entity_type": "column",
           "entity_key": "yellow_taxi.tolls_amount",
@@ -1068,20 +1047,12 @@
           "text": "Column: yellow_taxi.tolls_amount. Physical type: double. Dataset: NYC Yellow Taxi Trips. Dataset description: Curated Yellow Taxi trips for January 2024. Original TLC column names are preserved."
         },
         {
-          "rank": 4,
-          "score": 0.5126449879425352,
-          "entity_type": "column",
-          "entity_key": "weather_hourly.precipitation_raw",
-          "dataset": "weather_hourly",
-          "text": "Column: weather_hourly.precipitation_raw. Physical type: string. Dataset: NYC Central Park Hourly Weather. Dataset description: Hourly weather representation for NYC Central Park during January 2024, derived from NOAA Local Climatological Data."
-        },
-        {
           "rank": 5,
-          "score": 0.5118076873411379,
-          "entity_type": "column",
-          "entity_key": "yellow_taxi.tpep_pickup_datetime",
-          "dataset": "yellow_taxi",
-          "text": "Column: yellow_taxi.tpep_pickup_datetime. Physical type: timestamp_ntz. Dataset: NYC Yellow Taxi Trips. Dataset description: Curated Yellow Taxi trips for January 2024. Original TLC column names are preserved. Semantic concept: pickup_datetime. Semantic meaning: Date and time when a taxi trip begins. Semantic aliases: pickup time, trip start."
+          "score": 0.5195828732487199,
+          "entity_type": "rule",
+          "entity_key": "green_pickup_hour_of_day",
+          "dataset": "green_taxi",
+          "text": "Semantic SQL rule: green_pickup_hour_of_day. Dataset: green_taxi. Meaning: Extracts the integer clock hour of day from a Green Taxi pickup timestamp. SQL expression: hour(green_taxi.lpep_pickup_datetime). Result semantics: Returns an integer from 0 to 23. Use this for grouping pickups by clock hour across different dates."
         }
       ],
       "lexical": {
@@ -1089,11 +1060,12 @@
           "yellow_taxi"
         ],
         "concepts": [
+          "hour_of_day",
           "precipitation_status"
         ],
         "rules": [
           "rainy_hour",
-          "yellow_pickup_hour"
+          "yellow_pickup_hour_of_day"
         ]
       },
       "selection": {
@@ -1103,12 +1075,12 @@
         ],
         "columns": [
           "weather_hourly.has_precipitation",
-          "weather_hourly.precipitation_raw",
           "weather_hourly.weather_hour",
           "yellow_taxi.tolls_amount",
           "yellow_taxi.tpep_pickup_datetime"
         ],
         "concepts": [
+          "hour_of_day",
           "pickup_datetime",
           "precipitation_status",
           "weather_hour"
@@ -1118,7 +1090,7 @@
         ],
         "rules": [
           "rainy_hour",
-          "yellow_pickup_hour"
+          "yellow_pickup_hour_of_day"
         ]
       },
       "gold": [
@@ -1128,7 +1100,8 @@
         "dataset:weather_hourly",
         "dataset:yellow_taxi",
         "relationship:yellow_pickup_weather_hour",
-        "rule:rainy_hour"
+        "rule:rainy_hour",
+        "rule:yellow_pickup_hour_of_day"
       ],
       "hits": [
         "column:weather_hourly.has_precipitation",
@@ -1137,22 +1110,21 @@
         "dataset:weather_hourly",
         "dataset:yellow_taxi",
         "relationship:yellow_pickup_weather_hour",
-        "rule:rainy_hour"
+        "rule:rainy_hour",
+        "rule:yellow_pickup_hour_of_day"
       ],
       "missing": [],
       "extras": [
-        "column:weather_hourly.precipitation_raw",
-        "column:yellow_taxi.tolls_amount",
-        "rule:yellow_pickup_hour"
+        "column:yellow_taxi.tolls_amount"
       ],
       "recall": 1.0,
-      "precision": 0.7,
-      "f1": 0.8235294117647058,
-      "context_characters": 2008,
-      "context_words": 238,
-      "character_reduction_percent": 76.65116279069768,
-      "word_reduction_percent": 74.40860215053763,
-      "retrieval_seconds": 0.3717235089998212,
+      "precision": 0.8888888888888888,
+      "f1": 0.9411764705882353,
+      "context_characters": 2763,
+      "context_words": 373,
+      "character_reduction_percent": 70.90966519267215,
+      "word_reduction_percent": 64.6780303030303,
+      "retrieval_seconds": 0.37695860100029677,
       "embedding_prompt_tokens": 46
     }
   ]

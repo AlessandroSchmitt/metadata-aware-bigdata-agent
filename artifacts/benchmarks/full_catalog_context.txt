@@ -127,6 +127,7 @@ columns:
 - precipitation_status [weather]: Three-valued precipitation status: true means precipitation occurred, false means dry, null means unknown. | aliases=rain, rainy, wet weather
 - wind_speed [weather]: Observed wind speed in miles per hour. | aliases=wind
 - visibility [weather]: Observed visibility in miles. | aliases=visibility
+- hour_of_day [temporal]: Integer clock hour of day from 0 to 23, independent of calendar date. | aliases=clock hour, clock hour of day, hour of day
 
 === CROSS-SOURCE RELATIONSHIPS ===
 - yellow_pickup_zone [foreign_key_like, many_to_one, validated]: yellow_taxi.PULocationID = taxi_zones.LocationID
@@ -149,9 +150,15 @@ columns:
 - dry_hour [weather_hourly]: weather_hourly.has_precipitation = FALSE
   meaning: An hour is dry only when precipitation status is explicitly false.
   result_semantics: Missing precipitation status is not interpreted as dry.
-- yellow_pickup_hour [yellow_taxi]: date_trunc('hour', yellow_taxi.tpep_pickup_datetime)
-  meaning: Hourly time bucket for a Yellow Taxi pickup.
-  result_semantics: Used to align Yellow Taxi trips with hourly weather.
-- green_pickup_hour [green_taxi]: date_trunc('hour', green_taxi.lpep_pickup_datetime)
-  meaning: Hourly time bucket for a Green Taxi pickup.
-  result_semantics: Used to align Green Taxi trips with hourly weather.
+- yellow_pickup_weather_bucket [yellow_taxi]: date_trunc('hour', yellow_taxi.tpep_pickup_datetime)
+  meaning: Hourly timestamp bucket for a Yellow Taxi pickup, used for alignment with hourly weather.
+  result_semantics: Returns a timestamp truncated to the hour. It is not the integer clock hour of day.
+- green_pickup_weather_bucket [green_taxi]: date_trunc('hour', green_taxi.lpep_pickup_datetime)
+  meaning: Hourly timestamp bucket for a Green Taxi pickup, used for alignment with hourly weather.
+  result_semantics: Returns a timestamp truncated to the hour. It is not the integer clock hour of day.
+- yellow_pickup_hour_of_day [yellow_taxi]: hour(yellow_taxi.tpep_pickup_datetime)
+  meaning: Extracts the integer clock hour of day from a Yellow Taxi pickup timestamp.
+  result_semantics: Returns an integer from 0 to 23. Use this for grouping pickups by clock hour across different dates.
+- green_pickup_hour_of_day [green_taxi]: hour(green_taxi.lpep_pickup_datetime)
+  meaning: Extracts the integer clock hour of day from a Green Taxi pickup timestamp.
+  result_semantics: Returns an integer from 0 to 23. Use this for grouping pickups by clock hour across different dates.
