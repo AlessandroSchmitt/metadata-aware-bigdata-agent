@@ -1,0 +1,193 @@
+{
+  "benchmark": {
+    "name": "NYC Metadata-Aware Text-to-Spark-SQL Benchmark",
+    "version": "1.0",
+    "period": "January 2024",
+    "description": "Controlled benchmark for comparing Full Catalog, Relation-Aware Retrieval, and Relation-Aware Retrieval with validation and one-shot repair."
+  },
+
+  "queries": [
+    {
+      "id": "Q01",
+      "category": "single_source_aggregation",
+      "question": "What was the average trip distance for Yellow Taxi trips in January 2024? Return exactly one column named average_trip_distance.",
+      "expected_columns": [
+        "average_trip_distance"
+      ],
+      "gold_sql": "SELECT AVG(trip_distance) AS average_trip_distance FROM yellow_taxi",
+      "required_metadata": [
+        "dataset:yellow_taxi",
+        "column:yellow_taxi.trip_distance"
+      ]
+    },
+
+    {
+      "id": "Q02",
+      "category": "single_source_filter_aggregation",
+      "question": "How many Green Taxi trips had a trip distance greater than 10 miles in January 2024? Return exactly one column named trip_count.",
+      "expected_columns": [
+        "trip_count"
+      ],
+      "gold_sql": "SELECT COUNT(*) AS trip_count FROM green_taxi WHERE trip_distance > 10",
+      "required_metadata": [
+        "dataset:green_taxi",
+        "column:green_taxi.trip_distance"
+      ]
+    },
+
+    {
+      "id": "Q03",
+      "category": "geographic_pickup_join",
+      "question": "Which pickup taxi zone had the highest number of Yellow Taxi trips in January 2024? Return exactly two columns named zone_name and trip_count, with only the top zone.",
+      "expected_columns": [
+        "zone_name",
+        "trip_count"
+      ],
+      "gold_sql": "SELECT z.Zone AS zone_name, COUNT(*) AS trip_count FROM yellow_taxi y JOIN taxi_zones z ON y.PULocationID = z.LocationID GROUP BY z.Zone ORDER BY trip_count DESC, zone_name ASC LIMIT 1",
+      "required_metadata": [
+        "dataset:yellow_taxi",
+        "dataset:taxi_zones",
+        "column:yellow_taxi.PULocationID",
+        "column:taxi_zones.LocationID",
+        "column:taxi_zones.Zone",
+        "relationship:yellow_pickup_zone"
+      ]
+    },
+
+    {
+      "id": "Q04",
+      "category": "geographic_dropoff_join",
+      "question": "Which borough received the most Green Taxi dropoffs in January 2024? Return exactly two columns named borough and trip_count, with only the top borough.",
+      "expected_columns": [
+        "borough",
+        "trip_count"
+      ],
+      "gold_sql": "SELECT z.Borough AS borough, COUNT(*) AS trip_count FROM green_taxi g JOIN taxi_zones z ON g.DOLocationID = z.LocationID GROUP BY z.Borough ORDER BY trip_count DESC, borough ASC LIMIT 1",
+      "required_metadata": [
+        "dataset:green_taxi",
+        "dataset:taxi_zones",
+        "column:green_taxi.DOLocationID",
+        "column:taxi_zones.LocationID",
+        "column:taxi_zones.Borough",
+        "relationship:green_dropoff_zone"
+      ]
+    },
+
+    {
+      "id": "Q05",
+      "category": "cross_service_comparison",
+      "question": "Compare the average trip distance of Yellow Taxi and Green Taxi trips in January 2024. Return exactly two columns named taxi_type and average_trip_distance, with one row for Yellow and one row for Green.",
+      "expected_columns": [
+        "taxi_type",
+        "average_trip_distance"
+      ],
+      "gold_sql": "SELECT 'Yellow' AS taxi_type, AVG(trip_distance) AS average_trip_distance FROM yellow_taxi UNION ALL SELECT 'Green' AS taxi_type, AVG(trip_distance) AS average_trip_distance FROM green_taxi",
+      "required_metadata": [
+        "dataset:yellow_taxi",
+        "dataset:green_taxi",
+        "column:yellow_taxi.trip_distance",
+        "column:green_taxi.trip_distance"
+      ]
+    },
+
+    {
+      "id": "Q06",
+      "category": "weather_temporal_join",
+      "question": "What was the average trip distance for Yellow Taxi trips during rainy hours in January 2024? Return exactly one column named average_trip_distance.",
+      "expected_columns": [
+        "average_trip_distance"
+      ],
+      "gold_sql": "SELECT AVG(y.trip_distance) AS average_trip_distance FROM yellow_taxi y JOIN weather_hourly w ON date_trunc('hour', y.tpep_pickup_datetime) = w.weather_hour WHERE w.has_precipitation = TRUE",
+      "required_metadata": [
+        "dataset:yellow_taxi",
+        "dataset:weather_hourly",
+        "column:yellow_taxi.trip_distance",
+        "column:yellow_taxi.tpep_pickup_datetime",
+        "column:weather_hourly.weather_hour",
+        "column:weather_hourly.has_precipitation",
+        "relationship:yellow_pickup_weather_hour",
+        "rule:rainy_hour"
+      ]
+    },
+
+    {
+      "id": "Q07",
+      "category": "weather_semantic_rule",
+      "question": "How many Green Taxi trips started during dry hours in January 2024? Return exactly one column named trip_count.",
+      "expected_columns": [
+        "trip_count"
+      ],
+      "gold_sql": "SELECT COUNT(*) AS trip_count FROM green_taxi g JOIN weather_hourly w ON date_trunc('hour', g.lpep_pickup_datetime) = w.weather_hour WHERE w.has_precipitation = FALSE",
+      "required_metadata": [
+        "dataset:green_taxi",
+        "dataset:weather_hourly",
+        "column:green_taxi.lpep_pickup_datetime",
+        "column:weather_hourly.weather_hour",
+        "column:weather_hourly.has_precipitation",
+        "relationship:green_pickup_weather_hour",
+        "rule:dry_hour"
+      ]
+    },
+
+    {
+      "id": "Q08",
+      "category": "three_source_query",
+      "question": "Which pickup borough had the most Yellow Taxi trips during rainy hours in January 2024? Return exactly two columns named borough and trip_count, with only the top borough.",
+      "expected_columns": [
+        "borough",
+        "trip_count"
+      ],
+      "gold_sql": "SELECT z.Borough AS borough, COUNT(*) AS trip_count FROM yellow_taxi y JOIN taxi_zones z ON y.PULocationID = z.LocationID JOIN weather_hourly w ON date_trunc('hour', y.tpep_pickup_datetime) = w.weather_hour WHERE w.has_precipitation = TRUE GROUP BY z.Borough ORDER BY trip_count DESC, borough ASC LIMIT 1",
+      "required_metadata": [
+        "dataset:yellow_taxi",
+        "dataset:taxi_zones",
+        "dataset:weather_hourly",
+        "column:yellow_taxi.PULocationID",
+        "column:yellow_taxi.tpep_pickup_datetime",
+        "column:taxi_zones.LocationID",
+        "column:taxi_zones.Borough",
+        "column:weather_hourly.weather_hour",
+        "column:weather_hourly.has_precipitation",
+        "relationship:yellow_pickup_zone",
+        "relationship:yellow_pickup_weather_hour",
+        "rule:rainy_hour"
+      ]
+    },
+
+    {
+      "id": "Q09",
+      "category": "weather_only",
+      "question": "What was the average temperature during rainy hours in January 2024? Return exactly one column named average_temperature_f.",
+      "expected_columns": [
+        "average_temperature_f"
+      ],
+      "gold_sql": "SELECT AVG(temperature_f) AS average_temperature_f FROM weather_hourly WHERE has_precipitation = TRUE",
+      "required_metadata": [
+        "dataset:weather_hourly",
+        "column:weather_hourly.temperature_f",
+        "column:weather_hourly.has_precipitation",
+        "rule:rainy_hour"
+      ]
+    },
+
+    {
+      "id": "Q10",
+      "category": "temporal_grouping",
+      "question": "During rainy hours in January 2024, which clock hour of day had the most Yellow Taxi pickups? Return exactly two columns named hour_of_day and trip_count, with only the top hour.",
+      "expected_columns": [
+        "hour_of_day",
+        "trip_count"
+      ],
+      "gold_sql": "SELECT hour(y.tpep_pickup_datetime) AS hour_of_day, COUNT(*) AS trip_count FROM yellow_taxi y JOIN weather_hourly w ON date_trunc('hour', y.tpep_pickup_datetime) = w.weather_hour WHERE w.has_precipitation = TRUE GROUP BY hour(y.tpep_pickup_datetime) ORDER BY trip_count DESC, hour_of_day ASC LIMIT 1",
+      "required_metadata": [
+        "dataset:yellow_taxi",
+        "dataset:weather_hourly",
+        "column:yellow_taxi.tpep_pickup_datetime",
+        "column:weather_hourly.weather_hour",
+        "column:weather_hourly.has_precipitation",
+        "relationship:yellow_pickup_weather_hour",
+        "rule:rainy_hour"
+      ]
+    }
+  ]
+}

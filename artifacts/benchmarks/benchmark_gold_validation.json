@@ -1,0 +1,176 @@
+{
+  "benchmark": {
+    "name": "NYC Metadata-Aware Text-to-Spark-SQL Benchmark",
+    "version": "1.0",
+    "period": "January 2024",
+    "description": "Controlled benchmark for comparing Full Catalog, Relation-Aware Retrieval, and Relation-Aware Retrieval with validation and one-shot repair."
+  },
+  "queries_total": 10,
+  "queries_passed": 10,
+  "records": [
+    {
+      "id": "Q01",
+      "category": "single_source_aggregation",
+      "success": true,
+      "columns": [
+        "average_trip_distance"
+      ],
+      "rows": [
+        [
+          3.229347612268583
+        ]
+      ],
+      "spark_seconds": 1.8653945119999662,
+      "error": null
+    },
+    {
+      "id": "Q02",
+      "category": "single_source_filter_aggregation",
+      "success": true,
+      "columns": [
+        "trip_count"
+      ],
+      "rows": [
+        [
+          1516
+        ]
+      ],
+      "spark_seconds": 0.5834030779997192,
+      "error": null
+    },
+    {
+      "id": "Q03",
+      "category": "geographic_pickup_join",
+      "success": true,
+      "columns": [
+        "zone_name",
+        "trip_count"
+      ],
+      "rows": [
+        [
+          "JFK Airport",
+          145183
+        ]
+      ],
+      "spark_seconds": 1.9883720789998733,
+      "error": null
+    },
+    {
+      "id": "Q04",
+      "category": "geographic_dropoff_join",
+      "success": true,
+      "columns": [
+        "borough",
+        "trip_count"
+      ],
+      "rows": [
+        [
+          "Manhattan",
+          33062
+        ]
+      ],
+      "spark_seconds": 0.42873823200034167,
+      "error": null
+    },
+    {
+      "id": "Q05",
+      "category": "cross_service_comparison",
+      "success": true,
+      "columns": [
+        "taxi_type",
+        "average_trip_distance"
+      ],
+      "rows": [
+        [
+          "Yellow",
+          3.229347612268583
+        ],
+        [
+          "Green",
+          2.6227749915823337
+        ]
+      ],
+      "spark_seconds": 0.6402610689997346,
+      "error": null
+    },
+    {
+      "id": "Q06",
+      "category": "weather_temporal_join",
+      "success": true,
+      "columns": [
+        "average_trip_distance"
+      ],
+      "rows": [
+        [
+          3.118357853464959
+        ]
+      ],
+      "spark_seconds": 1.8640240839999933,
+      "error": null
+    },
+    {
+      "id": "Q07",
+      "category": "weather_semantic_rule",
+      "success": true,
+      "columns": [
+        "trip_count"
+      ],
+      "rows": [
+        [
+          44932
+        ]
+      ],
+      "spark_seconds": 0.46662015799984147,
+      "error": null
+    },
+    {
+      "id": "Q08",
+      "category": "three_source_query",
+      "success": true,
+      "columns": [
+        "borough",
+        "trip_count"
+      ],
+      "rows": [
+        [
+          "Manhattan",
+          552813
+        ]
+      ],
+      "spark_seconds": 1.4952974249999897,
+      "error": null
+    },
+    {
+      "id": "Q09",
+      "category": "weather_only",
+      "success": true,
+      "columns": [
+        "average_temperature_f"
+      ],
+      "rows": [
+        [
+          39.790419161676645
+        ]
+      ],
+      "spark_seconds": 0.20458436900025845,
+      "error": null
+    },
+    {
+      "id": "Q10",
+      "category": "temporal_grouping",
+      "success": true,
+      "columns": [
+        "hour_of_day",
+        "trip_count"
+      ],
+      "rows": [
+        [
+          12,
+          54447
+        ]
+      ],
+      "spark_seconds": 1.3675982210002076,
+      "error": null
+    }
+  ]
+}
