@@ -1,0 +1,418 @@
+{
+  "yellow_taxi": {
+    "january_rows": 2964606,
+    "thresholds": {
+      "30": {
+        "rows": 2695,
+        "percentage": 0.09090584043883065
+      },
+      "50": {
+        "rows": 412,
+        "percentage": 0.01389729360326465
+      },
+      "75": {
+        "rows": 105,
+        "percentage": 0.0035417859911232724
+      },
+      "100": {
+        "rows": 59,
+        "percentage": 0.0019901464140597435
+      },
+      "150": {
+        "rows": 36,
+        "percentage": 0.001214326625527979
+      },
+      "200": {
+        "rows": 31,
+        "percentage": 0.001045670149760204
+      },
+      "500": {
+        "rows": 25,
+        "percentage": 0.0008432823788388744
+      },
+      "1000": {
+        "rows": 23,
+        "percentage": 0.0007758197885317644
+      }
+    },
+    "quantiles": {
+      "p99.000": 20.0,
+      "p99.500": 21.64,
+      "p99.900": 29.52,
+      "p99.950": 35.44,
+      "p99.990": 54.22,
+      "p99.995": 67.84,
+      "p99.999": 312722.3
+    },
+    "top_20": [
+      {
+        "tpep_pickup_datetime": "2024-01-30 06:37:00",
+        "trip_distance": "312722.3",
+        "PULocationID": "151",
+        "DOLocationID": "162",
+        "fare_amount": "14.46",
+        "total_amount": "22.15"
+      },
+      {
+        "tpep_pickup_datetime": "2024-01-25 08:39:00",
+        "trip_distance": "97793.92",
+        "PULocationID": "4",
+        "DOLocationID": "13",
+        "fare_amount": "29.71",
+        "total_amount": "36.31"
+      },
+      {
+        "tpep_pickup_datetime": "2024-01-20 08:01:00",
+        "trip_distance": "82015.45",
+        "PULocationID": "40",
+        "DOLocationID": "43",
+        "fare_amount": "16.56",
+        "total_amount": "21.56"
+      },
+      {
+        "tpep_pickup_datetime": "2024-01-21 11:58:00",
+        "trip_distance": "72975.97",
+        "PULocationID": "209",
+        "DOLocationID": "211",
+        "fare_amount": "12.7",
+        "total_amount": "20.04"
+      },
+      {
+        "tpep_pickup_datetime": "2024-01-17 08:41:00",
+        "trip_distance": "71752.26",
+        "PULocationID": "33",
+        "DOLocationID": "161",
+        "fare_amount": "41.06",
+        "total_amount": "49.57"
+      },
+      {
+        "tpep_pickup_datetime": "2024-01-05 15:46:00",
+        "trip_distance": "59282.45",
+        "PULocationID": "74",
+        "DOLocationID": "47",
+        "fare_amount": "32.02",
+        "total_amount": "33.52"
+      },
+      {
+        "tpep_pickup_datetime": "2024-01-09 07:13:00",
+        "trip_distance": "59076.43",
+        "PULocationID": "141",
+        "DOLocationID": "162",
+        "fare_amount": "13.82",
+        "total_amount": "23.17"
+      },
+      {
+        "tpep_pickup_datetime": "2024-01-24 12:26:00",
+        "trip_distance": "58298.51",
+        "PULocationID": "151",
+        "DOLocationID": "236",
+        "fare_amount": "12.94",
+        "total_amount": "18.63"
+      },
+      {
+        "tpep_pickup_datetime": "2024-01-12 05:16:00",
+        "trip_distance": "51619.36",
+        "PULocationID": "238",
+        "DOLocationID": "186",
+        "fare_amount": "16.17",
+        "total_amount": "24.2"
+      },
+      {
+        "tpep_pickup_datetime": "2024-01-12 07:18:00",
+        "trip_distance": "44018.64",
+        "PULocationID": "233",
+        "DOLocationID": "138",
+        "fare_amount": "32.75",
+        "total_amount": "52.43"
+      },
+      {
+        "tpep_pickup_datetime": "2024-01-13 14:00:00",
+        "trip_distance": "41123.32",
+        "PULocationID": "238",
+        "DOLocationID": "236",
+        "fare_amount": "14.57",
+        "total_amount": "18.57"
+      },
+      {
+        "tpep_pickup_datetime": "2024-01-21 07:02:00",
+        "trip_distance": "38202.66",
+        "PULocationID": "161",
+        "DOLocationID": "138",
+        "fare_amount": "34.42",
+        "total_amount": "54.43"
+      },
+      {
+        "tpep_pickup_datetime": "2024-01-13 15:50:00",
+        "trip_distance": "38131.83",
+        "PULocationID": "66",
+        "DOLocationID": "113",
+        "fare_amount": "19.39",
+        "total_amount": "29.24"
+      },
+      {
+        "tpep_pickup_datetime": "2024-01-16 10:43:00",
+        "trip_distance": "36339.72",
+        "PULocationID": "151",
+        "DOLocationID": "48",
+        "fare_amount": "16.23",
+        "total_amount": "24.28"
+      },
+      {
+        "tpep_pickup_datetime": "2024-01-11 07:41:00",
+        "trip_distance": "33934.01",
+        "PULocationID": "238",
+        "DOLocationID": "142",
+        "fare_amount": "13.82",
+        "total_amount": "19.6"
+      },
+      {
+        "tpep_pickup_datetime": "2024-01-09 08:16:00",
+        "trip_distance": "33916.1",
+        "PULocationID": "211",
+        "DOLocationID": "162",
+        "fare_amount": "21.94",
+        "total_amount": "26.94"
+      },
+      {
+        "tpep_pickup_datetime": "2024-01-26 06:49:00",
+        "trip_distance": "31963.56",
+        "PULocationID": "79",
+        "DOLocationID": "50",
+        "fare_amount": "17.85",
+        "total_amount": "26.22"
+      },
+      {
+        "tpep_pickup_datetime": "2024-01-01 15:41:00",
+        "trip_distance": "28339.6",
+        "PULocationID": "244",
+        "DOLocationID": "166",
+        "fare_amount": "22.82",
+        "total_amount": "29.18"
+      },
+      {
+        "tpep_pickup_datetime": "2024-01-31 07:01:00",
+        "trip_distance": "21235.88",
+        "PULocationID": "262",
+        "DOLocationID": "186",
+        "fare_amount": "25.18",
+        "total_amount": "33.56"
+      },
+      {
+        "tpep_pickup_datetime": "2024-01-17 14:50:40",
+        "trip_distance": "15400.32",
+        "PULocationID": "163",
+        "DOLocationID": "24",
+        "fare_amount": "28.9",
+        "total_amount": "39.48"
+      }
+    ]
+  },
+  "green_taxi": {
+    "january_rows": 56549,
+    "thresholds": {
+      "30": {
+        "rows": 75,
+        "percentage": 0.13262834002369628
+      },
+      "50": {
+        "rows": 52,
+        "percentage": 0.09195564908309609
+      },
+      "75": {
+        "rows": 46,
+        "percentage": 0.08134538188120037
+      },
+      "100": {
+        "rows": 46,
+        "percentage": 0.08134538188120037
+      },
+      "150": {
+        "rows": 46,
+        "percentage": 0.08134538188120037
+      },
+      "200": {
+        "rows": 46,
+        "percentage": 0.08134538188120037
+      },
+      "500": {
+        "rows": 46,
+        "percentage": 0.08134538188120037
+      },
+      "1000": {
+        "rows": 46,
+        "percentage": 0.08134538188120037
+      }
+    },
+    "quantiles": {
+      "p99.000": 15.68,
+      "p99.500": 18.67,
+      "p99.900": 38.25,
+      "p99.950": 21824.07,
+      "p99.990": 45719.16,
+      "p99.995": 50508.27,
+      "p99.999": 201421.68
+    },
+    "top_20": [
+      {
+        "lpep_pickup_datetime": "2024-01-19 11:19:00",
+        "trip_distance": "201421.68",
+        "PULocationID": "42",
+        "DOLocationID": "114",
+        "fare_amount": "40.56",
+        "total_amount": "50.96"
+      },
+      {
+        "lpep_pickup_datetime": "2024-01-10 09:30:00",
+        "trip_distance": "154650.47",
+        "PULocationID": "213",
+        "DOLocationID": "242",
+        "fare_amount": "15.0",
+        "total_amount": "16.0"
+      },
+      {
+        "lpep_pickup_datetime": "2024-01-26 12:57:00",
+        "trip_distance": "103153.6",
+        "PULocationID": "244",
+        "DOLocationID": "62",
+        "fare_amount": "64.4",
+        "total_amount": "68.15"
+      },
+      {
+        "lpep_pickup_datetime": "2024-01-30 10:49:00",
+        "trip_distance": "50508.27",
+        "PULocationID": "75",
+        "DOLocationID": "20",
+        "fare_amount": "31.65",
+        "total_amount": "32.65"
+      },
+      {
+        "lpep_pickup_datetime": "2024-01-23 09:55:00",
+        "trip_distance": "49452.14",
+        "PULocationID": "92",
+        "DOLocationID": "50",
+        "fare_amount": "71.91",
+        "total_amount": "99.12"
+      },
+      {
+        "lpep_pickup_datetime": "2024-01-13 14:32:00",
+        "trip_distance": "46383.82",
+        "PULocationID": "74",
+        "DOLocationID": "239",
+        "fare_amount": "23.34",
+        "total_amount": "32.2"
+      },
+      {
+        "lpep_pickup_datetime": "2024-01-10 10:21:00",
+        "trip_distance": "45719.16",
+        "PULocationID": "75",
+        "DOLocationID": "186",
+        "fare_amount": "30.54",
+        "total_amount": "34.29"
+      },
+      {
+        "lpep_pickup_datetime": "2024-01-19 09:26:00",
+        "trip_distance": "45369.11",
+        "PULocationID": "38",
+        "DOLocationID": "95",
+        "fare_amount": "25.11",
+        "total_amount": "26.11"
+      },
+      {
+        "lpep_pickup_datetime": "2024-01-04 19:23:00",
+        "trip_distance": "43267.14",
+        "PULocationID": "235",
+        "DOLocationID": "74",
+        "fare_amount": "25.75",
+        "total_amount": "26.75"
+      },
+      {
+        "lpep_pickup_datetime": "2024-01-10 22:55:00",
+        "trip_distance": "43134.12",
+        "PULocationID": "181",
+        "DOLocationID": "112",
+        "fare_amount": "25.44",
+        "total_amount": "31.73"
+      },
+      {
+        "lpep_pickup_datetime": "2024-01-24 08:18:00",
+        "trip_distance": "42476.78",
+        "PULocationID": "7",
+        "DOLocationID": "193",
+        "fare_amount": "11.02",
+        "total_amount": "14.02"
+      },
+      {
+        "lpep_pickup_datetime": "2024-01-08 11:04:00",
+        "trip_distance": "39789.73",
+        "PULocationID": "188",
+        "DOLocationID": "101",
+        "fare_amount": "54.51",
+        "total_amount": "55.51"
+      },
+      {
+        "lpep_pickup_datetime": "2024-01-28 17:57:40",
+        "trip_distance": "35024.28",
+        "PULocationID": "82",
+        "DOLocationID": "236",
+        "fare_amount": "25.31",
+        "total_amount": "38.71"
+      },
+      {
+        "lpep_pickup_datetime": "2024-01-19 05:21:00",
+        "trip_distance": "34855.29",
+        "PULocationID": "7",
+        "DOLocationID": "143",
+        "fare_amount": "27.59",
+        "total_amount": "34.47"
+      },
+      {
+        "lpep_pickup_datetime": "2024-01-19 15:01:00",
+        "trip_distance": "33951.61",
+        "PULocationID": "75",
+        "DOLocationID": "82",
+        "fare_amount": "41.88",
+        "total_amount": "49.82"
+      },
+      {
+        "lpep_pickup_datetime": "2024-01-28 18:41:00",
+        "trip_distance": "33041.17",
+        "PULocationID": "244",
+        "DOLocationID": "238",
+        "fare_amount": "21.31",
+        "total_amount": "32.58"
+      },
+      {
+        "lpep_pickup_datetime": "2024-01-22 07:35:00",
+        "trip_distance": "33005.54",
+        "PULocationID": "60",
+        "DOLocationID": "75",
+        "fare_amount": "26.8",
+        "total_amount": "27.8"
+      },
+      {
+        "lpep_pickup_datetime": "2024-01-20 11:39:00",
+        "trip_distance": "32679.52",
+        "PULocationID": "159",
+        "DOLocationID": "159",
+        "fare_amount": "32.93",
+        "total_amount": "33.93"
+      },
+      {
+        "lpep_pickup_datetime": "2024-01-24 16:19:00",
+        "trip_distance": "32525.71",
+        "PULocationID": "75",
+        "DOLocationID": "91",
+        "fare_amount": "84.78",
+        "total_amount": "88.53"
+      },
+      {
+        "lpep_pickup_datetime": "2024-01-30 09:24:00",
+        "trip_distance": "31664.27",
+        "PULocationID": "145",
+        "DOLocationID": "193",
+        "fare_amount": "11.8",
+        "total_amount": "13.8"
+      }
+    ]
+  }
+}
