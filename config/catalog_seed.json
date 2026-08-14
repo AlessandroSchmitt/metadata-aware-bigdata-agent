@@ -1,0 +1,329 @@
+{
+  "catalog": {
+    "name": "NYC Mobility Metadata Catalog",
+    "version": "1.0",
+    "description": "Metadata catalog for cross-source analysis of NYC taxi mobility, taxi zones, and hourly weather."
+  },
+
+  "datasets": [
+    {
+      "name": "yellow_taxi",
+      "display_name": "NYC Yellow Taxi Trips",
+      "path": "data/curated/yellow/2024-01",
+      "format": "parquet",
+      "layer": "curated",
+      "source": "NYC Taxi and Limousine Commission",
+      "granularity": "one row per taxi trip",
+      "primary_time_column": "tpep_pickup_datetime",
+      "temporal_start": "2024-01-01 00:00:00",
+      "temporal_end": "2024-02-01 00:00:00",
+      "description": "Curated Yellow Taxi trips for January 2024. Original TLC column names are preserved.",
+      "notes": "Invalid target-period records, non-positive trip durations, invalid zone references, and extreme trip distances above 1000 miles were excluded. Zero-distance trips and negative monetary values were preserved."
+    },
+    {
+      "name": "green_taxi",
+      "display_name": "NYC Green Taxi Trips",
+      "path": "data/curated/green/2024-01",
+      "format": "parquet",
+      "layer": "curated",
+      "source": "NYC Taxi and Limousine Commission",
+      "granularity": "one row per taxi trip",
+      "primary_time_column": "lpep_pickup_datetime",
+      "temporal_start": "2024-01-01 00:00:00",
+      "temporal_end": "2024-02-01 00:00:00",
+      "description": "Curated Green Taxi trips for January 2024. Original TLC column names are preserved.",
+      "notes": "Invalid target-period records, non-positive trip durations, invalid zone references, and extreme trip distances above 1000 miles were excluded. Zero-distance trips and negative monetary values were preserved."
+    },
+    {
+      "name": "taxi_zones",
+      "display_name": "NYC Taxi Zones",
+      "path": "data/curated/zones",
+      "format": "parquet",
+      "layer": "curated",
+      "source": "NYC Taxi and Limousine Commission",
+      "granularity": "one row per TLC taxi zone",
+      "primary_time_column": null,
+      "temporal_start": null,
+      "temporal_end": null,
+      "description": "Reference dataset mapping TLC LocationID values to borough, taxi-zone name, and service-zone classification.",
+      "notes": "LocationID was validated as unique."
+    },
+    {
+      "name": "weather_hourly",
+      "display_name": "NYC Central Park Hourly Weather",
+      "path": "data/curated/weather/2024-01",
+      "format": "parquet",
+      "layer": "curated",
+      "source": "NOAA National Centers for Environmental Information",
+      "granularity": "one row per clock hour",
+      "primary_time_column": "weather_hour",
+      "temporal_start": "2024-01-01 00:00:00",
+      "temporal_end": "2024-02-01 00:00:00",
+      "description": "Hourly weather representation for NYC Central Park during January 2024, derived from NOAA Local Climatological Data.",
+      "notes": "FM-15 routine observations are preferred. Trace precipitation is represented as precipitation_trace=true and has_precipitation=true without inventing a numeric precipitation amount. Missing weather observations remain unknown."
+    }
+  ],
+
+  "semantic_concepts": [
+    {
+      "name": "pickup_datetime",
+      "category": "temporal",
+      "description": "Date and time when a taxi trip begins."
+    },
+    {
+      "name": "dropoff_datetime",
+      "category": "temporal",
+      "description": "Date and time when a taxi trip ends."
+    },
+    {
+      "name": "pickup_zone_id",
+      "category": "geographic",
+      "description": "TLC taxi-zone identifier for the trip pickup location."
+    },
+    {
+      "name": "dropoff_zone_id",
+      "category": "geographic",
+      "description": "TLC taxi-zone identifier for the trip drop-off location."
+    },
+    {
+      "name": "taxi_zone_id",
+      "category": "geographic",
+      "description": "Primary TLC identifier of a taxi zone."
+    },
+    {
+      "name": "zone_name",
+      "category": "geographic",
+      "description": "Human-readable TLC taxi-zone name."
+    },
+    {
+      "name": "borough",
+      "category": "geographic",
+      "description": "NYC borough associated with a TLC taxi zone."
+    },
+    {
+      "name": "trip_distance",
+      "category": "mobility",
+      "description": "Recorded distance of a taxi trip in miles."
+    },
+    {
+      "name": "passenger_count",
+      "category": "mobility",
+      "description": "Recorded number of passengers for a taxi trip."
+    },
+    {
+      "name": "fare_amount",
+      "category": "monetary",
+      "description": "Base fare amount associated with a taxi trip."
+    },
+    {
+      "name": "tip_amount",
+      "category": "monetary",
+      "description": "Tip amount associated with a taxi trip."
+    },
+    {
+      "name": "total_amount",
+      "category": "monetary",
+      "description": "Total recorded monetary amount associated with a taxi trip."
+    },
+    {
+      "name": "weather_hour",
+      "category": "temporal",
+      "description": "Clock-hour bucket represented by an hourly weather record."
+    },
+    {
+      "name": "temperature",
+      "category": "weather",
+      "description": "Observed dry-bulb air temperature in degrees Fahrenheit."
+    },
+    {
+      "name": "relative_humidity",
+      "category": "weather",
+      "description": "Observed relative humidity percentage."
+    },
+    {
+      "name": "precipitation_amount",
+      "category": "weather",
+      "description": "Numeric hourly precipitation amount in inches when measurable."
+    },
+    {
+      "name": "precipitation_trace",
+      "category": "weather",
+      "description": "Indicates trace precipitation that is present but lacks a measurable numeric amount."
+    },
+    {
+      "name": "precipitation_status",
+      "category": "weather",
+      "description": "Three-valued precipitation status: true means precipitation occurred, false means dry, null means unknown."
+    },
+    {
+      "name": "wind_speed",
+      "category": "weather",
+      "description": "Observed wind speed in miles per hour."
+    },
+    {
+      "name": "visibility",
+      "category": "weather",
+      "description": "Observed visibility in miles."
+    }
+  ],
+
+  "column_semantics": [
+    ["yellow_taxi", "tpep_pickup_datetime", "pickup_datetime"],
+    ["green_taxi", "lpep_pickup_datetime", "pickup_datetime"],
+    ["yellow_taxi", "tpep_dropoff_datetime", "dropoff_datetime"],
+    ["green_taxi", "lpep_dropoff_datetime", "dropoff_datetime"],
+    ["yellow_taxi", "PULocationID", "pickup_zone_id"],
+    ["green_taxi", "PULocationID", "pickup_zone_id"],
+    ["yellow_taxi", "DOLocationID", "dropoff_zone_id"],
+    ["green_taxi", "DOLocationID", "dropoff_zone_id"],
+    ["taxi_zones", "LocationID", "taxi_zone_id"],
+    ["taxi_zones", "Zone", "zone_name"],
+    ["taxi_zones", "Borough", "borough"],
+    ["yellow_taxi", "trip_distance", "trip_distance"],
+    ["green_taxi", "trip_distance", "trip_distance"],
+    ["yellow_taxi", "passenger_count", "passenger_count"],
+    ["green_taxi", "passenger_count", "passenger_count"],
+    ["yellow_taxi", "fare_amount", "fare_amount"],
+    ["green_taxi", "fare_amount", "fare_amount"],
+    ["yellow_taxi", "tip_amount", "tip_amount"],
+    ["green_taxi", "tip_amount", "tip_amount"],
+    ["yellow_taxi", "total_amount", "total_amount"],
+    ["green_taxi", "total_amount", "total_amount"],
+    ["weather_hourly", "weather_hour", "weather_hour"],
+    ["weather_hourly", "temperature_f", "temperature"],
+    ["weather_hourly", "relative_humidity", "relative_humidity"],
+    ["weather_hourly", "precipitation_in", "precipitation_amount"],
+    ["weather_hourly", "precipitation_trace", "precipitation_trace"],
+    ["weather_hourly", "has_precipitation", "precipitation_status"],
+    ["weather_hourly", "wind_speed_mph", "wind_speed"],
+    ["weather_hourly", "visibility_miles", "visibility"]
+  ],
+
+  "relationships": [
+    {
+      "name": "yellow_pickup_zone",
+      "source_dataset": "yellow_taxi",
+      "target_dataset": "taxi_zones",
+      "relationship_type": "foreign_key_like",
+      "source_expression": "yellow_taxi.PULocationID",
+      "target_expression": "taxi_zones.LocationID",
+      "cardinality": "many_to_one",
+      "validated": true,
+      "description": "Maps each Yellow Taxi pickup LocationID to its TLC taxi-zone record."
+    },
+    {
+      "name": "yellow_dropoff_zone",
+      "source_dataset": "yellow_taxi",
+      "target_dataset": "taxi_zones",
+      "relationship_type": "foreign_key_like",
+      "source_expression": "yellow_taxi.DOLocationID",
+      "target_expression": "taxi_zones.LocationID",
+      "cardinality": "many_to_one",
+      "validated": true,
+      "description": "Maps each Yellow Taxi drop-off LocationID to its TLC taxi-zone record."
+    },
+    {
+      "name": "green_pickup_zone",
+      "source_dataset": "green_taxi",
+      "target_dataset": "taxi_zones",
+      "relationship_type": "foreign_key_like",
+      "source_expression": "green_taxi.PULocationID",
+      "target_expression": "taxi_zones.LocationID",
+      "cardinality": "many_to_one",
+      "validated": true,
+      "description": "Maps each Green Taxi pickup LocationID to its TLC taxi-zone record."
+    },
+    {
+      "name": "green_dropoff_zone",
+      "source_dataset": "green_taxi",
+      "target_dataset": "taxi_zones",
+      "relationship_type": "foreign_key_like",
+      "source_expression": "green_taxi.DOLocationID",
+      "target_expression": "taxi_zones.LocationID",
+      "cardinality": "many_to_one",
+      "validated": true,
+      "description": "Maps each Green Taxi drop-off LocationID to its TLC taxi-zone record."
+    },
+    {
+      "name": "yellow_pickup_weather_hour",
+      "source_dataset": "yellow_taxi",
+      "target_dataset": "weather_hourly",
+      "relationship_type": "temporal_alignment",
+      "source_expression": "date_trunc('hour', yellow_taxi.tpep_pickup_datetime)",
+      "target_expression": "weather_hourly.weather_hour",
+      "cardinality": "many_to_one",
+      "validated": true,
+      "description": "Aligns a Yellow Taxi pickup timestamp with the corresponding hourly NYC weather bucket."
+    },
+    {
+      "name": "green_pickup_weather_hour",
+      "source_dataset": "green_taxi",
+      "target_dataset": "weather_hourly",
+      "relationship_type": "temporal_alignment",
+      "source_expression": "date_trunc('hour', green_taxi.lpep_pickup_datetime)",
+      "target_expression": "weather_hourly.weather_hour",
+      "cardinality": "many_to_one",
+      "validated": true,
+      "description": "Aligns a Green Taxi pickup timestamp with the corresponding hourly NYC weather bucket."
+    }
+  ],
+
+  "aliases": [
+    ["dataset", "yellow_taxi", "yellow cab"],
+    ["dataset", "yellow_taxi", "yellow taxis"],
+    ["dataset", "green_taxi", "green cab"],
+    ["dataset", "green_taxi", "boro taxi"],
+    ["dataset", "taxi_zones", "taxi areas"],
+    ["dataset", "weather_hourly", "weather"],
+
+    ["concept", "pickup_datetime", "pickup time"],
+    ["concept", "pickup_datetime", "trip start"],
+    ["concept", "dropoff_datetime", "dropoff time"],
+    ["concept", "dropoff_datetime", "trip end"],
+    ["concept", "pickup_zone_id", "pickup location"],
+    ["concept", "dropoff_zone_id", "dropoff location"],
+    ["concept", "zone_name", "taxi zone"],
+    ["concept", "borough", "borough name"],
+    ["concept", "trip_distance", "distance"],
+    ["concept", "passenger_count", "passengers"],
+    ["concept", "precipitation_status", "rain"],
+    ["concept", "precipitation_status", "rainy"],
+    ["concept", "precipitation_status", "wet weather"],
+    ["concept", "precipitation_amount", "rainfall"],
+    ["concept", "temperature", "temperature"],
+    ["concept", "relative_humidity", "humidity"],
+    ["concept", "wind_speed", "wind"],
+    ["concept", "visibility", "visibility"]
+  ],
+
+  "semantic_rules": [
+    {
+      "name": "rainy_hour",
+      "dataset": "weather_hourly",
+      "description": "An hour is rainy when NOAA indicates measurable or trace precipitation.",
+      "sql_expression": "weather_hourly.has_precipitation = TRUE",
+      "result_semantics": "Includes trace precipitation. Missing weather is not classified as rainy."
+    },
+    {
+      "name": "dry_hour",
+      "dataset": "weather_hourly",
+      "description": "An hour is dry only when precipitation status is explicitly false.",
+      "sql_expression": "weather_hourly.has_precipitation = FALSE",
+      "result_semantics": "Missing precipitation status is not interpreted as dry."
+    },
+    {
+      "name": "yellow_pickup_hour",
+      "dataset": "yellow_taxi",
+      "description": "Hourly time bucket for a Yellow Taxi pickup.",
+      "sql_expression": "date_trunc('hour', yellow_taxi.tpep_pickup_datetime)",
+      "result_semantics": "Used to align Yellow Taxi trips with hourly weather."
+    },
+    {
+      "name": "green_pickup_hour",
+      "dataset": "green_taxi",
+      "description": "Hourly time bucket for a Green Taxi pickup.",
+      "sql_expression": "date_trunc('hour', green_taxi.lpep_pickup_datetime)",
+      "result_semantics": "Used to align Green Taxi trips with hourly weather."
+    }
+  ]
+}
