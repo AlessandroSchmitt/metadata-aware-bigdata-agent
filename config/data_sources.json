@@ -23,5 +23,15 @@
     "format": "csv",
     "url": "https://d37ci6vzurychx.cloudfront.net/misc/taxi_zone_lookup.csv",
     "local_path": "data/raw/zones/taxi_zone_lookup.csv"
+  },
+  "weather_central_park_2024": {
+    "dataset": "NOAA Local Climatological Data - NYC Central Park",
+    "source": "NOAA National Centers for Environmental Information",
+    "station_name": "NY CITY CENTRAL PARK, NY US",
+    "station_id": "72505394728",
+    "year": 2024,
+    "format": "csv",
+    "url": "https://www.ncei.noaa.gov/data/local-climatological-data/access/2024/72505394728.csv",
+    "local_path": "data/raw/weather/72505394728_2024.csv"
   }
 }

@@ -1,0 +1,322 @@
+{
+  "source": "NOAA Local Climatological Data",
+  "station_id": "72505394728",
+  "station_name": "NY CITY CENTRAL PARK, NY US",
+  "raw_path": "data/raw/weather/72505394728_2024.csv",
+  "total_rows": 11595,
+  "physical_columns": 125,
+  "columns": [
+    "STATION",
+    "DATE",
+    "LATITUDE",
+    "LONGITUDE",
+    "ELEVATION",
+    "NAME",
+    "REPORT_TYPE",
+    "SOURCE",
+    "HourlyAltimeterSetting",
+    "HourlyDewPointTemperature",
+    "HourlyDryBulbTemperature",
+    "HourlyPrecipitation",
+    "HourlyPresentWeatherType",
+    "HourlyPressureChange",
+    "HourlyPressureTendency",
+    "HourlyRelativeHumidity",
+    "HourlySkyConditions",
+    "HourlySeaLevelPressure",
+    "HourlyStationPressure",
+    "HourlyVisibility",
+    "HourlyWetBulbTemperature",
+    "HourlyWindDirection",
+    "HourlyWindGustSpeed",
+    "HourlyWindSpeed",
+    "Sunrise",
+    "Sunset",
+    "DailyAverageDewPointTemperature",
+    "DailyAverageDryBulbTemperature",
+    "DailyAverageRelativeHumidity",
+    "DailyAverageSeaLevelPressure",
+    "DailyAverageStationPressure",
+    "DailyAverageWetBulbTemperature",
+    "DailyAverageWindSpeed",
+    "DailyCoolingDegreeDays",
+    "DailyDepartureFromNormalAverageTemperature",
+    "DailyHeatingDegreeDays",
+    "DailyMaximumDryBulbTemperature",
+    "DailyMinimumDryBulbTemperature",
+    "DailyPeakWindDirection",
+    "DailyPeakWindSpeed",
+    "DailyPrecipitation",
+    "DailySnowDepth",
+    "DailySnowfall",
+    "DailySustainedWindDirection",
+    "DailySustainedWindSpeed",
+    "DailyWeather",
+    "MonthlyAverageRH",
+    "MonthlyDaysWithGT001Precip",
+    "MonthlyDaysWithGT010Precip",
+    "MonthlyDaysWithGT32Temp",
+    "MonthlyDaysWithGT90Temp",
+    "MonthlyDaysWithLT0Temp",
+    "MonthlyDaysWithLT32Temp",
+    "MonthlyDepartureFromNormalAverageTemperature",
+    "MonthlyDepartureFromNormalCoolingDegreeDays",
+    "MonthlyDepartureFromNormalHeatingDegreeDays",
+    "MonthlyDepartureFromNormalMaximumTemperature",
+    "MonthlyDepartureFromNormalMinimumTemperature",
+    "MonthlyDepartureFromNormalPrecipitation",
+    "MonthlyDewpointTemperature",
+    "MonthlyGreatestPrecip",
+    "MonthlyGreatestPrecipDate",
+    "MonthlyGreatestSnowDepth",
+    "MonthlyGreatestSnowDepthDate",
+    "MonthlyGreatestSnowfall",
+    "MonthlyGreatestSnowfallDate",
+    "MonthlyMaxSeaLevelPressureValue",
+    "MonthlyMaxSeaLevelPressureValueDate",
+    "MonthlyMaxSeaLevelPressureValueTime",
+    "MonthlyMaximumTemperature",
+    "MonthlyMeanTemperature",
+    "MonthlyMinSeaLevelPressureValue",
+    "MonthlyMinSeaLevelPressureValueDate",
+    "MonthlyMinSeaLevelPressureValueTime",
+    "MonthlyMinimumTemperature",
+    "MonthlySeaLevelPressure",
+    "MonthlyStationPressure",
+    "MonthlyTotalLiquidPrecipitation",
+    "MonthlyTotalSnowfall",
+    "MonthlyWetBulb",
+    "AWND",
+    "CDSD",
+    "CLDD",
+    "DSNW",
+    "HDSD",
+    "HTDD",
+    "DYTS",
+    "DYHF",
+    "NormalsCoolingDegreeDay",
+    "NormalsHeatingDegreeDay",
+    "ShortDurationEndDate005",
+    "ShortDurationEndDate010",
+    "ShortDurationEndDate015",
+    "ShortDurationEndDate020",
+    "ShortDurationEndDate030",
+    "ShortDurationEndDate045",
+    "ShortDurationEndDate060",
+    "ShortDurationEndDate080",
+    "ShortDurationEndDate100",
+    "ShortDurationEndDate120",
+    "ShortDurationEndDate150",
+    "ShortDurationEndDate180",
+    "ShortDurationPrecipitationValue005",
+    "ShortDurationPrecipitationValue010",
+    "ShortDurationPrecipitationValue015",
+    "ShortDurationPrecipitationValue020",
+    "ShortDurationPrecipitationValue030",
+    "ShortDurationPrecipitationValue045",
+    "ShortDurationPrecipitationValue060",
+    "ShortDurationPrecipitationValue080",
+    "ShortDurationPrecipitationValue100",
+    "ShortDurationPrecipitationValue120",
+    "ShortDurationPrecipitationValue150",
+    "ShortDurationPrecipitationValue180",
+    "REM",
+    "BackupDirection",
+    "BackupDistance",
+    "BackupDistanceUnit",
+    "BackupElements",
+    "BackupElevation",
+    "BackupEquipment",
+    "BackupLatitude",
+    "BackupLongitude",
+    "BackupName",
+    "WindEquipmentChangeDate"
+  ],
+  "date_profile": {
+    "parsed_rows": 11595,
+    "invalid_rows": 0,
+    "min": "2024-01-01 00:51:00",
+    "max": "2024-12-31 23:51:00",
+    "january_rows": 1108
+  },
+  "candidate_columns": {
+    "STATION": {
+      "non_empty_rows": 1108,
+      "distinct_values": 1
+    },
+    "LATITUDE": {
+      "non_empty_rows": 1108,
+      "distinct_values": 1
+    },
+    "LONGITUDE": {
+      "non_empty_rows": 1108,
+      "distinct_values": 1
+    },
+    "ELEVATION": {
+      "non_empty_rows": 1108,
+      "distinct_values": 1
+    },
+    "NAME": {
+      "non_empty_rows": 1108,
+      "distinct_values": 1
+    },
+    "REPORT_TYPE": {
+      "non_empty_rows": 1108,
+      "distinct_values": 4
+    },
+    "SOURCE": {
+      "non_empty_rows": 1108,
+      "distinct_values": 2
+    },
+    "HourlyDryBulbTemperature": {
+      "non_empty_rows": 1076,
+      "distinct_values": 44
+    },
+    "HourlyRelativeHumidity": {
+      "non_empty_rows": 1076,
+      "distinct_values": 68
+    },
+    "HourlyPrecipitation": {
+      "non_empty_rows": 953,
+      "distinct_values": 30
+    },
+    "HourlyPresentWeatherType": {
+      "non_empty_rows": 410,
+      "distinct_values": 19
+    },
+    "HourlyWindDirection": {
+      "non_empty_rows": 937,
+      "distinct_values": 34
+    },
+    "HourlyWindSpeed": {
+      "non_empty_rows": 937,
+      "distinct_values": 19
+    },
+    "HourlyVisibility": {
+      "non_empty_rows": 1076,
+      "distinct_values": 20
+    }
+  },
+  "precipitation_raw_values": [
+    {
+      "value": "0.00",
+      "count": 576
+    },
+    {
+      "value": "T",
+      "count": 131
+    },
+    {
+      "value": "0.01",
+      "count": 109
+    },
+    {
+      "value": "0.02",
+      "count": 44
+    },
+    {
+      "value": "0.03",
+      "count": 20
+    },
+    {
+      "value": "0.05",
+      "count": 14
+    },
+    {
+      "value": "0.04",
+      "count": 8
+    },
+    {
+      "value": "0.07",
+      "count": 6
+    },
+    {
+      "value": "0.09",
+      "count": 6
+    },
+    {
+      "value": "0.06",
+      "count": 5
+    },
+    {
+      "value": "0.17",
+      "count": 4
+    },
+    {
+      "value": "0.15",
+      "count": 3
+    },
+    {
+      "value": "0.12",
+      "count": 3
+    },
+    {
+      "value": "0.10",
+      "count": 3
+    },
+    {
+      "value": "0.16",
+      "count": 3
+    },
+    {
+      "value": "0.11",
+      "count": 2
+    },
+    {
+      "value": "0.08",
+      "count": 2
+    },
+    {
+      "value": "0.23",
+      "count": 2
+    },
+    {
+      "value": "0.43",
+      "count": 1
+    },
+    {
+      "value": "0.42",
+      "count": 1
+    },
+    {
+      "value": "0.33",
+      "count": 1
+    },
+    {
+      "value": "0.27",
+      "count": 1
+    },
+    {
+      "value": "0.38",
+      "count": 1
+    },
+    {
+      "value": "0.13",
+      "count": 1
+    },
+    {
+      "value": "0.24",
+      "count": 1
+    },
+    {
+      "value": "0.39",
+      "count": 1
+    },
+    {
+      "value": "0.22",
+      "count": 1
+    },
+    {
+      "value": "0.21",
+      "count": 1
+    },
+    {
+      "value": "0.20",
+      "count": 1
+    },
+    {
+      "value": "0.41",
+      "count": 1
+    }
+  ]
+}
