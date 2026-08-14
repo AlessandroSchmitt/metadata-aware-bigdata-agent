@@ -1,0 +1,1159 @@
+{
+  "benchmark": {
+    "name": "NYC Metadata-Aware Text-to-Spark-SQL Benchmark",
+    "version": "1.0",
+    "period": "January 2024",
+    "description": "Controlled benchmark for comparing Full Catalog, Relation-Aware Retrieval, and Relation-Aware Retrieval with validation and one-shot repair."
+  },
+  "configuration": {
+    "dense_top_k": 5,
+    "full_catalog_characters": 8600,
+    "full_catalog_words": 930
+  },
+  "summary": {
+    "queries": 10,
+    "perfect_recall_queries": 10,
+    "macro_recall": 1.0,
+    "macro_precision": 0.6081818181818182,
+    "macro_f1": 0.7500840336134453,
+    "mean_context_reduction_percent": 80.82674418604651,
+    "mean_retrieval_seconds": 0.6831363231999148
+  },
+  "records": [
+    {
+      "id": "Q01",
+      "category": "single_source_aggregation",
+      "question": "What was the average trip distance for Yellow Taxi trips in January 2024? Return exactly one column named average_trip_distance.",
+      "dense_top_k": 5,
+      "dense": [
+        {
+          "rank": 1,
+          "score": 0.6455390427079597,
+          "entity_type": "column",
+          "entity_key": "yellow_taxi.trip_distance",
+          "dataset": "yellow_taxi",
+          "text": "Column: yellow_taxi.trip_distance. Physical type: double. Dataset: NYC Yellow Taxi Trips. Dataset description: Curated Yellow Taxi trips for January 2024. Original TLC column names are preserved. Semantic concept: trip_distance. Semantic meaning: Recorded distance of a taxi trip in miles. Semantic aliases: distance."
+        },
+        {
+          "rank": 2,
+          "score": 0.6252661779480453,
+          "entity_type": "column",
+          "entity_key": "yellow_taxi.tolls_amount",
+          "dataset": "yellow_taxi",
+          "text": "Column: yellow_taxi.tolls_amount. Physical type: double. Dataset: NYC Yellow Taxi Trips. Dataset description: Curated Yellow Taxi trips for January 2024. Original TLC column names are preserved."
+        },
+        {
+          "rank": 3,
+          "score": 0.6214034440936977,
+          "entity_type": "dataset",
+          "entity_key": "yellow_taxi",
+          "dataset": "yellow_taxi",
+          "text": "Dataset: yellow_taxi. Display name: NYC Yellow Taxi Trips. Description: Curated Yellow Taxi trips for January 2024. Original TLC column names are preserved. Granularity: one row per taxi trip. Aliases: yellow cab, yellow taxis. Primary time column: tpep_pickup_datetime. Semantic columns: tpep_pickup_datetime=pickup_datetime, tpep_dropoff_datetime=dropoff_datetime, passenger_count=passenger_count, trip_distance=trip_distance, PULocationID=pickup_zone_id, DOLocationID=dropoff_zone_id, fare_amount=fare_amount, tip_amount=tip_amount, total_amount=total_amount."
+        },
+        {
+          "rank": 4,
+          "score": 0.6192567098229239,
+          "entity_type": "column",
+          "entity_key": "green_taxi.trip_distance",
+          "dataset": "green_taxi",
+          "text": "Column: green_taxi.trip_distance. Physical type: double. Dataset: NYC Green Taxi Trips. Dataset description: Curated Green Taxi trips for January 2024. Original TLC column names are preserved. Semantic concept: trip_distance. Semantic meaning: Recorded distance of a taxi trip in miles. Semantic aliases: distance."
+        },
+        {
+          "rank": 5,
+          "score": 0.6092954792205649,
+          "entity_type": "column",
+          "entity_key": "yellow_taxi.Airport_fee",
+          "dataset": "yellow_taxi",
+          "text": "Column: yellow_taxi.Airport_fee. Physical type: double. Dataset: NYC Yellow Taxi Trips. Dataset description: Curated Yellow Taxi trips for January 2024. Original TLC column names are preserved."
+        }
+      ],
+      "lexical": {
+        "datasets": [
+          "yellow_taxi"
+        ],
+        "concepts": [
+          "trip_distance"
+        ],
+        "rules": []
+      },
+      "selection": {
+        "datasets": [
+          "yellow_taxi"
+        ],
+        "columns": [
+          "yellow_taxi.Airport_fee",
+          "yellow_taxi.tolls_amount",
+          "yellow_taxi.trip_distance"
+        ],
+        "concepts": [
+          "trip_distance"
+        ],
+        "relationships": [],
+        "rules": []
+      },
+      "gold": [
+        "column:yellow_taxi.trip_distance",
+        "dataset:yellow_taxi"
+      ],
+      "hits": [
+        "column:yellow_taxi.trip_distance",
+        "dataset:yellow_taxi"
+      ],
+      "missing": [],
+      "extras": [
+        "column:yellow_taxi.Airport_fee",
+        "column:yellow_taxi.tolls_amount"
+      ],
+      "recall": 1.0,
+      "precision": 0.5,
+      "f1": 0.6666666666666666,
+      "context_characters": 678,
+      "context_words": 87,
+      "character_reduction_percent": 92.11627906976744,
+      "word_reduction_percent": 90.64516129032259,
+      "retrieval_seconds": 3.4816044300000613,
+      "embedding_prompt_tokens": 31
+    },
+    {
+      "id": "Q02",
+      "category": "single_source_filter_aggregation",
+      "question": "How many Green Taxi trips had a trip distance greater than 10 miles in January 2024? Return exactly one column named trip_count.",
+      "dense_top_k": 5,
+      "dense": [
+        {
+          "rank": 1,
+          "score": 0.6117491918478057,
+          "entity_type": "column",
+          "entity_key": "green_taxi.trip_distance",
+          "dataset": "green_taxi",
+          "text": "Column: green_taxi.trip_distance. Physical type: double. Dataset: NYC Green Taxi Trips. Dataset description: Curated Green Taxi trips for January 2024. Original TLC column names are preserved. Semantic concept: trip_distance. Semantic meaning: Recorded distance of a taxi trip in miles. Semantic aliases: distance."
+        },
+        {
+          "rank": 2,
+          "score": 0.5989430988515999,
+          "entity_type": "dataset",
+          "entity_key": "green_taxi",
+          "dataset": "green_taxi",
+          "text": "Dataset: green_taxi. Display name: NYC Green Taxi Trips. Description: Curated Green Taxi trips for January 2024. Original TLC column names are preserved. Granularity: one row per taxi trip. Aliases: boro taxi, green cab. Primary time column: lpep_pickup_datetime. Semantic columns: lpep_pickup_datetime=pickup_datetime, lpep_dropoff_datetime=dropoff_datetime, PULocationID=pickup_zone_id, DOLocationID=dropoff_zone_id, passenger_count=passenger_count, trip_distance=trip_distance, fare_amount=fare_amount, tip_amount=tip_amount, total_amount=total_amount."
+        },
+        {
+          "rank": 3,
+          "score": 0.5943150499377978,
+          "entity_type": "column",
+          "entity_key": "green_taxi.tolls_amount",
+          "dataset": "green_taxi",
+          "text": "Column: green_taxi.tolls_amount. Physical type: double. Dataset: NYC Green Taxi Trips. Dataset description: Curated Green Taxi trips for January 2024. Original TLC column names are preserved."
+        },
+        {
+          "rank": 4,
+          "score": 0.5877591266225188,
+          "entity_type": "column",
+          "entity_key": "green_taxi.passenger_count",
+          "dataset": "green_taxi",
+          "text": "Column: green_taxi.passenger_count. Physical type: bigint. Dataset: NYC Green Taxi Trips. Dataset description: Curated Green Taxi trips for January 2024. Original TLC column names are preserved. Semantic concept: passenger_count. Semantic meaning: Recorded number of passengers for a taxi trip. Semantic aliases: passengers."
+        },
+        {
+          "rank": 5,
+          "score": 0.5857613897384538,
+          "entity_type": "column",
+          "entity_key": "green_taxi.mta_tax",
+          "dataset": "green_taxi",
+          "text": "Column: green_taxi.mta_tax. Physical type: double. Dataset: NYC Green Taxi Trips. Dataset description: Curated Green Taxi trips for January 2024. Original TLC column names are preserved."
+        }
+      ],
+      "lexical": {
+        "datasets": [
+          "green_taxi"
+        ],
+        "concepts": [
+          "trip_distance"
+        ],
+        "rules": []
+      },
+      "selection": {
+        "datasets": [
+          "green_taxi"
+        ],
+        "columns": [
+          "green_taxi.mta_tax",
+          "green_taxi.passenger_count",
+          "green_taxi.tolls_amount",
+          "green_taxi.trip_distance"
+        ],
+        "concepts": [
+          "passenger_count",
+          "trip_distance"
+        ],
+        "relationships": [],
+        "rules": []
+      },
+      "gold": [
+        "column:green_taxi.trip_distance",
+        "dataset:green_taxi"
+      ],
+      "hits": [
+        "column:green_taxi.trip_distance",
+        "dataset:green_taxi"
+      ],
+      "missing": [],
+      "extras": [
+        "column:green_taxi.mta_tax",
+        "column:green_taxi.passenger_count",
+        "column:green_taxi.tolls_amount"
+      ],
+      "recall": 1.0,
+      "precision": 0.4,
+      "f1": 0.5714285714285715,
+      "context_characters": 812,
+      "context_words": 106,
+      "character_reduction_percent": 90.55813953488372,
+      "word_reduction_percent": 88.6021505376344,
+      "retrieval_seconds": 0.3993804079996153,
+      "embedding_prompt_tokens": 34
+    },
+    {
+      "id": "Q03",
+      "category": "geographic_pickup_join",
+      "question": "Which pickup taxi zone had the highest number of Yellow Taxi trips in January 2024? Return exactly two columns named zone_name and trip_count, with only the top zone.",
+      "dense_top_k": 5,
+      "dense": [
+        {
+          "rank": 1,
+          "score": 0.619652358342655,
+          "entity_type": "dataset",
+          "entity_key": "yellow_taxi",
+          "dataset": "yellow_taxi",
+          "text": "Dataset: yellow_taxi. Display name: NYC Yellow Taxi Trips. Description: Curated Yellow Taxi trips for January 2024. Original TLC column names are preserved. Granularity: one row per taxi trip. Aliases: yellow cab, yellow taxis. Primary time column: tpep_pickup_datetime. Semantic columns: tpep_pickup_datetime=pickup_datetime, tpep_dropoff_datetime=dropoff_datetime, passenger_count=passenger_count, trip_distance=trip_distance, PULocationID=pickup_zone_id, DOLocationID=dropoff_zone_id, fare_amount=fare_amount, tip_amount=tip_amount, total_amount=total_amount."
+        },
+        {
+          "rank": 2,
+          "score": 0.614465836589489,
+          "entity_type": "column",
+          "entity_key": "yellow_taxi.PULocationID",
+          "dataset": "yellow_taxi",
+          "text": "Column: yellow_taxi.PULocationID. Physical type: int. Dataset: NYC Yellow Taxi Trips. Dataset description: Curated Yellow Taxi trips for January 2024. Original TLC column names are preserved. Semantic concept: pickup_zone_id. Semantic meaning: TLC taxi-zone identifier for the trip pickup location. Semantic aliases: pickup location."
+        },
+        {
+          "rank": 3,
+          "score": 0.5871408954620647,
+          "entity_type": "column",
+          "entity_key": "yellow_taxi.tolls_amount",
+          "dataset": "yellow_taxi",
+          "text": "Column: yellow_taxi.tolls_amount. Physical type: double. Dataset: NYC Yellow Taxi Trips. Dataset description: Curated Yellow Taxi trips for January 2024. Original TLC column names are preserved."
+        },
+        {
+          "rank": 4,
+          "score": 0.5821985848470772,
+          "entity_type": "column",
+          "entity_key": "green_taxi.PULocationID",
+          "dataset": "green_taxi",
+          "text": "Column: green_taxi.PULocationID. Physical type: int. Dataset: NYC Green Taxi Trips. Dataset description: Curated Green Taxi trips for January 2024. Original TLC column names are preserved. Semantic concept: pickup_zone_id. Semantic meaning: TLC taxi-zone identifier for the trip pickup location. Semantic aliases: pickup location."
+        },
+        {
+          "rank": 5,
+          "score": 0.5785275060654331,
+          "entity_type": "column",
+          "entity_key": "yellow_taxi.DOLocationID",
+          "dataset": "yellow_taxi",
+          "text": "Column: yellow_taxi.DOLocationID. Physical type: int. Dataset: NYC Yellow Taxi Trips. Dataset description: Curated Yellow Taxi trips for January 2024. Original TLC column names are preserved. Semantic concept: dropoff_zone_id. Semantic meaning: TLC taxi-zone identifier for the trip drop-off location. Semantic aliases: dropoff location."
+        }
+      ],
+      "lexical": {
+        "datasets": [
+          "yellow_taxi"
+        ],
+        "concepts": [
+          "zone_name"
+        ],
+        "rules": []
+      },
+      "selection": {
+        "datasets": [
+          "taxi_zones",
+          "yellow_taxi"
+        ],
+        "columns": [
+          "taxi_zones.LocationID",
+          "taxi_zones.Zone",
+          "yellow_taxi.DOLocationID",
+          "yellow_taxi.PULocationID",
+          "yellow_taxi.tolls_amount"
+        ],
+        "concepts": [
+          "dropoff_zone_id",
+          "pickup_zone_id",
+          "taxi_zone_id",
+          "zone_name"
+        ],
+        "relationships": [
+          "yellow_dropoff_zone",
+          "yellow_pickup_zone"
+        ],
+        "rules": []
+      },
+      "gold": [
+        "column:taxi_zones.LocationID",
+        "column:taxi_zones.Zone",
+        "column:yellow_taxi.PULocationID",
+        "dataset:taxi_zones",
+        "dataset:yellow_taxi",
+        "relationship:yellow_pickup_zone"
+      ],
+      "hits": [
+        "column:taxi_zones.LocationID",
+        "column:taxi_zones.Zone",
+        "column:yellow_taxi.PULocationID",
+        "dataset:taxi_zones",
+        "dataset:yellow_taxi",
+        "relationship:yellow_pickup_zone"
+      ],
+      "missing": [],
+      "extras": [
+        "column:yellow_taxi.DOLocationID",
+        "column:yellow_taxi.tolls_amount",
+        "relationship:yellow_dropoff_zone"
+      ],
+      "recall": 1.0,
+      "precision": 0.6666666666666666,
+      "f1": 0.8,
+      "context_characters": 1567,
+      "context_words": 196,
+      "character_reduction_percent": 81.77906976744185,
+      "word_reduction_percent": 78.92473118279571,
+      "retrieval_seconds": 0.3985819370000172,
+      "embedding_prompt_tokens": 41
+    },
+    {
+      "id": "Q04",
+      "category": "geographic_dropoff_join",
+      "question": "Which borough received the most Green Taxi dropoffs in January 2024? Return exactly two columns named borough and trip_count, with only the top borough.",
+      "dense_top_k": 5,
+      "dense": [
+        {
+          "rank": 1,
+          "score": 0.6260990456045613,
+          "entity_type": "dataset",
+          "entity_key": "green_taxi",
+          "dataset": "green_taxi",
+          "text": "Dataset: green_taxi. Display name: NYC Green Taxi Trips. Description: Curated Green Taxi trips for January 2024. Original TLC column names are preserved. Granularity: one row per taxi trip. Aliases: boro taxi, green cab. Primary time column: lpep_pickup_datetime. Semantic columns: lpep_pickup_datetime=pickup_datetime, lpep_dropoff_datetime=dropoff_datetime, PULocationID=pickup_zone_id, DOLocationID=dropoff_zone_id, passenger_count=passenger_count, trip_distance=trip_distance, fare_amount=fare_amount, tip_amount=tip_amount, total_amount=total_amount."
+        },
+        {
+          "rank": 2,
+          "score": 0.5895013300664464,
+          "entity_type": "column",
+          "entity_key": "green_taxi.tolls_amount",
+          "dataset": "green_taxi",
+          "text": "Column: green_taxi.tolls_amount. Physical type: double. Dataset: NYC Green Taxi Trips. Dataset description: Curated Green Taxi trips for January 2024. Original TLC column names are preserved."
+        },
+        {
+          "rank": 3,
+          "score": 0.5725133322027527,
+          "entity_type": "column",
+          "entity_key": "green_taxi.mta_tax",
+          "dataset": "green_taxi",
+          "text": "Column: green_taxi.mta_tax. Physical type: double. Dataset: NYC Green Taxi Trips. Dataset description: Curated Green Taxi trips for January 2024. Original TLC column names are preserved."
+        },
+        {
+          "rank": 4,
+          "score": 0.5582792400181803,
+          "entity_type": "column",
+          "entity_key": "green_taxi.VendorID",
+          "dataset": "green_taxi",
+          "text": "Column: green_taxi.VendorID. Physical type: int. Dataset: NYC Green Taxi Trips. Dataset description: Curated Green Taxi trips for January 2024. Original TLC column names are preserved."
+        },
+        {
+          "rank": 5,
+          "score": 0.5562693329620358,
+          "entity_type": "column",
+          "entity_key": "green_taxi.DOLocationID",
+          "dataset": "green_taxi",
+          "text": "Column: green_taxi.DOLocationID. Physical type: int. Dataset: NYC Green Taxi Trips. Dataset description: Curated Green Taxi trips for January 2024. Original TLC column names are preserved. Semantic concept: dropoff_zone_id. Semantic meaning: TLC taxi-zone identifier for the trip drop-off location. Semantic aliases: dropoff location."
+        }
+      ],
+      "lexical": {
+        "datasets": [
+          "green_taxi"
+        ],
+        "concepts": [
+          "borough"
+        ],
+        "rules": []
+      },
+      "selection": {
+        "datasets": [
+          "green_taxi",
+          "taxi_zones"
+        ],
+        "columns": [
+          "green_taxi.DOLocationID",
+          "green_taxi.PULocationID",
+          "green_taxi.VendorID",
+          "green_taxi.mta_tax",
+          "green_taxi.tolls_amount",
+          "taxi_zones.Borough",
+          "taxi_zones.LocationID"
+        ],
+        "concepts": [
+          "borough",
+          "dropoff_zone_id",
+          "pickup_zone_id",
+          "taxi_zone_id"
+        ],
+        "relationships": [
+          "green_dropoff_zone",
+          "green_pickup_zone"
+        ],
+        "rules": []
+      },
+      "gold": [
+        "column:green_taxi.DOLocationID",
+        "column:taxi_zones.Borough",
+        "column:taxi_zones.LocationID",
+        "dataset:green_taxi",
+        "dataset:taxi_zones",
+        "relationship:green_dropoff_zone"
+      ],
+      "hits": [
+        "column:green_taxi.DOLocationID",
+        "column:taxi_zones.Borough",
+        "column:taxi_zones.LocationID",
+        "dataset:green_taxi",
+        "dataset:taxi_zones",
+        "relationship:green_dropoff_zone"
+      ],
+      "missing": [],
+      "extras": [
+        "column:green_taxi.PULocationID",
+        "column:green_taxi.VendorID",
+        "column:green_taxi.mta_tax",
+        "column:green_taxi.tolls_amount",
+        "relationship:green_pickup_zone"
+      ],
+      "recall": 1.0,
+      "precision": 0.5454545454545454,
+      "f1": 0.7058823529411764,
+      "context_characters": 1589,
+      "context_words": 200,
+      "character_reduction_percent": 81.52325581395348,
+      "word_reduction_percent": 78.49462365591397,
+      "retrieval_seconds": 0.34036750399991433,
+      "embedding_prompt_tokens": 36
+    },
+    {
+      "id": "Q05",
+      "category": "cross_service_comparison",
+      "question": "Compare the average trip distance of Yellow Taxi and Green Taxi trips in January 2024. Return exactly two columns named taxi_type and average_trip_distance, with one row for Yellow and one row for Green.",
+      "dense_top_k": 5,
+      "dense": [
+        {
+          "rank": 1,
+          "score": 0.6502891083124694,
+          "entity_type": "column",
+          "entity_key": "green_taxi.trip_distance",
+          "dataset": "green_taxi",
+          "text": "Column: green_taxi.trip_distance. Physical type: double. Dataset: NYC Green Taxi Trips. Dataset description: Curated Green Taxi trips for January 2024. Original TLC column names are preserved. Semantic concept: trip_distance. Semantic meaning: Recorded distance of a taxi trip in miles. Semantic aliases: distance."
+        },
+        {
+          "rank": 2,
+          "score": 0.6426238324498219,
+          "entity_type": "column",
+          "entity_key": "green_taxi.tolls_amount",
+          "dataset": "green_taxi",
+          "text": "Column: green_taxi.tolls_amount. Physical type: double. Dataset: NYC Green Taxi Trips. Dataset description: Curated Green Taxi trips for January 2024. Original TLC column names are preserved."
+        },
+        {
+          "rank": 3,
+          "score": 0.6411629610515113,
+          "entity_type": "column",
+          "entity_key": "yellow_taxi.tolls_amount",
+          "dataset": "yellow_taxi",
+          "text": "Column: yellow_taxi.tolls_amount. Physical type: double. Dataset: NYC Yellow Taxi Trips. Dataset description: Curated Yellow Taxi trips for January 2024. Original TLC column names are preserved."
+        },
+        {
+          "rank": 4,
+          "score": 0.6384008843023362,
+          "entity_type": "column",
+          "entity_key": "yellow_taxi.trip_distance",
+          "dataset": "yellow_taxi",
+          "text": "Column: yellow_taxi.trip_distance. Physical type: double. Dataset: NYC Yellow Taxi Trips. Dataset description: Curated Yellow Taxi trips for January 2024. Original TLC column names are preserved. Semantic concept: trip_distance. Semantic meaning: Recorded distance of a taxi trip in miles. Semantic aliases: distance."
+        },
+        {
+          "rank": 5,
+          "score": 0.6371103510977613,
+          "entity_type": "dataset",
+          "entity_key": "yellow_taxi",
+          "dataset": "yellow_taxi",
+          "text": "Dataset: yellow_taxi. Display name: NYC Yellow Taxi Trips. Description: Curated Yellow Taxi trips for January 2024. Original TLC column names are preserved. Granularity: one row per taxi trip. Aliases: yellow cab, yellow taxis. Primary time column: tpep_pickup_datetime. Semantic columns: tpep_pickup_datetime=pickup_datetime, tpep_dropoff_datetime=dropoff_datetime, passenger_count=passenger_count, trip_distance=trip_distance, PULocationID=pickup_zone_id, DOLocationID=dropoff_zone_id, fare_amount=fare_amount, tip_amount=tip_amount, total_amount=total_amount."
+        }
+      ],
+      "lexical": {
+        "datasets": [
+          "green_taxi",
+          "yellow_taxi"
+        ],
+        "concepts": [
+          "trip_distance"
+        ],
+        "rules": []
+      },
+      "selection": {
+        "datasets": [
+          "green_taxi",
+          "yellow_taxi"
+        ],
+        "columns": [
+          "green_taxi.tolls_amount",
+          "green_taxi.trip_distance",
+          "yellow_taxi.tolls_amount",
+          "yellow_taxi.trip_distance"
+        ],
+        "concepts": [
+          "trip_distance"
+        ],
+        "relationships": [],
+        "rules": []
+      },
+      "gold": [
+        "column:green_taxi.trip_distance",
+        "column:yellow_taxi.trip_distance",
+        "dataset:green_taxi",
+        "dataset:yellow_taxi"
+      ],
+      "hits": [
+        "column:green_taxi.trip_distance",
+        "column:yellow_taxi.trip_distance",
+        "dataset:green_taxi",
+        "dataset:yellow_taxi"
+      ],
+      "missing": [],
+      "extras": [
+        "column:green_taxi.tolls_amount",
+        "column:yellow_taxi.tolls_amount"
+      ],
+      "recall": 1.0,
+      "precision": 0.6666666666666666,
+      "f1": 0.8,
+      "context_characters": 1015,
+      "context_words": 130,
+      "character_reduction_percent": 88.19767441860465,
+      "word_reduction_percent": 86.02150537634408,
+      "retrieval_seconds": 0.40939240399984556,
+      "embedding_prompt_tokens": 48
+    },
+    {
+      "id": "Q06",
+      "category": "weather_temporal_join",
+      "question": "What was the average trip distance for Yellow Taxi trips during rainy hours in January 2024? Return exactly one column named average_trip_distance.",
+      "dense_top_k": 5,
+      "dense": [
+        {
+          "rank": 1,
+          "score": 0.6016579677827005,
+          "entity_type": "column",
+          "entity_key": "yellow_taxi.trip_distance",
+          "dataset": "yellow_taxi",
+          "text": "Column: yellow_taxi.trip_distance. Physical type: double. Dataset: NYC Yellow Taxi Trips. Dataset description: Curated Yellow Taxi trips for January 2024. Original TLC column names are preserved. Semantic concept: trip_distance. Semantic meaning: Recorded distance of a taxi trip in miles. Semantic aliases: distance."
+        },
+        {
+          "rank": 2,
+          "score": 0.597278038038441,
+          "entity_type": "dataset",
+          "entity_key": "yellow_taxi",
+          "dataset": "yellow_taxi",
+          "text": "Dataset: yellow_taxi. Display name: NYC Yellow Taxi Trips. Description: Curated Yellow Taxi trips for January 2024. Original TLC column names are preserved. Granularity: one row per taxi trip. Aliases: yellow cab, yellow taxis. Primary time column: tpep_pickup_datetime. Semantic columns: tpep_pickup_datetime=pickup_datetime, tpep_dropoff_datetime=dropoff_datetime, passenger_count=passenger_count, trip_distance=trip_distance, PULocationID=pickup_zone_id, DOLocationID=dropoff_zone_id, fare_amount=fare_amount, tip_amount=tip_amount, total_amount=total_amount."
+        },
+        {
+          "rank": 3,
+          "score": 0.5890610377610981,
+          "entity_type": "column",
+          "entity_key": "yellow_taxi.tolls_amount",
+          "dataset": "yellow_taxi",
+          "text": "Column: yellow_taxi.tolls_amount. Physical type: double. Dataset: NYC Yellow Taxi Trips. Dataset description: Curated Yellow Taxi trips for January 2024. Original TLC column names are preserved."
+        },
+        {
+          "rank": 4,
+          "score": 0.575357429198518,
+          "entity_type": "column",
+          "entity_key": "green_taxi.trip_distance",
+          "dataset": "green_taxi",
+          "text": "Column: green_taxi.trip_distance. Physical type: double. Dataset: NYC Green Taxi Trips. Dataset description: Curated Green Taxi trips for January 2024. Original TLC column names are preserved. Semantic concept: trip_distance. Semantic meaning: Recorded distance of a taxi trip in miles. Semantic aliases: distance."
+        },
+        {
+          "rank": 5,
+          "score": 0.5732514800738289,
+          "entity_type": "column",
+          "entity_key": "yellow_taxi.Airport_fee",
+          "dataset": "yellow_taxi",
+          "text": "Column: yellow_taxi.Airport_fee. Physical type: double. Dataset: NYC Yellow Taxi Trips. Dataset description: Curated Yellow Taxi trips for January 2024. Original TLC column names are preserved."
+        }
+      ],
+      "lexical": {
+        "datasets": [
+          "yellow_taxi"
+        ],
+        "concepts": [
+          "precipitation_status",
+          "trip_distance"
+        ],
+        "rules": [
+          "rainy_hour"
+        ]
+      },
+      "selection": {
+        "datasets": [
+          "weather_hourly",
+          "yellow_taxi"
+        ],
+        "columns": [
+          "weather_hourly.has_precipitation",
+          "weather_hourly.weather_hour",
+          "yellow_taxi.Airport_fee",
+          "yellow_taxi.tolls_amount",
+          "yellow_taxi.tpep_pickup_datetime",
+          "yellow_taxi.trip_distance"
+        ],
+        "concepts": [
+          "pickup_datetime",
+          "precipitation_status",
+          "trip_distance",
+          "weather_hour"
+        ],
+        "relationships": [
+          "yellow_pickup_weather_hour"
+        ],
+        "rules": [
+          "rainy_hour"
+        ]
+      },
+      "gold": [
+        "column:weather_hourly.has_precipitation",
+        "column:weather_hourly.weather_hour",
+        "column:yellow_taxi.tpep_pickup_datetime",
+        "column:yellow_taxi.trip_distance",
+        "dataset:weather_hourly",
+        "dataset:yellow_taxi",
+        "relationship:yellow_pickup_weather_hour",
+        "rule:rainy_hour"
+      ],
+      "hits": [
+        "column:weather_hourly.has_precipitation",
+        "column:weather_hourly.weather_hour",
+        "column:yellow_taxi.tpep_pickup_datetime",
+        "column:yellow_taxi.trip_distance",
+        "dataset:weather_hourly",
+        "dataset:yellow_taxi",
+        "relationship:yellow_pickup_weather_hour",
+        "rule:rainy_hour"
+      ],
+      "missing": [],
+      "extras": [
+        "column:yellow_taxi.Airport_fee",
+        "column:yellow_taxi.tolls_amount"
+      ],
+      "recall": 1.0,
+      "precision": 0.8,
+      "f1": 0.888888888888889,
+      "context_characters": 1895,
+      "context_words": 223,
+      "character_reduction_percent": 77.96511627906978,
+      "word_reduction_percent": 76.0215053763441,
+      "retrieval_seconds": 0.439237988000059,
+      "embedding_prompt_tokens": 34
+    },
+    {
+      "id": "Q07",
+      "category": "weather_semantic_rule",
+      "question": "How many Green Taxi trips started during dry hours in January 2024? Return exactly one column named trip_count.",
+      "dense_top_k": 5,
+      "dense": [
+        {
+          "rank": 1,
+          "score": 0.6294830058748635,
+          "entity_type": "dataset",
+          "entity_key": "green_taxi",
+          "dataset": "green_taxi",
+          "text": "Dataset: green_taxi. Display name: NYC Green Taxi Trips. Description: Curated Green Taxi trips for January 2024. Original TLC column names are preserved. Granularity: one row per taxi trip. Aliases: boro taxi, green cab. Primary time column: lpep_pickup_datetime. Semantic columns: lpep_pickup_datetime=pickup_datetime, lpep_dropoff_datetime=dropoff_datetime, PULocationID=pickup_zone_id, DOLocationID=dropoff_zone_id, passenger_count=passenger_count, trip_distance=trip_distance, fare_amount=fare_amount, tip_amount=tip_amount, total_amount=total_amount."
+        },
+        {
+          "rank": 2,
+          "score": 0.6149614656359564,
+          "entity_type": "column",
+          "entity_key": "green_taxi.tolls_amount",
+          "dataset": "green_taxi",
+          "text": "Column: green_taxi.tolls_amount. Physical type: double. Dataset: NYC Green Taxi Trips. Dataset description: Curated Green Taxi trips for January 2024. Original TLC column names are preserved."
+        },
+        {
+          "rank": 3,
+          "score": 0.6090101321670511,
+          "entity_type": "column",
+          "entity_key": "green_taxi.mta_tax",
+          "dataset": "green_taxi",
+          "text": "Column: green_taxi.mta_tax. Physical type: double. Dataset: NYC Green Taxi Trips. Dataset description: Curated Green Taxi trips for January 2024. Original TLC column names are preserved."
+        },
+        {
+          "rank": 4,
+          "score": 0.5959868165036214,
+          "entity_type": "column",
+          "entity_key": "green_taxi.passenger_count",
+          "dataset": "green_taxi",
+          "text": "Column: green_taxi.passenger_count. Physical type: bigint. Dataset: NYC Green Taxi Trips. Dataset description: Curated Green Taxi trips for January 2024. Original TLC column names are preserved. Semantic concept: passenger_count. Semantic meaning: Recorded number of passengers for a taxi trip. Semantic aliases: passengers."
+        },
+        {
+          "rank": 5,
+          "score": 0.5872715230891238,
+          "entity_type": "column",
+          "entity_key": "green_taxi.trip_type",
+          "dataset": "green_taxi",
+          "text": "Column: green_taxi.trip_type. Physical type: bigint. Dataset: NYC Green Taxi Trips. Dataset description: Curated Green Taxi trips for January 2024. Original TLC column names are preserved."
+        }
+      ],
+      "lexical": {
+        "datasets": [
+          "green_taxi"
+        ],
+        "concepts": [],
+        "rules": [
+          "dry_hour"
+        ]
+      },
+      "selection": {
+        "datasets": [
+          "green_taxi",
+          "weather_hourly"
+        ],
+        "columns": [
+          "green_taxi.lpep_pickup_datetime",
+          "green_taxi.mta_tax",
+          "green_taxi.passenger_count",
+          "green_taxi.tolls_amount",
+          "green_taxi.trip_type",
+          "weather_hourly.has_precipitation",
+          "weather_hourly.weather_hour"
+        ],
+        "concepts": [
+          "passenger_count",
+          "pickup_datetime",
+          "precipitation_status",
+          "weather_hour"
+        ],
+        "relationships": [
+          "green_pickup_weather_hour"
+        ],
+        "rules": [
+          "dry_hour"
+        ]
+      },
+      "gold": [
+        "column:green_taxi.lpep_pickup_datetime",
+        "column:weather_hourly.has_precipitation",
+        "column:weather_hourly.weather_hour",
+        "dataset:green_taxi",
+        "dataset:weather_hourly",
+        "relationship:green_pickup_weather_hour",
+        "rule:dry_hour"
+      ],
+      "hits": [
+        "column:green_taxi.lpep_pickup_datetime",
+        "column:weather_hourly.has_precipitation",
+        "column:weather_hourly.weather_hour",
+        "dataset:green_taxi",
+        "dataset:weather_hourly",
+        "relationship:green_pickup_weather_hour",
+        "rule:dry_hour"
+      ],
+      "missing": [],
+      "extras": [
+        "column:green_taxi.mta_tax",
+        "column:green_taxi.passenger_count",
+        "column:green_taxi.tolls_amount",
+        "column:green_taxi.trip_type"
+      ],
+      "recall": 1.0,
+      "precision": 0.6363636363636364,
+      "f1": 0.7777777777777778,
+      "context_characters": 1857,
+      "context_words": 219,
+      "character_reduction_percent": 78.40697674418604,
+      "word_reduction_percent": 76.45161290322581,
+      "retrieval_seconds": 0.32668088299988085,
+      "embedding_prompt_tokens": 28
+    },
+    {
+      "id": "Q08",
+      "category": "three_source_query",
+      "question": "Which pickup borough had the most Yellow Taxi trips during rainy hours in January 2024? Return exactly two columns named borough and trip_count, with only the top borough.",
+      "dense_top_k": 5,
+      "dense": [
+        {
+          "rank": 1,
+          "score": 0.6052540976256285,
+          "entity_type": "dataset",
+          "entity_key": "yellow_taxi",
+          "dataset": "yellow_taxi",
+          "text": "Dataset: yellow_taxi. Display name: NYC Yellow Taxi Trips. Description: Curated Yellow Taxi trips for January 2024. Original TLC column names are preserved. Granularity: one row per taxi trip. Aliases: yellow cab, yellow taxis. Primary time column: tpep_pickup_datetime. Semantic columns: tpep_pickup_datetime=pickup_datetime, tpep_dropoff_datetime=dropoff_datetime, passenger_count=passenger_count, trip_distance=trip_distance, PULocationID=pickup_zone_id, DOLocationID=dropoff_zone_id, fare_amount=fare_amount, tip_amount=tip_amount, total_amount=total_amount."
+        },
+        {
+          "rank": 2,
+          "score": 0.5763090728095377,
+          "entity_type": "column",
+          "entity_key": "yellow_taxi.tolls_amount",
+          "dataset": "yellow_taxi",
+          "text": "Column: yellow_taxi.tolls_amount. Physical type: double. Dataset: NYC Yellow Taxi Trips. Dataset description: Curated Yellow Taxi trips for January 2024. Original TLC column names are preserved."
+        },
+        {
+          "rank": 3,
+          "score": 0.5666257382691753,
+          "entity_type": "dataset",
+          "entity_key": "green_taxi",
+          "dataset": "green_taxi",
+          "text": "Dataset: green_taxi. Display name: NYC Green Taxi Trips. Description: Curated Green Taxi trips for January 2024. Original TLC column names are preserved. Granularity: one row per taxi trip. Aliases: boro taxi, green cab. Primary time column: lpep_pickup_datetime. Semantic columns: lpep_pickup_datetime=pickup_datetime, lpep_dropoff_datetime=dropoff_datetime, PULocationID=pickup_zone_id, DOLocationID=dropoff_zone_id, passenger_count=passenger_count, trip_distance=trip_distance, fare_amount=fare_amount, tip_amount=tip_amount, total_amount=total_amount."
+        },
+        {
+          "rank": 4,
+          "score": 0.5615475680474533,
+          "entity_type": "column",
+          "entity_key": "yellow_taxi.Airport_fee",
+          "dataset": "yellow_taxi",
+          "text": "Column: yellow_taxi.Airport_fee. Physical type: double. Dataset: NYC Yellow Taxi Trips. Dataset description: Curated Yellow Taxi trips for January 2024. Original TLC column names are preserved."
+        },
+        {
+          "rank": 5,
+          "score": 0.5557226770877584,
+          "entity_type": "column",
+          "entity_key": "yellow_taxi.PULocationID",
+          "dataset": "yellow_taxi",
+          "text": "Column: yellow_taxi.PULocationID. Physical type: int. Dataset: NYC Yellow Taxi Trips. Dataset description: Curated Yellow Taxi trips for January 2024. Original TLC column names are preserved. Semantic concept: pickup_zone_id. Semantic meaning: TLC taxi-zone identifier for the trip pickup location. Semantic aliases: pickup location."
+        }
+      ],
+      "lexical": {
+        "datasets": [
+          "yellow_taxi"
+        ],
+        "concepts": [
+          "borough",
+          "precipitation_status"
+        ],
+        "rules": [
+          "rainy_hour",
+          "yellow_pickup_hour"
+        ]
+      },
+      "selection": {
+        "datasets": [
+          "green_taxi",
+          "taxi_zones",
+          "weather_hourly",
+          "yellow_taxi"
+        ],
+        "columns": [
+          "green_taxi.DOLocationID",
+          "green_taxi.PULocationID",
+          "green_taxi.lpep_pickup_datetime",
+          "taxi_zones.Borough",
+          "taxi_zones.LocationID",
+          "weather_hourly.has_precipitation",
+          "weather_hourly.weather_hour",
+          "yellow_taxi.Airport_fee",
+          "yellow_taxi.DOLocationID",
+          "yellow_taxi.PULocationID",
+          "yellow_taxi.tolls_amount",
+          "yellow_taxi.tpep_pickup_datetime"
+        ],
+        "concepts": [
+          "borough",
+          "dropoff_zone_id",
+          "pickup_datetime",
+          "pickup_zone_id",
+          "precipitation_status",
+          "taxi_zone_id",
+          "weather_hour"
+        ],
+        "relationships": [
+          "green_dropoff_zone",
+          "green_pickup_weather_hour",
+          "green_pickup_zone",
+          "yellow_dropoff_zone",
+          "yellow_pickup_weather_hour",
+          "yellow_pickup_zone"
+        ],
+        "rules": [
+          "rainy_hour",
+          "yellow_pickup_hour"
+        ]
+      },
+      "gold": [
+        "column:taxi_zones.Borough",
+        "column:taxi_zones.LocationID",
+        "column:weather_hourly.has_precipitation",
+        "column:weather_hourly.weather_hour",
+        "column:yellow_taxi.PULocationID",
+        "column:yellow_taxi.tpep_pickup_datetime",
+        "dataset:taxi_zones",
+        "dataset:weather_hourly",
+        "dataset:yellow_taxi",
+        "relationship:yellow_pickup_weather_hour",
+        "relationship:yellow_pickup_zone",
+        "rule:rainy_hour"
+      ],
+      "hits": [
+        "column:taxi_zones.Borough",
+        "column:taxi_zones.LocationID",
+        "column:weather_hourly.has_precipitation",
+        "column:weather_hourly.weather_hour",
+        "column:yellow_taxi.PULocationID",
+        "column:yellow_taxi.tpep_pickup_datetime",
+        "dataset:taxi_zones",
+        "dataset:weather_hourly",
+        "dataset:yellow_taxi",
+        "relationship:yellow_pickup_weather_hour",
+        "relationship:yellow_pickup_zone",
+        "rule:rainy_hour"
+      ],
+      "missing": [],
+      "extras": [
+        "column:green_taxi.DOLocationID",
+        "column:green_taxi.PULocationID",
+        "column:green_taxi.lpep_pickup_datetime",
+        "column:yellow_taxi.Airport_fee",
+        "column:yellow_taxi.DOLocationID",
+        "column:yellow_taxi.tolls_amount",
+        "dataset:green_taxi",
+        "relationship:green_dropoff_zone",
+        "relationship:green_pickup_weather_hour",
+        "relationship:green_pickup_zone",
+        "relationship:yellow_dropoff_zone",
+        "rule:yellow_pickup_hour"
+      ],
+      "recall": 1.0,
+      "precision": 0.5,
+      "f1": 0.6666666666666666,
+      "context_characters": 3885,
+      "context_words": 449,
+      "character_reduction_percent": 54.825581395348834,
+      "word_reduction_percent": 51.72043010752688,
+      "retrieval_seconds": 0.35134054999980435,
+      "embedding_prompt_tokens": 39
+    },
+    {
+      "id": "Q09",
+      "category": "weather_only",
+      "question": "What was the average temperature during rainy hours in January 2024? Return exactly one column named average_temperature_f.",
+      "dense_top_k": 5,
+      "dense": [
+        {
+          "rank": 1,
+          "score": 0.5801180845409404,
+          "entity_type": "dataset",
+          "entity_key": "weather_hourly",
+          "dataset": "weather_hourly",
+          "text": "Dataset: weather_hourly. Display name: NYC Central Park Hourly Weather. Description: Hourly weather representation for NYC Central Park during January 2024, derived from NOAA Local Climatological Data. Granularity: one row per clock hour. Aliases: weather. Primary time column: weather_hour. Semantic columns: weather_hour=weather_hour, temperature_f=temperature, relative_humidity=relative_humidity, precipitation_in=precipitation_amount, precipitation_trace=precipitation_trace, has_precipitation=precipitation_status, wind_speed_mph=wind_speed, visibility_miles=visibility."
+        },
+        {
+          "rank": 2,
+          "score": 0.578772616698388,
+          "entity_type": "column",
+          "entity_key": "weather_hourly.temperature_f_raw",
+          "dataset": "weather_hourly",
+          "text": "Column: weather_hourly.temperature_f_raw. Physical type: string. Dataset: NYC Central Park Hourly Weather. Dataset description: Hourly weather representation for NYC Central Park during January 2024, derived from NOAA Local Climatological Data."
+        },
+        {
+          "rank": 3,
+          "score": 0.5602923030634444,
+          "entity_type": "column",
+          "entity_key": "weather_hourly.precipitation_raw",
+          "dataset": "weather_hourly",
+          "text": "Column: weather_hourly.precipitation_raw. Physical type: string. Dataset: NYC Central Park Hourly Weather. Dataset description: Hourly weather representation for NYC Central Park during January 2024, derived from NOAA Local Climatological Data."
+        },
+        {
+          "rank": 4,
+          "score": 0.5518577658580441,
+          "entity_type": "column",
+          "entity_key": "weather_hourly.temperature_f",
+          "dataset": "weather_hourly",
+          "text": "Column: weather_hourly.temperature_f. Physical type: double. Dataset: NYC Central Park Hourly Weather. Dataset description: Hourly weather representation for NYC Central Park during January 2024, derived from NOAA Local Climatological Data. Semantic concept: temperature. Semantic meaning: Observed dry-bulb air temperature in degrees Fahrenheit. Semantic aliases: temperature."
+        },
+        {
+          "rank": 5,
+          "score": 0.5430428763580488,
+          "entity_type": "column",
+          "entity_key": "weather_hourly.has_precipitation",
+          "dataset": "weather_hourly",
+          "text": "Column: weather_hourly.has_precipitation. Physical type: boolean. Dataset: NYC Central Park Hourly Weather. Dataset description: Hourly weather representation for NYC Central Park during January 2024, derived from NOAA Local Climatological Data. Semantic concept: precipitation_status. Semantic meaning: Three-valued precipitation status: true means precipitation occurred, false means dry, null means unknown. Semantic aliases: rain, rainy, wet weather."
+        }
+      ],
+      "lexical": {
+        "datasets": [],
+        "concepts": [
+          "precipitation_status",
+          "temperature"
+        ],
+        "rules": [
+          "rainy_hour"
+        ]
+      },
+      "selection": {
+        "datasets": [
+          "weather_hourly"
+        ],
+        "columns": [
+          "weather_hourly.has_precipitation",
+          "weather_hourly.precipitation_raw",
+          "weather_hourly.temperature_f",
+          "weather_hourly.temperature_f_raw"
+        ],
+        "concepts": [
+          "precipitation_status",
+          "temperature"
+        ],
+        "relationships": [],
+        "rules": [
+          "rainy_hour"
+        ]
+      },
+      "gold": [
+        "column:weather_hourly.has_precipitation",
+        "column:weather_hourly.temperature_f",
+        "dataset:weather_hourly",
+        "rule:rainy_hour"
+      ],
+      "hits": [
+        "column:weather_hourly.has_precipitation",
+        "column:weather_hourly.temperature_f",
+        "dataset:weather_hourly",
+        "rule:rainy_hour"
+      ],
+      "missing": [],
+      "extras": [
+        "column:weather_hourly.precipitation_raw",
+        "column:weather_hourly.temperature_f_raw"
+      ],
+      "recall": 1.0,
+      "precision": 0.6666666666666666,
+      "f1": 0.8,
+      "context_characters": 1183,
+      "context_words": 139,
+      "character_reduction_percent": 86.24418604651163,
+      "word_reduction_percent": 85.05376344086022,
+      "retrieval_seconds": 0.3130536190001294,
+      "embedding_prompt_tokens": 29
+    },
+    {
+      "id": "Q10",
+      "category": "temporal_grouping",
+      "question": "During rainy hours in January 2024, which clock hour of day had the most Yellow Taxi pickups? Return exactly two columns named hour_of_day and trip_count, with only the top hour.",
+      "dense_top_k": 5,
+      "dense": [
+        {
+          "rank": 1,
+          "score": 0.5601658054603114,
+          "entity_type": "dataset",
+          "entity_key": "yellow_taxi",
+          "dataset": "yellow_taxi",
+          "text": "Dataset: yellow_taxi. Display name: NYC Yellow Taxi Trips. Description: Curated Yellow Taxi trips for January 2024. Original TLC column names are preserved. Granularity: one row per taxi trip. Aliases: yellow cab, yellow taxis. Primary time column: tpep_pickup_datetime. Semantic columns: tpep_pickup_datetime=pickup_datetime, tpep_dropoff_datetime=dropoff_datetime, passenger_count=passenger_count, trip_distance=trip_distance, PULocationID=pickup_zone_id, DOLocationID=dropoff_zone_id, fare_amount=fare_amount, tip_amount=tip_amount, total_amount=total_amount."
+        },
+        {
+          "rank": 2,
+          "score": 0.5458617792041777,
+          "entity_type": "dataset",
+          "entity_key": "weather_hourly",
+          "dataset": "weather_hourly",
+          "text": "Dataset: weather_hourly. Display name: NYC Central Park Hourly Weather. Description: Hourly weather representation for NYC Central Park during January 2024, derived from NOAA Local Climatological Data. Granularity: one row per clock hour. Aliases: weather. Primary time column: weather_hour. Semantic columns: weather_hour=weather_hour, temperature_f=temperature, relative_humidity=relative_humidity, precipitation_in=precipitation_amount, precipitation_trace=precipitation_trace, has_precipitation=precipitation_status, wind_speed_mph=wind_speed, visibility_miles=visibility."
+        },
+        {
+          "rank": 3,
+          "score": 0.5270806281083436,
+          "entity_type": "column",
+          "entity_key": "yellow_taxi.tolls_amount",
+          "dataset": "yellow_taxi",
+          "text": "Column: yellow_taxi.tolls_amount. Physical type: double. Dataset: NYC Yellow Taxi Trips. Dataset description: Curated Yellow Taxi trips for January 2024. Original TLC column names are preserved."
+        },
+        {
+          "rank": 4,
+          "score": 0.5126449879425352,
+          "entity_type": "column",
+          "entity_key": "weather_hourly.precipitation_raw",
+          "dataset": "weather_hourly",
+          "text": "Column: weather_hourly.precipitation_raw. Physical type: string. Dataset: NYC Central Park Hourly Weather. Dataset description: Hourly weather representation for NYC Central Park during January 2024, derived from NOAA Local Climatological Data."
+        },
+        {
+          "rank": 5,
+          "score": 0.5118076873411379,
+          "entity_type": "column",
+          "entity_key": "yellow_taxi.tpep_pickup_datetime",
+          "dataset": "yellow_taxi",
+          "text": "Column: yellow_taxi.tpep_pickup_datetime. Physical type: timestamp_ntz. Dataset: NYC Yellow Taxi Trips. Dataset description: Curated Yellow Taxi trips for January 2024. Original TLC column names are preserved. Semantic concept: pickup_datetime. Semantic meaning: Date and time when a taxi trip begins. Semantic aliases: pickup time, trip start."
+        }
+      ],
+      "lexical": {
+        "datasets": [
+          "yellow_taxi"
+        ],
+        "concepts": [
+          "precipitation_status"
+        ],
+        "rules": [
+          "rainy_hour",
+          "yellow_pickup_hour"
+        ]
+      },
+      "selection": {
+        "datasets": [
+          "weather_hourly",
+          "yellow_taxi"
+        ],
+        "columns": [
+          "weather_hourly.has_precipitation",
+          "weather_hourly.precipitation_raw",
+          "weather_hourly.weather_hour",
+          "yellow_taxi.tolls_amount",
+          "yellow_taxi.tpep_pickup_datetime"
+        ],
+        "concepts": [
+          "pickup_datetime",
+          "precipitation_status",
+          "weather_hour"
+        ],
+        "relationships": [
+          "yellow_pickup_weather_hour"
+        ],
+        "rules": [
+          "rainy_hour",
+          "yellow_pickup_hour"
+        ]
+      },
+      "gold": [
+        "column:weather_hourly.has_precipitation",
+        "column:weather_hourly.weather_hour",
+        "column:yellow_taxi.tpep_pickup_datetime",
+        "dataset:weather_hourly",
+        "dataset:yellow_taxi",
+        "relationship:yellow_pickup_weather_hour",
+        "rule:rainy_hour"
+      ],
+      "hits": [
+        "column:weather_hourly.has_precipitation",
+        "column:weather_hourly.weather_hour",
+        "column:yellow_taxi.tpep_pickup_datetime",
+        "dataset:weather_hourly",
+        "dataset:yellow_taxi",
+        "relationship:yellow_pickup_weather_hour",
+        "rule:rainy_hour"
+      ],
+      "missing": [],
+      "extras": [
+        "column:weather_hourly.precipitation_raw",
+        "column:yellow_taxi.tolls_amount",
+        "rule:yellow_pickup_hour"
+      ],
+      "recall": 1.0,
+      "precision": 0.7,
+      "f1": 0.8235294117647058,
+      "context_characters": 2008,
+      "context_words": 238,
+      "character_reduction_percent": 76.65116279069768,
+      "word_reduction_percent": 74.40860215053763,
+      "retrieval_seconds": 0.3717235089998212,
+      "embedding_prompt_tokens": 46
+    }
+  ]
+}
