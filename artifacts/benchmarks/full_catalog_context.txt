@@ -1,0 +1,157 @@
+=== METADATA CATALOG ===
+Name: NYC Mobility Metadata Catalog
+Version: 1.0
+Description: Metadata catalog for cross-source analysis of NYC taxi mobility, taxi zones, and hourly weather.
+
+=== DATASETS AND SCHEMAS ===
+
+DATASET yellow_taxi
+display_name: NYC Yellow Taxi Trips
+description: Curated Yellow Taxi trips for January 2024. Original TLC column names are preserved.
+granularity: one row per taxi trip
+row_count: 2963713
+primary_time_column: tpep_pickup_datetime
+aliases: yellow cab, yellow taxis
+columns:
+- VendorID:int [nullable]
+- tpep_pickup_datetime:timestamp_ntz [nullable] -> semantic=pickup_datetime
+- tpep_dropoff_datetime:timestamp_ntz [nullable] -> semantic=dropoff_datetime
+- passenger_count:bigint [nullable] -> semantic=passenger_count
+- trip_distance:double [nullable] -> semantic=trip_distance
+- RatecodeID:bigint [nullable]
+- store_and_fwd_flag:string [nullable]
+- PULocationID:int [nullable] -> semantic=pickup_zone_id
+- DOLocationID:int [nullable] -> semantic=dropoff_zone_id
+- payment_type:bigint [nullable]
+- fare_amount:double [nullable] -> semantic=fare_amount
+- extra:double [nullable]
+- mta_tax:double [nullable]
+- tip_amount:double [nullable] -> semantic=tip_amount
+- tolls_amount:double [nullable]
+- improvement_surcharge:double [nullable]
+- total_amount:double [nullable] -> semantic=total_amount
+- congestion_surcharge:double [nullable]
+- Airport_fee:double [nullable]
+
+DATASET green_taxi
+display_name: NYC Green Taxi Trips
+description: Curated Green Taxi trips for January 2024. Original TLC column names are preserved.
+granularity: one row per taxi trip
+row_count: 56429
+primary_time_column: lpep_pickup_datetime
+aliases: boro taxi, green cab
+columns:
+- VendorID:int [nullable]
+- lpep_pickup_datetime:timestamp_ntz [nullable] -> semantic=pickup_datetime
+- lpep_dropoff_datetime:timestamp_ntz [nullable] -> semantic=dropoff_datetime
+- store_and_fwd_flag:string [nullable]
+- RatecodeID:bigint [nullable]
+- PULocationID:int [nullable] -> semantic=pickup_zone_id
+- DOLocationID:int [nullable] -> semantic=dropoff_zone_id
+- passenger_count:bigint [nullable] -> semantic=passenger_count
+- trip_distance:double [nullable] -> semantic=trip_distance
+- fare_amount:double [nullable] -> semantic=fare_amount
+- extra:double [nullable]
+- mta_tax:double [nullable]
+- tip_amount:double [nullable] -> semantic=tip_amount
+- tolls_amount:double [nullable]
+- ehail_fee:double [nullable]
+- improvement_surcharge:double [nullable]
+- total_amount:double [nullable] -> semantic=total_amount
+- payment_type:bigint [nullable]
+- trip_type:bigint [nullable]
+- congestion_surcharge:double [nullable]
+
+DATASET taxi_zones
+display_name: NYC Taxi Zones
+description: Reference dataset mapping TLC LocationID values to borough, taxi-zone name, and service-zone classification.
+granularity: one row per TLC taxi zone
+row_count: 265
+aliases: taxi areas
+columns:
+- LocationID:int [nullable] -> semantic=taxi_zone_id
+- Borough:string [nullable] -> semantic=borough
+- Zone:string [nullable] -> semantic=zone_name
+- service_zone:string [nullable]
+
+DATASET weather_hourly
+display_name: NYC Central Park Hourly Weather
+description: Hourly weather representation for NYC Central Park during January 2024, derived from NOAA Local Climatological Data.
+granularity: one row per clock hour
+row_count: 744
+primary_time_column: weather_hour
+aliases: weather
+columns:
+- weather_hour:timestamp_ntz [nullable] -> semantic=weather_hour
+- observation_time:timestamp_ntz [nullable]
+- STATION:string [nullable]
+- NAME:string [nullable]
+- REPORT_TYPE:string [nullable]
+- SOURCE:string [nullable]
+- latitude:double [nullable]
+- longitude:double [nullable]
+- elevation_ft:double [nullable]
+- temperature_f_raw:string [nullable]
+- temperature_f:double [nullable] -> semantic=temperature
+- relative_humidity_raw:string [nullable]
+- relative_humidity:int [nullable] -> semantic=relative_humidity
+- precipitation_raw:string [nullable]
+- precipitation_in:double [nullable] -> semantic=precipitation_amount
+- precipitation_trace:boolean [nullable] -> semantic=precipitation_trace
+- has_precipitation:boolean [nullable] -> semantic=precipitation_status
+- HourlyPresentWeatherType:string [nullable]
+- HourlyWindDirection:string [nullable]
+- wind_speed_raw:string [nullable]
+- wind_speed_mph:double [nullable] -> semantic=wind_speed
+- visibility_raw:string [nullable]
+- visibility_miles:double [nullable] -> semantic=visibility
+
+=== SEMANTIC CONCEPTS ===
+- pickup_datetime [temporal]: Date and time when a taxi trip begins. | aliases=pickup time, trip start
+- dropoff_datetime [temporal]: Date and time when a taxi trip ends. | aliases=dropoff time, trip end
+- pickup_zone_id [geographic]: TLC taxi-zone identifier for the trip pickup location. | aliases=pickup location
+- dropoff_zone_id [geographic]: TLC taxi-zone identifier for the trip drop-off location. | aliases=dropoff location
+- taxi_zone_id [geographic]: Primary TLC identifier of a taxi zone.
+- zone_name [geographic]: Human-readable TLC taxi-zone name. | aliases=taxi zone
+- borough [geographic]: NYC borough associated with a TLC taxi zone. | aliases=borough name
+- trip_distance [mobility]: Recorded distance of a taxi trip in miles. | aliases=distance
+- passenger_count [mobility]: Recorded number of passengers for a taxi trip. | aliases=passengers
+- fare_amount [monetary]: Base fare amount associated with a taxi trip.
+- tip_amount [monetary]: Tip amount associated with a taxi trip.
+- total_amount [monetary]: Total recorded monetary amount associated with a taxi trip.
+- weather_hour [temporal]: Clock-hour bucket represented by an hourly weather record.
+- temperature [weather]: Observed dry-bulb air temperature in degrees Fahrenheit. | aliases=temperature
+- relative_humidity [weather]: Observed relative humidity percentage. | aliases=humidity
+- precipitation_amount [weather]: Numeric hourly precipitation amount in inches when measurable. | aliases=rainfall
+- precipitation_trace [weather]: Indicates trace precipitation that is present but lacks a measurable numeric amount.
+- precipitation_status [weather]: Three-valued precipitation status: true means precipitation occurred, false means dry, null means unknown. | aliases=rain, rainy, wet weather
+- wind_speed [weather]: Observed wind speed in miles per hour. | aliases=wind
+- visibility [weather]: Observed visibility in miles. | aliases=visibility
+
+=== CROSS-SOURCE RELATIONSHIPS ===
+- yellow_pickup_zone [foreign_key_like, many_to_one, validated]: yellow_taxi.PULocationID = taxi_zones.LocationID
+  meaning: Maps each Yellow Taxi pickup LocationID to its TLC taxi-zone record.
+- yellow_dropoff_zone [foreign_key_like, many_to_one, validated]: yellow_taxi.DOLocationID = taxi_zones.LocationID
+  meaning: Maps each Yellow Taxi drop-off LocationID to its TLC taxi-zone record.
+- green_pickup_zone [foreign_key_like, many_to_one, validated]: green_taxi.PULocationID = taxi_zones.LocationID
+  meaning: Maps each Green Taxi pickup LocationID to its TLC taxi-zone record.
+- green_dropoff_zone [foreign_key_like, many_to_one, validated]: green_taxi.DOLocationID = taxi_zones.LocationID
+  meaning: Maps each Green Taxi drop-off LocationID to its TLC taxi-zone record.
+- yellow_pickup_weather_hour [temporal_alignment, many_to_one, validated]: date_trunc('hour', yellow_taxi.tpep_pickup_datetime) = weather_hourly.weather_hour
+  meaning: Aligns a Yellow Taxi pickup timestamp with the corresponding hourly NYC weather bucket.
+- green_pickup_weather_hour [temporal_alignment, many_to_one, validated]: date_trunc('hour', green_taxi.lpep_pickup_datetime) = weather_hourly.weather_hour
+  meaning: Aligns a Green Taxi pickup timestamp with the corresponding hourly NYC weather bucket.
+
+=== SEMANTIC SQL RULES ===
+- rainy_hour [weather_hourly]: weather_hourly.has_precipitation = TRUE
+  meaning: An hour is rainy when NOAA indicates measurable or trace precipitation.
+  result_semantics: Includes trace precipitation. Missing weather is not classified as rainy.
+- dry_hour [weather_hourly]: weather_hourly.has_precipitation = FALSE
+  meaning: An hour is dry only when precipitation status is explicitly false.
+  result_semantics: Missing precipitation status is not interpreted as dry.
+- yellow_pickup_hour [yellow_taxi]: date_trunc('hour', yellow_taxi.tpep_pickup_datetime)
+  meaning: Hourly time bucket for a Yellow Taxi pickup.
+  result_semantics: Used to align Yellow Taxi trips with hourly weather.
+- green_pickup_hour [green_taxi]: date_trunc('hour', green_taxi.lpep_pickup_datetime)
+  meaning: Hourly time bucket for a Green Taxi pickup.
+  result_semantics: Used to align Green Taxi trips with hourly weather.
