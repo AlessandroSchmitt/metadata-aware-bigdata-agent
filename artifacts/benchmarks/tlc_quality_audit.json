@@ -1,0 +1,90 @@
+{
+  "yellow_taxi_2024_01": {
+    "total_rows": 2964624,
+    "temporal": {
+      "pickup_inside_january_2024": 2964606,
+      "pickup_before_january_2024": 15,
+      "pickup_on_or_after_february_2024": 3,
+      "null_pickup": 0,
+      "null_dropoff": 0,
+      "dropoff_not_after_pickup": 870
+    },
+    "locations": {
+      "null_pickup_location": 0,
+      "null_dropoff_location": 0
+    },
+    "trip_distance": {
+      "negative": 0,
+      "zero": 60371,
+      "greater_than_100": 59,
+      "greater_than_200": 31,
+      "quantiles": {
+        "p50": 1.68,
+        "p95": 13.7,
+        "p99": 20.0,
+        "p999": 312722.3
+      }
+    },
+    "monetary": {
+      "negative_fare_amount": 37448,
+      "negative_tip_amount": 102,
+      "negative_total_amount": 35504,
+      "fare_quantiles": {
+        "p50": 12.8,
+        "p95": 62.5,
+        "p99": 75.0,
+        "p999": 5000.0
+      },
+      "total_quantiles": {
+        "p50": 20.1,
+        "p95": 80.0,
+        "p99": 103.36,
+        "p999": 5000.0
+      }
+    }
+  },
+  "green_taxi_2024_01": {
+    "total_rows": 56551,
+    "temporal": {
+      "pickup_inside_january_2024": 56549,
+      "pickup_before_january_2024": 2,
+      "pickup_on_or_after_february_2024": 0,
+      "null_pickup": 0,
+      "null_dropoff": 0,
+      "dropoff_not_after_pickup": 76
+    },
+    "locations": {
+      "null_pickup_location": 0,
+      "null_dropoff_location": 0
+    },
+    "trip_distance": {
+      "negative": 0,
+      "zero": 2870,
+      "greater_than_100": 46,
+      "greater_than_200": 46,
+      "quantiles": {
+        "p50": 1.79,
+        "p95": 7.71,
+        "p99": 15.16,
+        "p999": 201421.68
+      }
+    },
+    "monetary": {
+      "negative_fare_amount": 182,
+      "negative_tip_amount": 9,
+      "negative_total_amount": 185,
+      "fare_quantiles": {
+        "p50": 13.5,
+        "p95": 39.4,
+        "p99": 68.0,
+        "p999": 1422.6
+      },
+      "total_quantiles": {
+        "p50": 18.42,
+        "p95": 49.02,
+        "p99": 77.7,
+        "p999": 1424.1
+      }
+    }
+  }
+}
