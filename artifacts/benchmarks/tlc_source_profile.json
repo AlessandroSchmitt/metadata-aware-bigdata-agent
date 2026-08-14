@@ -1,0 +1,373 @@
+{
+  "spark_version": "3.5.8",
+  "sources": {
+    "yellow_taxi_2024_01": {
+      "path": "data/raw/yellow/yellow_tripdata_2024-01.parquet",
+      "rows": 2964624,
+      "schema": [
+        {
+          "name": "VendorID",
+          "type": "int",
+          "nullable": true
+        },
+        {
+          "name": "tpep_pickup_datetime",
+          "type": "timestamp_ntz",
+          "nullable": true
+        },
+        {
+          "name": "tpep_dropoff_datetime",
+          "type": "timestamp_ntz",
+          "nullable": true
+        },
+        {
+          "name": "passenger_count",
+          "type": "bigint",
+          "nullable": true
+        },
+        {
+          "name": "trip_distance",
+          "type": "double",
+          "nullable": true
+        },
+        {
+          "name": "RatecodeID",
+          "type": "bigint",
+          "nullable": true
+        },
+        {
+          "name": "store_and_fwd_flag",
+          "type": "string",
+          "nullable": true
+        },
+        {
+          "name": "PULocationID",
+          "type": "int",
+          "nullable": true
+        },
+        {
+          "name": "DOLocationID",
+          "type": "int",
+          "nullable": true
+        },
+        {
+          "name": "payment_type",
+          "type": "bigint",
+          "nullable": true
+        },
+        {
+          "name": "fare_amount",
+          "type": "double",
+          "nullable": true
+        },
+        {
+          "name": "extra",
+          "type": "double",
+          "nullable": true
+        },
+        {
+          "name": "mta_tax",
+          "type": "double",
+          "nullable": true
+        },
+        {
+          "name": "tip_amount",
+          "type": "double",
+          "nullable": true
+        },
+        {
+          "name": "tolls_amount",
+          "type": "double",
+          "nullable": true
+        },
+        {
+          "name": "improvement_surcharge",
+          "type": "double",
+          "nullable": true
+        },
+        {
+          "name": "total_amount",
+          "type": "double",
+          "nullable": true
+        },
+        {
+          "name": "congestion_surcharge",
+          "type": "double",
+          "nullable": true
+        },
+        {
+          "name": "Airport_fee",
+          "type": "double",
+          "nullable": true
+        }
+      ],
+      "temporal_coverage": {
+        "min_pickup": "2002-12-31 22:59:39",
+        "max_pickup": "2024-02-01 00:01:15",
+        "min_dropoff": "2002-12-31 23:05:41",
+        "max_dropoff": "2024-02-02 13:56:52"
+      }
+    },
+    "green_taxi_2024_01": {
+      "path": "data/raw/green/green_tripdata_2024-01.parquet",
+      "rows": 56551,
+      "schema": [
+        {
+          "name": "VendorID",
+          "type": "int",
+          "nullable": true
+        },
+        {
+          "name": "lpep_pickup_datetime",
+          "type": "timestamp_ntz",
+          "nullable": true
+        },
+        {
+          "name": "lpep_dropoff_datetime",
+          "type": "timestamp_ntz",
+          "nullable": true
+        },
+        {
+          "name": "store_and_fwd_flag",
+          "type": "string",
+          "nullable": true
+        },
+        {
+          "name": "RatecodeID",
+          "type": "bigint",
+          "nullable": true
+        },
+        {
+          "name": "PULocationID",
+          "type": "int",
+          "nullable": true
+        },
+        {
+          "name": "DOLocationID",
+          "type": "int",
+          "nullable": true
+        },
+        {
+          "name": "passenger_count",
+          "type": "bigint",
+          "nullable": true
+        },
+        {
+          "name": "trip_distance",
+          "type": "double",
+          "nullable": true
+        },
+        {
+          "name": "fare_amount",
+          "type": "double",
+          "nullable": true
+        },
+        {
+          "name": "extra",
+          "type": "double",
+          "nullable": true
+        },
+        {
+          "name": "mta_tax",
+          "type": "double",
+          "nullable": true
+        },
+        {
+          "name": "tip_amount",
+          "type": "double",
+          "nullable": true
+        },
+        {
+          "name": "tolls_amount",
+          "type": "double",
+          "nullable": true
+        },
+        {
+          "name": "ehail_fee",
+          "type": "double",
+          "nullable": true
+        },
+        {
+          "name": "improvement_surcharge",
+          "type": "double",
+          "nullable": true
+        },
+        {
+          "name": "total_amount",
+          "type": "double",
+          "nullable": true
+        },
+        {
+          "name": "payment_type",
+          "type": "bigint",
+          "nullable": true
+        },
+        {
+          "name": "trip_type",
+          "type": "bigint",
+          "nullable": true
+        },
+        {
+          "name": "congestion_surcharge",
+          "type": "double",
+          "nullable": true
+        }
+      ],
+      "temporal_coverage": {
+        "min_pickup": "2023-12-31 14:38:47",
+        "max_pickup": "2024-01-31 23:57:29",
+        "min_dropoff": "2023-12-31 14:46:45",
+        "max_dropoff": "2024-02-01 19:17:30"
+      }
+    },
+    "taxi_zones": {
+      "path": "data/raw/zones/taxi_zone_lookup.csv",
+      "rows": 265,
+      "schema": [
+        {
+          "name": "LocationID",
+          "type": "int",
+          "nullable": true
+        },
+        {
+          "name": "Borough",
+          "type": "string",
+          "nullable": true
+        },
+        {
+          "name": "Zone",
+          "type": "string",
+          "nullable": true
+        },
+        {
+          "name": "service_zone",
+          "type": "string",
+          "nullable": true
+        }
+      ]
+    }
+  },
+  "schema_comparison": {
+    "common_columns": [
+      "DOLocationID",
+      "PULocationID",
+      "RatecodeID",
+      "VendorID",
+      "congestion_surcharge",
+      "extra",
+      "fare_amount",
+      "improvement_surcharge",
+      "mta_tax",
+      "passenger_count",
+      "payment_type",
+      "store_and_fwd_flag",
+      "tip_amount",
+      "tolls_amount",
+      "total_amount",
+      "trip_distance"
+    ],
+    "yellow_only_columns": [
+      "Airport_fee",
+      "tpep_dropoff_datetime",
+      "tpep_pickup_datetime"
+    ],
+    "green_only_columns": [
+      "ehail_fee",
+      "lpep_dropoff_datetime",
+      "lpep_pickup_datetime",
+      "trip_type"
+    ]
+  },
+  "relationships": {
+    "yellow_taxi": {
+      "PULocationID": {
+        "distinct_source_ids": 260,
+        "unmatched_rows": 0,
+        "unmatched_distinct_ids": 0,
+        "unmatched_examples": []
+      },
+      "DOLocationID": {
+        "distinct_source_ids": 261,
+        "unmatched_rows": 0,
+        "unmatched_distinct_ids": 0,
+        "unmatched_examples": []
+      }
+    },
+    "green_taxi": {
+      "PULocationID": {
+        "distinct_source_ids": 211,
+        "unmatched_rows": 0,
+        "unmatched_distinct_ids": 0,
+        "unmatched_examples": []
+      },
+      "DOLocationID": {
+        "distinct_source_ids": 241,
+        "unmatched_rows": 0,
+        "unmatched_distinct_ids": 0,
+        "unmatched_examples": []
+      }
+    }
+  },
+  "statistics": {
+    "yellow_taxi": {
+      "count": {
+        "trip_distance": "2964624",
+        "fare_amount": "2964624",
+        "tip_amount": "2964624",
+        "total_amount": "2964624",
+        "passenger_count": "2824462"
+      },
+      "mean": {
+        "trip_distance": "3.6521691789580624",
+        "fare_amount": "18.175061916792536",
+        "tip_amount": "3.335870015894562",
+        "total_amount": "26.80150477092493",
+        "passenger_count": "1.3392808966805005"
+      },
+      "min": {
+        "trip_distance": "0.0",
+        "fare_amount": "-899.0",
+        "tip_amount": "-80.0",
+        "total_amount": "-900.0",
+        "passenger_count": "0"
+      },
+      "max": {
+        "trip_distance": "312722.3",
+        "fare_amount": "5000.0",
+        "tip_amount": "428.0",
+        "total_amount": "5000.0",
+        "passenger_count": "9"
+      }
+    },
+    "green_taxi": {
+      "count": {
+        "trip_distance": "56551",
+        "fare_amount": "56551",
+        "tip_amount": "56551",
+        "total_amount": "56551",
+        "passenger_count": "53136"
+      },
+      "mean": {
+        "trip_distance": "31.491123941221307",
+        "fare_amount": "16.929275167547825",
+        "tip_amount": "2.2565100528727724",
+        "total_amount": "22.403186327385683",
+        "passenger_count": "1.3091689250225835"
+      },
+      "min": {
+        "trip_distance": "0.0",
+        "fare_amount": "-70.0",
+        "tip_amount": "-1.66",
+        "total_amount": "-76.5",
+        "passenger_count": "0"
+      },
+      "max": {
+        "trip_distance": "201421.68",
+        "fare_amount": "1422.6",
+        "tip_amount": "110.0",
+        "total_amount": "1424.1",
+        "passenger_count": "9"
+      }
+    }
+  }
+}

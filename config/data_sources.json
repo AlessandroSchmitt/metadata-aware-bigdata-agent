@@ -1,0 +1,27 @@
+{
+  "yellow_taxi_2024_01": {
+    "dataset": "NYC Yellow Taxi Trip Records",
+    "source": "NYC Taxi and Limousine Commission",
+    "year": 2024,
+    "month": 1,
+    "format": "parquet",
+    "url": "https://d37ci6vzurychx.cloudfront.net/trip-data/yellow_tripdata_2024-01.parquet",
+    "local_path": "data/raw/yellow/yellow_tripdata_2024-01.parquet"
+  },
+  "green_taxi_2024_01": {
+    "dataset": "NYC Green Taxi Trip Records",
+    "source": "NYC Taxi and Limousine Commission",
+    "year": 2024,
+    "month": 1,
+    "format": "parquet",
+    "url": "https://d37ci6vzurychx.cloudfront.net/trip-data/green_tripdata_2024-01.parquet",
+    "local_path": "data/raw/green/green_tripdata_2024-01.parquet"
+  },
+  "taxi_zones": {
+    "dataset": "NYC Taxi Zone Lookup",
+    "source": "NYC Taxi and Limousine Commission",
+    "format": "csv",
+    "url": "https://d37ci6vzurychx.cloudfront.net/misc/taxi_zone_lookup.csv",
+    "local_path": "data/raw/zones/taxi_zone_lookup.csv"
+  }
+}
