@@ -1,0 +1,5 @@
+Metric,A Full,B Retrieval,C Repair
+Validation rate,0.75,0.85,0.9
+Execution rate,0.75,0.85,0.9
+Result accuracy,0.7,0.8,0.85
+Correct queries,14,16,17
