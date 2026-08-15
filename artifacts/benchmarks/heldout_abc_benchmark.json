@@ -1,0 +1,3377 @@
+{
+  "benchmark": {
+    "name": "NYC Metadata-Aware Text-to-Spark-SQL Held-Out Benchmark",
+    "version": "1.0",
+    "period": "January 2024",
+    "source_benchmark": "NYC Metadata-Aware Text-to-Spark-SQL Benchmark v1.0",
+    "development_freeze": "development-freeze-v1",
+    "description": "Held-out linguistic generalization set containing two previously unevaluated paraphrases for each of the ten frozen development intents."
+  },
+  "configuration": {
+    "model": "qwen2.5-coder:3b",
+    "temperature": 0,
+    "num_ctx": 4096,
+    "dense_top_k": 5,
+    "full_catalog_characters": 9498,
+    "full_catalog_words": 1056
+  },
+  "warmup": {
+    "wall_seconds": 140.440659847,
+    "load_seconds": 136.029867161
+  },
+  "summary": {
+    "queries": 20,
+    "A": {
+      "validation_rate": 0.75,
+      "execution_rate": 0.75,
+      "result_accuracy": 0.7,
+      "mean_prompt_tokens": 2558.45,
+      "mean_prompt_eval_seconds": 12.52876895
+    },
+    "B": {
+      "validation_rate": 0.85,
+      "execution_rate": 0.85,
+      "result_accuracy": 0.8,
+      "mean_prompt_tokens": 776.35,
+      "mean_prompt_eval_seconds": 31.2786467,
+      "mean_retrieval_seconds": 0.33497809130002454
+    },
+    "C": {
+      "validation_rate": 0.9,
+      "execution_rate": 0.9,
+      "result_accuracy": 0.85,
+      "repair_attempts": 3,
+      "repair_validation_successes": 1,
+      "repair_validation_success_rate": 0.3333333333333333
+    },
+    "B_vs_A": {
+      "mean_prompt_token_reduction_percent": 69.65545545154292,
+      "mean_prompt_eval_time_reduction_percent": -149.65458956763666
+    }
+  },
+  "records": [
+    {
+      "id": "Q01_H1",
+      "category": "single_source_aggregation",
+      "question": "Across all Yellow Taxi rides in January 2024, what was the mean trip distance? Return exactly one column named average_trip_distance.",
+      "expected_columns": [
+        "average_trip_distance"
+      ],
+      "generation_order": [
+        "A",
+        "B"
+      ],
+      "gold": {
+        "sql": "SELECT AVG(trip_distance) AS average_trip_distance FROM yellow_taxi",
+        "columns": [
+          "average_trip_distance"
+        ],
+        "rows": [
+          [
+            3.229347612268583
+          ]
+        ],
+        "spark_seconds": 2.7950733539998964
+      },
+      "retrieval": {
+        "context": "=== SQL-SAFE RETRIEVED METADATA ===\nQuestion: Across all Yellow Taxi rides in January 2024, what was the mean trip distance? Return exactly one column named average_trip_distance.\n\n=== SQL GENERATION CONSTRAINTS ===\n- Only DATASET names shown below are Spark table identifiers.\n- Only names under PHYSICAL COLUMNS are physical column identifiers.\n- PHYSICAL COLUMN names are fully qualified as dataset.column; use those exact physical identifiers in SQL.\n- Column names requested by the user for the result are output aliases unless they exactly match a listed PHYSICAL COLUMN.\n- Text following 'meaning:' is documentation, not an SQL identifier.\n- JOIN CONDITION lines are executable SQL conditions; use them directly when the described relationship is required.\n- SQL EXPRESSION/PREDICATE lines are executable SQL fragments; use them directly when their described meaning matches the question.\n- The registered yellow_taxi, green_taxi, and weather_hourly views already contain only January 2024 records.\n- Do not add a January 2024 date predicate unless the question asks for a narrower time range.\n\n=== RELEVANT DATASETS AND PHYSICAL COLUMNS ===\n\nDATASET yellow_taxi\ndescription: Curated Yellow Taxi trips for January 2024. Original TLC column names are preserved.\ngranularity: one row per taxi trip\nPHYSICAL COLUMNS:\n- yellow_taxi.mta_tax:double\n- yellow_taxi.tolls_amount:double\n- yellow_taxi.trip_distance:double\n  meaning: Recorded distance of a taxi trip in miles.\n\n=== VALID SQL JOIN CONDITIONS ===\n- None required.\n\n=== RELEVANT SQL EXPRESSIONS / PREDICATES ===\n- None required.",
+        "seconds": 0.3622157170000264,
+        "embedding_prompt_tokens": 33,
+        "selection": {
+          "datasets": [
+            "yellow_taxi"
+          ],
+          "columns": [
+            "yellow_taxi.mta_tax",
+            "yellow_taxi.tolls_amount",
+            "yellow_taxi.trip_distance"
+          ],
+          "concepts": [
+            "trip_distance"
+          ],
+          "relationships": [],
+          "rules": []
+        },
+        "metadata_recall": 1.0,
+        "metadata_hits": 2,
+        "metadata_required": 2
+      },
+      "A": {
+        "configuration": "full_catalog",
+        "metadata_characters": 9498,
+        "metadata_words": 1056,
+        "prompt_characters": 10798,
+        "prompt_tokens": 2554,
+        "generated_tokens": 61,
+        "wall_seconds": 177.1765165879999,
+        "load_seconds": 0.301206519,
+        "prompt_eval_seconds": 160.409064,
+        "generation_seconds": 16.439311,
+        "sql": "SELECT AVG(trip_distance) AS average_trip_distance\nFROM yellow_taxi\nWHERE tpep_pickup_datetime >= '2024-01-01' AND tpep_pickup_datetime < '2024-02-01';",
+        "validation": {
+          "valid": true,
+          "tables": [
+            "yellow_taxi"
+          ],
+          "output_columns": [
+            "average_trip_distance"
+          ],
+          "issues": []
+        },
+        "execution": {
+          "success": true,
+          "error": null,
+          "columns": [
+            "average_trip_distance"
+          ],
+          "rows": [
+            [
+              3.229347612268583
+            ]
+          ],
+          "seconds": 1.413399346999995
+        },
+        "result_correct": true
+      },
+      "B": {
+        "configuration": "relation_aware",
+        "metadata_characters": 1588,
+        "metadata_words": 230,
+        "prompt_characters": 2888,
+        "prompt_tokens": 646,
+        "generated_tokens": 24,
+        "wall_seconds": 29.074758030999874,
+        "load_seconds": 0.271497564,
+        "prompt_eval_seconds": 23.793962,
+        "generation_seconds": 4.948786,
+        "sql": "SELECT AVG(yellow_taxi.trip_distance) AS average_trip_distance\nFROM yellow_taxi;",
+        "validation": {
+          "valid": true,
+          "tables": [
+            "yellow_taxi"
+          ],
+          "output_columns": [
+            "average_trip_distance"
+          ],
+          "issues": []
+        },
+        "execution": {
+          "success": true,
+          "error": null,
+          "columns": [
+            "average_trip_distance"
+          ],
+          "rows": [
+            [
+              3.229347612268583
+            ]
+          ],
+          "seconds": 0.3618089830001736
+        },
+        "result_correct": true
+      },
+      "C": {
+        "initial_sql": "SELECT AVG(yellow_taxi.trip_distance) AS average_trip_distance\nFROM yellow_taxi;",
+        "repair_attempted": false,
+        "repair": null,
+        "final_sql": "SELECT AVG(yellow_taxi.trip_distance) AS average_trip_distance\nFROM yellow_taxi;",
+        "validation": {
+          "valid": true,
+          "tables": [
+            "yellow_taxi"
+          ],
+          "output_columns": [
+            "average_trip_distance"
+          ],
+          "issues": []
+        },
+        "execution": {
+          "success": true,
+          "error": null,
+          "columns": [
+            "average_trip_distance"
+          ],
+          "rows": [
+            [
+              3.229347612268583
+            ]
+          ],
+          "seconds": 0.3618089830001736
+        },
+        "result_correct": true
+      }
+    },
+    {
+      "id": "Q01_H2",
+      "category": "single_source_aggregation",
+      "question": "Find the average distance travelled per Yellow Taxi trip for January 2024. The result must contain exactly one column called average_trip_distance.",
+      "expected_columns": [
+        "average_trip_distance"
+      ],
+      "generation_order": [
+        "B",
+        "A"
+      ],
+      "gold": {
+        "sql": "SELECT AVG(trip_distance) AS average_trip_distance FROM yellow_taxi",
+        "columns": [
+          "average_trip_distance"
+        ],
+        "rows": [
+          [
+            3.229347612268583
+          ]
+        ],
+        "spark_seconds": 0.2655610709998655
+      },
+      "retrieval": {
+        "context": "=== SQL-SAFE RETRIEVED METADATA ===\nQuestion: Find the average distance travelled per Yellow Taxi trip for January 2024. The result must contain exactly one column called average_trip_distance.\n\n=== SQL GENERATION CONSTRAINTS ===\n- Only DATASET names shown below are Spark table identifiers.\n- Only names under PHYSICAL COLUMNS are physical column identifiers.\n- PHYSICAL COLUMN names are fully qualified as dataset.column; use those exact physical identifiers in SQL.\n- Column names requested by the user for the result are output aliases unless they exactly match a listed PHYSICAL COLUMN.\n- Text following 'meaning:' is documentation, not an SQL identifier.\n- JOIN CONDITION lines are executable SQL conditions; use them directly when the described relationship is required.\n- SQL EXPRESSION/PREDICATE lines are executable SQL fragments; use them directly when their described meaning matches the question.\n- The registered yellow_taxi, green_taxi, and weather_hourly views already contain only January 2024 records.\n- Do not add a January 2024 date predicate unless the question asks for a narrower time range.\n\n=== RELEVANT DATASETS AND PHYSICAL COLUMNS ===\n\nDATASET yellow_taxi\ndescription: Curated Yellow Taxi trips for January 2024. Original TLC column names are preserved.\ngranularity: one row per taxi trip\nPHYSICAL COLUMNS:\n- yellow_taxi.mta_tax:double\n- yellow_taxi.tolls_amount:double\n- yellow_taxi.trip_distance:double\n  meaning: Recorded distance of a taxi trip in miles.\n\n=== VALID SQL JOIN CONDITIONS ===\n- None required.\n\n=== RELEVANT SQL EXPRESSIONS / PREDICATES ===\n- None required.",
+        "seconds": 0.34012940599996,
+        "embedding_prompt_tokens": 33,
+        "selection": {
+          "datasets": [
+            "yellow_taxi"
+          ],
+          "columns": [
+            "yellow_taxi.mta_tax",
+            "yellow_taxi.tolls_amount",
+            "yellow_taxi.trip_distance"
+          ],
+          "concepts": [
+            "trip_distance"
+          ],
+          "relationships": [],
+          "rules": []
+        },
+        "metadata_recall": 1.0,
+        "metadata_hits": 2,
+        "metadata_required": 2
+      },
+      "A": {
+        "configuration": "full_catalog",
+        "metadata_characters": 9498,
+        "metadata_words": 1056,
+        "prompt_characters": 10812,
+        "prompt_tokens": 2554,
+        "generated_tokens": 61,
+        "wall_seconds": 20.547005691000322,
+        "load_seconds": 0.286642183,
+        "prompt_eval_seconds": 4.221412,
+        "generation_seconds": 15.978709,
+        "sql": "SELECT AVG(trip_distance) AS average_trip_distance\nFROM yellow_taxi\nWHERE tpep_pickup_datetime >= '2024-01-01' AND tpep_pickup_datetime < '2024-02-01';",
+        "validation": {
+          "valid": true,
+          "tables": [
+            "yellow_taxi"
+          ],
+          "output_columns": [
+            "average_trip_distance"
+          ],
+          "issues": []
+        },
+        "execution": {
+          "success": true,
+          "error": null,
+          "columns": [
+            "average_trip_distance"
+          ],
+          "rows": [
+            [
+              3.229347612268583
+            ]
+          ],
+          "seconds": 0.34253010899965375
+        },
+        "result_correct": true
+      },
+      "B": {
+        "configuration": "relation_aware",
+        "metadata_characters": 1602,
+        "metadata_words": 231,
+        "prompt_characters": 2916,
+        "prompt_tokens": 646,
+        "generated_tokens": 24,
+        "wall_seconds": 28.09053493899978,
+        "load_seconds": 0.280091205,
+        "prompt_eval_seconds": 22.930531,
+        "generation_seconds": 4.857366,
+        "sql": "SELECT AVG(yellow_taxi.trip_distance) AS average_trip_distance\nFROM yellow_taxi;",
+        "validation": {
+          "valid": true,
+          "tables": [
+            "yellow_taxi"
+          ],
+          "output_columns": [
+            "average_trip_distance"
+          ],
+          "issues": []
+        },
+        "execution": {
+          "success": true,
+          "error": null,
+          "columns": [
+            "average_trip_distance"
+          ],
+          "rows": [
+            [
+              3.229347612268583
+            ]
+          ],
+          "seconds": 0.20379928900001687
+        },
+        "result_correct": true
+      },
+      "C": {
+        "initial_sql": "SELECT AVG(yellow_taxi.trip_distance) AS average_trip_distance\nFROM yellow_taxi;",
+        "repair_attempted": false,
+        "repair": null,
+        "final_sql": "SELECT AVG(yellow_taxi.trip_distance) AS average_trip_distance\nFROM yellow_taxi;",
+        "validation": {
+          "valid": true,
+          "tables": [
+            "yellow_taxi"
+          ],
+          "output_columns": [
+            "average_trip_distance"
+          ],
+          "issues": []
+        },
+        "execution": {
+          "success": true,
+          "error": null,
+          "columns": [
+            "average_trip_distance"
+          ],
+          "rows": [
+            [
+              3.229347612268583
+            ]
+          ],
+          "seconds": 0.20379928900001687
+        },
+        "result_correct": true
+      }
+    },
+    {
+      "id": "Q02_H1",
+      "category": "single_source_filter_aggregation",
+      "question": "Count the Green Taxi trips in January 2024 whose trip distance exceeded 10 miles. Return exactly one column named trip_count.",
+      "expected_columns": [
+        "trip_count"
+      ],
+      "generation_order": [
+        "A",
+        "B"
+      ],
+      "gold": {
+        "sql": "SELECT COUNT(*) AS trip_count FROM green_taxi WHERE trip_distance > 10",
+        "columns": [
+          "trip_count"
+        ],
+        "rows": [
+          [
+            1516
+          ]
+        ],
+        "spark_seconds": 0.47139278399981777
+      },
+      "retrieval": {
+        "context": "=== SQL-SAFE RETRIEVED METADATA ===\nQuestion: Count the Green Taxi trips in January 2024 whose trip distance exceeded 10 miles. Return exactly one column named trip_count.\n\n=== SQL GENERATION CONSTRAINTS ===\n- Only DATASET names shown below are Spark table identifiers.\n- Only names under PHYSICAL COLUMNS are physical column identifiers.\n- PHYSICAL COLUMN names are fully qualified as dataset.column; use those exact physical identifiers in SQL.\n- Column names requested by the user for the result are output aliases unless they exactly match a listed PHYSICAL COLUMN.\n- Text following 'meaning:' is documentation, not an SQL identifier.\n- JOIN CONDITION lines are executable SQL conditions; use them directly when the described relationship is required.\n- SQL EXPRESSION/PREDICATE lines are executable SQL fragments; use them directly when their described meaning matches the question.\n- The registered yellow_taxi, green_taxi, and weather_hourly views already contain only January 2024 records.\n- Do not add a January 2024 date predicate unless the question asks for a narrower time range.\n\n=== RELEVANT DATASETS AND PHYSICAL COLUMNS ===\n\nDATASET green_taxi\ndescription: Curated Green Taxi trips for January 2024. Original TLC column names are preserved.\ngranularity: one row per taxi trip\nPHYSICAL COLUMNS:\n- green_taxi.mta_tax:double\n- green_taxi.passenger_count:bigint\n  meaning: Recorded number of passengers for a taxi trip.\n- green_taxi.tolls_amount:double\n- green_taxi.trip_distance:double\n  meaning: Recorded distance of a taxi trip in miles.\n\n=== VALID SQL JOIN CONDITIONS ===\n- None required.\n\n=== RELEVANT SQL EXPRESSIONS / PREDICATES ===\n- None required.",
+        "seconds": 0.2965004200000294,
+        "embedding_prompt_tokens": 32,
+        "selection": {
+          "datasets": [
+            "green_taxi"
+          ],
+          "columns": [
+            "green_taxi.mta_tax",
+            "green_taxi.passenger_count",
+            "green_taxi.tolls_amount",
+            "green_taxi.trip_distance"
+          ],
+          "concepts": [
+            "passenger_count",
+            "trip_distance"
+          ],
+          "relationships": [],
+          "rules": []
+        },
+        "metadata_recall": 1.0,
+        "metadata_hits": 2,
+        "metadata_required": 2
+      },
+      "A": {
+        "configuration": "full_catalog",
+        "metadata_characters": 9498,
+        "metadata_words": 1056,
+        "prompt_characters": 10790,
+        "prompt_tokens": 2554,
+        "generated_tokens": 25,
+        "wall_seconds": 10.93352102200015,
+        "load_seconds": 0.404908483,
+        "prompt_eval_seconds": 4.123569,
+        "generation_seconds": 6.379587,
+        "sql": "SELECT COUNT(*) AS trip_count\nFROM green_taxi\nWHERE trip_distance > 10;",
+        "validation": {
+          "valid": true,
+          "tables": [
+            "green_taxi"
+          ],
+          "output_columns": [
+            "trip_count"
+          ],
+          "issues": []
+        },
+        "execution": {
+          "success": true,
+          "error": null,
+          "columns": [
+            "trip_count"
+          ],
+          "rows": [
+            [
+              1516
+            ]
+          ],
+          "seconds": 0.17083335300003455
+        },
+        "result_correct": true
+      },
+      "B": {
+        "configuration": "relation_aware",
+        "metadata_characters": 1669,
+        "metadata_words": 241,
+        "prompt_characters": 2961,
+        "prompt_tokens": 668,
+        "generated_tokens": 25,
+        "wall_seconds": 29.350860964000276,
+        "load_seconds": 0.280124164,
+        "prompt_eval_seconds": 23.937206,
+        "generation_seconds": 5.07137,
+        "sql": "SELECT COUNT(*) AS trip_count\nFROM green_taxi\nWHERE trip_distance > 10;",
+        "validation": {
+          "valid": true,
+          "tables": [
+            "green_taxi"
+          ],
+          "output_columns": [
+            "trip_count"
+          ],
+          "issues": []
+        },
+        "execution": {
+          "success": true,
+          "error": null,
+          "columns": [
+            "trip_count"
+          ],
+          "rows": [
+            [
+              1516
+            ]
+          ],
+          "seconds": 0.17140090500015503
+        },
+        "result_correct": true
+      },
+      "C": {
+        "initial_sql": "SELECT COUNT(*) AS trip_count\nFROM green_taxi\nWHERE trip_distance > 10;",
+        "repair_attempted": false,
+        "repair": null,
+        "final_sql": "SELECT COUNT(*) AS trip_count\nFROM green_taxi\nWHERE trip_distance > 10;",
+        "validation": {
+          "valid": true,
+          "tables": [
+            "green_taxi"
+          ],
+          "output_columns": [
+            "trip_count"
+          ],
+          "issues": []
+        },
+        "execution": {
+          "success": true,
+          "error": null,
+          "columns": [
+            "trip_count"
+          ],
+          "rows": [
+            [
+              1516
+            ]
+          ],
+          "seconds": 0.17140090500015503
+        },
+        "result_correct": true
+      }
+    },
+    {
+      "id": "Q02_H2",
+      "category": "single_source_filter_aggregation",
+      "question": "How many January 2024 Green Taxi rides were longer than 10 miles? Output exactly one column called trip_count.",
+      "expected_columns": [
+        "trip_count"
+      ],
+      "generation_order": [
+        "B",
+        "A"
+      ],
+      "gold": {
+        "sql": "SELECT COUNT(*) AS trip_count FROM green_taxi WHERE trip_distance > 10",
+        "columns": [
+          "trip_count"
+        ],
+        "rows": [
+          [
+            1516
+          ]
+        ],
+        "spark_seconds": 0.22405371300010302
+      },
+      "retrieval": {
+        "context": "=== SQL-SAFE RETRIEVED METADATA ===\nQuestion: How many January 2024 Green Taxi rides were longer than 10 miles? Output exactly one column called trip_count.\n\n=== SQL GENERATION CONSTRAINTS ===\n- Only DATASET names shown below are Spark table identifiers.\n- Only names under PHYSICAL COLUMNS are physical column identifiers.\n- PHYSICAL COLUMN names are fully qualified as dataset.column; use those exact physical identifiers in SQL.\n- Column names requested by the user for the result are output aliases unless they exactly match a listed PHYSICAL COLUMN.\n- Text following 'meaning:' is documentation, not an SQL identifier.\n- JOIN CONDITION lines are executable SQL conditions; use them directly when the described relationship is required.\n- SQL EXPRESSION/PREDICATE lines are executable SQL fragments; use them directly when their described meaning matches the question.\n- The registered yellow_taxi, green_taxi, and weather_hourly views already contain only January 2024 records.\n- Do not add a January 2024 date predicate unless the question asks for a narrower time range.\n\n=== RELEVANT DATASETS AND PHYSICAL COLUMNS ===\n\nDATASET green_taxi\ndescription: Curated Green Taxi trips for January 2024. Original TLC column names are preserved.\ngranularity: one row per taxi trip\nPHYSICAL COLUMNS:\n- green_taxi.mta_tax:double\n- green_taxi.passenger_count:bigint\n  meaning: Recorded number of passengers for a taxi trip.\n- green_taxi.tolls_amount:double\n- green_taxi.trip_distance:double\n  meaning: Recorded distance of a taxi trip in miles.\n\n=== VALID SQL JOIN CONDITIONS ===\n- None required.\n\n=== RELEVANT SQL EXPRESSIONS / PREDICATES ===\n- None required.",
+        "seconds": 0.29963742500012813,
+        "embedding_prompt_tokens": 30,
+        "selection": {
+          "datasets": [
+            "green_taxi"
+          ],
+          "columns": [
+            "green_taxi.mta_tax",
+            "green_taxi.passenger_count",
+            "green_taxi.tolls_amount",
+            "green_taxi.trip_distance"
+          ],
+          "concepts": [
+            "passenger_count",
+            "trip_distance"
+          ],
+          "relationships": [],
+          "rules": []
+        },
+        "metadata_recall": 1.0,
+        "metadata_hits": 2,
+        "metadata_required": 2
+      },
+      "A": {
+        "configuration": "full_catalog",
+        "metadata_characters": 9498,
+        "metadata_words": 1056,
+        "prompt_characters": 10775,
+        "prompt_tokens": 2552,
+        "generated_tokens": 25,
+        "wall_seconds": 10.440592425999967,
+        "load_seconds": 0.286963066,
+        "prompt_eval_seconds": 3.704365,
+        "generation_seconds": 6.385897,
+        "sql": "SELECT COUNT(*) AS trip_count\nFROM green_taxi\nWHERE trip_distance > 10;",
+        "validation": {
+          "valid": true,
+          "tables": [
+            "green_taxi"
+          ],
+          "output_columns": [
+            "trip_count"
+          ],
+          "issues": []
+        },
+        "execution": {
+          "success": true,
+          "error": null,
+          "columns": [
+            "trip_count"
+          ],
+          "rows": [
+            [
+              1516
+            ]
+          ],
+          "seconds": 0.14349731699985568
+        },
+        "result_correct": true
+      },
+      "B": {
+        "configuration": "relation_aware",
+        "metadata_characters": 1654,
+        "metadata_words": 239,
+        "prompt_characters": 2931,
+        "prompt_tokens": 664,
+        "generated_tokens": 25,
+        "wall_seconds": 29.239792293999926,
+        "load_seconds": 0.318419886,
+        "prompt_eval_seconds": 23.893692,
+        "generation_seconds": 5.004703,
+        "sql": "SELECT COUNT(*) AS trip_count\nFROM green_taxi\nWHERE trip_distance > 10;",
+        "validation": {
+          "valid": true,
+          "tables": [
+            "green_taxi"
+          ],
+          "output_columns": [
+            "trip_count"
+          ],
+          "issues": []
+        },
+        "execution": {
+          "success": true,
+          "error": null,
+          "columns": [
+            "trip_count"
+          ],
+          "rows": [
+            [
+              1516
+            ]
+          ],
+          "seconds": 0.16999064900028316
+        },
+        "result_correct": true
+      },
+      "C": {
+        "initial_sql": "SELECT COUNT(*) AS trip_count\nFROM green_taxi\nWHERE trip_distance > 10;",
+        "repair_attempted": false,
+        "repair": null,
+        "final_sql": "SELECT COUNT(*) AS trip_count\nFROM green_taxi\nWHERE trip_distance > 10;",
+        "validation": {
+          "valid": true,
+          "tables": [
+            "green_taxi"
+          ],
+          "output_columns": [
+            "trip_count"
+          ],
+          "issues": []
+        },
+        "execution": {
+          "success": true,
+          "error": null,
+          "columns": [
+            "trip_count"
+          ],
+          "rows": [
+            [
+              1516
+            ]
+          ],
+          "seconds": 0.16999064900028316
+        },
+        "result_correct": true
+      }
+    },
+    {
+      "id": "Q03_H1",
+      "category": "geographic_pickup_join",
+      "question": "For January 2024 Yellow Taxi rides, identify the pickup taxi zone with the greatest number of trips. Return only the top result with exactly two columns named zone_name and trip_count.",
+      "expected_columns": [
+        "zone_name",
+        "trip_count"
+      ],
+      "generation_order": [
+        "A",
+        "B"
+      ],
+      "gold": {
+        "sql": "SELECT z.Zone AS zone_name, COUNT(*) AS trip_count FROM yellow_taxi y JOIN taxi_zones z ON y.PULocationID = z.LocationID GROUP BY z.Zone ORDER BY trip_count DESC, zone_name ASC LIMIT 1",
+        "columns": [
+          "zone_name",
+          "trip_count"
+        ],
+        "rows": [
+          [
+            "JFK Airport",
+            145183
+          ]
+        ],
+        "spark_seconds": 1.5366517340003156
+      },
+      "retrieval": {
+        "context": "=== SQL-SAFE RETRIEVED METADATA ===\nQuestion: For January 2024 Yellow Taxi rides, identify the pickup taxi zone with the greatest number of trips. Return only the top result with exactly two columns named zone_name and trip_count.\n\n=== SQL GENERATION CONSTRAINTS ===\n- Only DATASET names shown below are Spark table identifiers.\n- Only names under PHYSICAL COLUMNS are physical column identifiers.\n- PHYSICAL COLUMN names are fully qualified as dataset.column; use those exact physical identifiers in SQL.\n- Column names requested by the user for the result are output aliases unless they exactly match a listed PHYSICAL COLUMN.\n- Text following 'meaning:' is documentation, not an SQL identifier.\n- JOIN CONDITION lines are executable SQL conditions; use them directly when the described relationship is required.\n- SQL EXPRESSION/PREDICATE lines are executable SQL fragments; use them directly when their described meaning matches the question.\n- The registered yellow_taxi, green_taxi, and weather_hourly views already contain only January 2024 records.\n- Do not add a January 2024 date predicate unless the question asks for a narrower time range.\n\n=== RELEVANT DATASETS AND PHYSICAL COLUMNS ===\n\nDATASET taxi_zones\ndescription: Reference dataset mapping TLC LocationID values to borough, taxi-zone name, and service-zone classification.\ngranularity: one row per TLC taxi zone\nPHYSICAL COLUMNS:\n- taxi_zones.LocationID:int\n  meaning: Primary TLC identifier of a taxi zone.\n- taxi_zones.Zone:string\n  meaning: Human-readable TLC taxi-zone name.\n\nDATASET yellow_taxi\ndescription: Curated Yellow Taxi trips for January 2024. Original TLC column names are preserved.\ngranularity: one row per taxi trip\nPHYSICAL COLUMNS:\n- yellow_taxi.DOLocationID:int\n  meaning: TLC taxi-zone identifier for the trip drop-off location.\n- yellow_taxi.PULocationID:int\n  meaning: TLC taxi-zone identifier for the trip pickup location.\n\n=== VALID SQL JOIN CONDITIONS ===\n- JOIN CONDITION: yellow_taxi.PULocationID = taxi_zones.LocationID\n  meaning: Maps each Yellow Taxi pickup LocationID to its TLC taxi-zone record.\n\n=== RELEVANT SQL EXPRESSIONS / PREDICATES ===\n- None required.",
+        "seconds": 0.34638888300014514,
+        "embedding_prompt_tokens": 43,
+        "selection": {
+          "datasets": [
+            "taxi_zones",
+            "yellow_taxi"
+          ],
+          "columns": [
+            "taxi_zones.LocationID",
+            "taxi_zones.Zone",
+            "yellow_taxi.DOLocationID",
+            "yellow_taxi.PULocationID"
+          ],
+          "concepts": [
+            "dropoff_zone_id",
+            "pickup_zone_id",
+            "taxi_zone_id",
+            "zone_name"
+          ],
+          "relationships": [
+            "yellow_pickup_zone"
+          ],
+          "rules": []
+        },
+        "metadata_recall": 1.0,
+        "metadata_hits": 6,
+        "metadata_required": 6
+      },
+      "A": {
+        "configuration": "full_catalog",
+        "metadata_characters": 9498,
+        "metadata_words": 1056,
+        "prompt_characters": 10849,
+        "prompt_tokens": 2564,
+        "generated_tokens": 70,
+        "wall_seconds": 24.209509905000232,
+        "load_seconds": 0.470012023,
+        "prompt_eval_seconds": 5.337039,
+        "generation_seconds": 18.376757,
+        "sql": "SELECT \n  tz.zone_name,\n  COUNT(yt.PULocationID) AS trip_count\nFROM \n  yellow_taxi yt\nJOIN \n  taxi_zones tz ON yt.PULocationID = tz.LocationID\nGROUP BY \n  tz.zone_name\nORDER BY \n  trip_count DESC\nLIMIT 1",
+        "validation": {
+          "valid": false,
+          "tables": [
+            "taxi_zones",
+            "yellow_taxi"
+          ],
+          "output_columns": [],
+          "issues": [
+            {
+              "stage": "spark_analysis",
+              "message": "AnalysisException: [UNRESOLVED_COLUMN.WITH_SUGGESTION] A column or function parameter with name `tz`.`zone_name` cannot be resolved. Did you mean one of the following? [`tz`.`Zone`, `yt`.`mta_tax`, `tz`.`Borough`, `yt`.`extra`, `tz`.`LocationID`].; line 2 pos 2;\n'GlobalLimit 1\n+- 'LocalLimit 1\n   +- 'Sort ['trip_count DESC NULLS LAST], true\n      +- 'Aggregate ['tz.zone_name], ['tz.zone_name, count(PULocationID#7) AS trip_count#259L]\n         +- Join Inner, (PULocationID#7 = LocationID#78)\n            :- SubqueryAlias yt\n            :  +- SubqueryAlias yellow_taxi\n            :     +- View (`yellow_taxi`, [VendorID#0,tpep_pickup_datetime#1,tpep_dropoff_datetime#2,passenger_count#3L,trip_distance#4,RatecodeID#5L,store_and_fwd_flag#6,PULocationID#7,DOLocationID#8,payment_type#9L,fare_amount#10,extra#11,mta_tax#12,tip_amount#13,tolls_amount#14,improvement_surcharge#15,total_amount#16,congestion_surcharge#17,Airport_fee#18])\n            :        +- Relation [VendorID#0,tpep_pickup_datetime#1,tpep_dropoff_datetime#2,passenger_count#3L,trip_distance#4,RatecodeID#5L,store_and_fwd_flag#6,PULocationID#7,DOLocationID#8,payment_type#9L,fare_amount#10,extra#11,mta_tax#12,tip_amount#13,tolls_amount#14,improvement_surcharge#15,total_amount#16,congestion_surcharge#17,Airport_fee#18] parquet\n            +- SubqueryAlias tz\n               +- SubqueryAlias taxi_zones\n                  +- View (`taxi_zones`, [LocationID#78,Borough#79,Zone#80,service_zone#81])\n                     +- Relation [LocationID#78,Borough#79,Zone#80,service_zone#81] parquet\n"
+            }
+          ]
+        },
+        "execution": {
+          "success": false,
+          "error": "Not executed because validation failed.",
+          "columns": [],
+          "rows": [],
+          "seconds": 0.0
+        },
+        "result_correct": false
+      },
+      "B": {
+        "configuration": "relation_aware",
+        "metadata_characters": 2161,
+        "metadata_words": 304,
+        "prompt_characters": 3512,
+        "prompt_tokens": 779,
+        "generated_tokens": 124,
+        "wall_seconds": 57.713669988999754,
+        "load_seconds": 0.307346911,
+        "prompt_eval_seconds": 30.681884,
+        "generation_seconds": 26.663179,
+        "sql": "SELECT \n  T2.Zone AS zone_name,\n  COUNT(*) AS trip_count\nFROM \n  yellow_taxi AS T1\nJOIN \n  taxi_zones AS T2\nON \n  T1.PULocationID = T2.LocationID\nWHERE \n  T1.tpep_pickup_datetime >= '2024-01-01' AND T1.tpep_pickup_datetime < '2024-02-01'\nGROUP BY \n  T2.Zone\nORDER BY \n  trip_count DESC\nLIMIT 1;",
+        "validation": {
+          "valid": true,
+          "tables": [
+            "taxi_zones",
+            "yellow_taxi"
+          ],
+          "output_columns": [
+            "zone_name",
+            "trip_count"
+          ],
+          "issues": []
+        },
+        "execution": {
+          "success": true,
+          "error": null,
+          "columns": [
+            "zone_name",
+            "trip_count"
+          ],
+          "rows": [
+            [
+              "JFK Airport",
+              145183
+            ]
+          ],
+          "seconds": 1.3204862999996294
+        },
+        "result_correct": true
+      },
+      "C": {
+        "initial_sql": "SELECT \n  T2.Zone AS zone_name,\n  COUNT(*) AS trip_count\nFROM \n  yellow_taxi AS T1\nJOIN \n  taxi_zones AS T2\nON \n  T1.PULocationID = T2.LocationID\nWHERE \n  T1.tpep_pickup_datetime >= '2024-01-01' AND T1.tpep_pickup_datetime < '2024-02-01'\nGROUP BY \n  T2.Zone\nORDER BY \n  trip_count DESC\nLIMIT 1;",
+        "repair_attempted": false,
+        "repair": null,
+        "final_sql": "SELECT \n  T2.Zone AS zone_name,\n  COUNT(*) AS trip_count\nFROM \n  yellow_taxi AS T1\nJOIN \n  taxi_zones AS T2\nON \n  T1.PULocationID = T2.LocationID\nWHERE \n  T1.tpep_pickup_datetime >= '2024-01-01' AND T1.tpep_pickup_datetime < '2024-02-01'\nGROUP BY \n  T2.Zone\nORDER BY \n  trip_count DESC\nLIMIT 1;",
+        "validation": {
+          "valid": true,
+          "tables": [
+            "taxi_zones",
+            "yellow_taxi"
+          ],
+          "output_columns": [
+            "zone_name",
+            "trip_count"
+          ],
+          "issues": []
+        },
+        "execution": {
+          "success": true,
+          "error": null,
+          "columns": [
+            "zone_name",
+            "trip_count"
+          ],
+          "rows": [
+            [
+              "JFK Airport",
+              145183
+            ]
+          ],
+          "seconds": 1.3204862999996294
+        },
+        "result_correct": true
+      }
+    },
+    {
+      "id": "Q03_H2",
+      "category": "geographic_pickup_join",
+      "question": "Where did the largest number of Yellow Taxi pickups occur by taxi zone in January 2024? Return just the leading zone using exactly the columns zone_name and trip_count.",
+      "expected_columns": [
+        "zone_name",
+        "trip_count"
+      ],
+      "generation_order": [
+        "B",
+        "A"
+      ],
+      "gold": {
+        "sql": "SELECT z.Zone AS zone_name, COUNT(*) AS trip_count FROM yellow_taxi y JOIN taxi_zones z ON y.PULocationID = z.LocationID GROUP BY z.Zone ORDER BY trip_count DESC, zone_name ASC LIMIT 1",
+        "columns": [
+          "zone_name",
+          "trip_count"
+        ],
+        "rows": [
+          [
+            "JFK Airport",
+            145183
+          ]
+        ],
+        "spark_seconds": 0.7920446640000591
+      },
+      "retrieval": {
+        "context": "=== SQL-SAFE RETRIEVED METADATA ===\nQuestion: Where did the largest number of Yellow Taxi pickups occur by taxi zone in January 2024? Return just the leading zone using exactly the columns zone_name and trip_count.\n\n=== SQL GENERATION CONSTRAINTS ===\n- Only DATASET names shown below are Spark table identifiers.\n- Only names under PHYSICAL COLUMNS are physical column identifiers.\n- PHYSICAL COLUMN names are fully qualified as dataset.column; use those exact physical identifiers in SQL.\n- Column names requested by the user for the result are output aliases unless they exactly match a listed PHYSICAL COLUMN.\n- Text following 'meaning:' is documentation, not an SQL identifier.\n- JOIN CONDITION lines are executable SQL conditions; use them directly when the described relationship is required.\n- SQL EXPRESSION/PREDICATE lines are executable SQL fragments; use them directly when their described meaning matches the question.\n- The registered yellow_taxi, green_taxi, and weather_hourly views already contain only January 2024 records.\n- Do not add a January 2024 date predicate unless the question asks for a narrower time range.\n\n=== RELEVANT DATASETS AND PHYSICAL COLUMNS ===\n\nDATASET taxi_zones\ndescription: Reference dataset mapping TLC LocationID values to borough, taxi-zone name, and service-zone classification.\ngranularity: one row per TLC taxi zone\nPHYSICAL COLUMNS:\n- taxi_zones.LocationID:int\n  meaning: Primary TLC identifier of a taxi zone.\n- taxi_zones.Zone:string\n  meaning: Human-readable TLC taxi-zone name.\n\nDATASET yellow_taxi\ndescription: Curated Yellow Taxi trips for January 2024. Original TLC column names are preserved.\ngranularity: one row per taxi trip\nPHYSICAL COLUMNS:\n- yellow_taxi.DOLocationID:int\n  meaning: TLC taxi-zone identifier for the trip drop-off location.\n- yellow_taxi.PULocationID:int\n  meaning: TLC taxi-zone identifier for the trip pickup location.\n- yellow_taxi.tolls_amount:double\n\n=== VALID SQL JOIN CONDITIONS ===\n- JOIN CONDITION: yellow_taxi.PULocationID = taxi_zones.LocationID\n  meaning: Maps each Yellow Taxi pickup LocationID to its TLC taxi-zone record.\n\n=== RELEVANT SQL EXPRESSIONS / PREDICATES ===\n- None required.",
+        "seconds": 0.3246559409999463,
+        "embedding_prompt_tokens": 40,
+        "selection": {
+          "datasets": [
+            "taxi_zones",
+            "yellow_taxi"
+          ],
+          "columns": [
+            "taxi_zones.LocationID",
+            "taxi_zones.Zone",
+            "yellow_taxi.DOLocationID",
+            "yellow_taxi.PULocationID",
+            "yellow_taxi.tolls_amount"
+          ],
+          "concepts": [
+            "dropoff_zone_id",
+            "pickup_zone_id",
+            "taxi_zone_id",
+            "zone_name"
+          ],
+          "relationships": [
+            "yellow_pickup_zone"
+          ],
+          "rules": []
+        },
+        "metadata_recall": 1.0,
+        "metadata_hits": 6,
+        "metadata_required": 6
+      },
+      "A": {
+        "configuration": "full_catalog",
+        "metadata_characters": 9498,
+        "metadata_words": 1056,
+        "prompt_characters": 10833,
+        "prompt_tokens": 2561,
+        "generated_tokens": 114,
+        "wall_seconds": 36.433772856999894,
+        "load_seconds": 0.265758645,
+        "prompt_eval_seconds": 5.139572,
+        "generation_seconds": 30.967185,
+        "sql": "SELECT \n  tz.zone_name,\n  COUNT(yt.PULocationID) AS trip_count\nFROM \n  yellow_taxi yt\nJOIN \n  taxi_zones tz ON yt.PULocationID = tz.LocationID\nWHERE \n  yt.tpep_pickup_datetime >= '2024-01-01' AND yt.tpep_pickup_datetime < '2024-02-01'\nGROUP BY \n  tz.zone_name\nORDER BY \n  trip_count DESC\nLIMIT 1;",
+        "validation": {
+          "valid": false,
+          "tables": [
+            "taxi_zones",
+            "yellow_taxi"
+          ],
+          "output_columns": [],
+          "issues": [
+            {
+              "stage": "spark_analysis",
+              "message": "AnalysisException: [UNRESOLVED_COLUMN.WITH_SUGGESTION] A column or function parameter with name `tz`.`zone_name` cannot be resolved. Did you mean one of the following? [`tz`.`Zone`, `yt`.`mta_tax`, `tz`.`Borough`, `yt`.`extra`, `tz`.`LocationID`].; line 2 pos 2;\n'GlobalLimit 1\n+- 'LocalLimit 1\n   +- 'Sort ['trip_count DESC NULLS LAST], true\n      +- 'Aggregate ['tz.zone_name], ['tz.zone_name, count(PULocationID#7) AS trip_count#280L]\n         +- Filter ((tpep_pickup_datetime#1 >= cast(2024-01-01 as timestamp_ntz)) AND (tpep_pickup_datetime#1 < cast(2024-02-01 as timestamp_ntz)))\n            +- Join Inner, (PULocationID#7 = LocationID#78)\n               :- SubqueryAlias yt\n               :  +- SubqueryAlias yellow_taxi\n               :     +- View (`yellow_taxi`, [VendorID#0,tpep_pickup_datetime#1,tpep_dropoff_datetime#2,passenger_count#3L,trip_distance#4,RatecodeID#5L,store_and_fwd_flag#6,PULocationID#7,DOLocationID#8,payment_type#9L,fare_amount#10,extra#11,mta_tax#12,tip_amount#13,tolls_amount#14,improvement_surcharge#15,total_amount#16,congestion_surcharge#17,Airport_fee#18])\n               :        +- Relation [VendorID#0,tpep_pickup_datetime#1,tpep_dropoff_datetime#2,passenger_count#3L,trip_distance#4,RatecodeID#5L,store_and_fwd_flag#6,PULocationID#7,DOLocationID#8,payment_type#9L,fare_amount#10,extra#11,mta_tax#12,tip_amount#13,tolls_amount#14,improvement_surcharge#15,total_amount#16,congestion_surcharge#17,Airport_fee#18] parquet\n               +- SubqueryAlias tz\n                  +- SubqueryAlias taxi_zones\n                     +- View (`taxi_zones`, [LocationID#78,Borough#79,Zone#80,service_zone#81])\n                        +- Relation [LocationID#78,Borough#79,Zone#80,service_zone#81] parquet\n"
+            }
+          ]
+        },
+        "execution": {
+          "success": false,
+          "error": "Not executed because validation failed.",
+          "columns": [],
+          "rows": [],
+          "seconds": 0.0
+        },
+        "result_correct": false
+      },
+      "B": {
+        "configuration": "relation_aware",
+        "metadata_characters": 2179,
+        "metadata_words": 304,
+        "prompt_characters": 3514,
+        "prompt_tokens": 783,
+        "generated_tokens": 96,
+        "wall_seconds": 53.66649570200025,
+        "load_seconds": 0.330860389,
+        "prompt_eval_seconds": 32.348416,
+        "generation_seconds": 20.956948,
+        "sql": "SELECT \n  T2.Zone AS zone_name,\n  COUNT(T1.PULocationID) AS trip_count\nFROM \n  yellow_taxi AS T1\nJOIN \n  taxi_zones AS T2\nON \n  T1.PULocationID = T2.LocationID\nWHERE \n  T1.tolls_amount IS NOT NULL\nGROUP BY \n  T2.Zone\nORDER BY \n  trip_count DESC\nLIMIT 1;",
+        "validation": {
+          "valid": true,
+          "tables": [
+            "taxi_zones",
+            "yellow_taxi"
+          ],
+          "output_columns": [
+            "zone_name",
+            "trip_count"
+          ],
+          "issues": []
+        },
+        "execution": {
+          "success": true,
+          "error": null,
+          "columns": [
+            "zone_name",
+            "trip_count"
+          ],
+          "rows": [
+            [
+              "JFK Airport",
+              145183
+            ]
+          ],
+          "seconds": 1.0406112119999307
+        },
+        "result_correct": true
+      },
+      "C": {
+        "initial_sql": "SELECT \n  T2.Zone AS zone_name,\n  COUNT(T1.PULocationID) AS trip_count\nFROM \n  yellow_taxi AS T1\nJOIN \n  taxi_zones AS T2\nON \n  T1.PULocationID = T2.LocationID\nWHERE \n  T1.tolls_amount IS NOT NULL\nGROUP BY \n  T2.Zone\nORDER BY \n  trip_count DESC\nLIMIT 1;",
+        "repair_attempted": false,
+        "repair": null,
+        "final_sql": "SELECT \n  T2.Zone AS zone_name,\n  COUNT(T1.PULocationID) AS trip_count\nFROM \n  yellow_taxi AS T1\nJOIN \n  taxi_zones AS T2\nON \n  T1.PULocationID = T2.LocationID\nWHERE \n  T1.tolls_amount IS NOT NULL\nGROUP BY \n  T2.Zone\nORDER BY \n  trip_count DESC\nLIMIT 1;",
+        "validation": {
+          "valid": true,
+          "tables": [
+            "taxi_zones",
+            "yellow_taxi"
+          ],
+          "output_columns": [
+            "zone_name",
+            "trip_count"
+          ],
+          "issues": []
+        },
+        "execution": {
+          "success": true,
+          "error": null,
+          "columns": [
+            "zone_name",
+            "trip_count"
+          ],
+          "rows": [
+            [
+              "JFK Airport",
+              145183
+            ]
+          ],
+          "seconds": 1.0406112119999307
+        },
+        "result_correct": true
+      }
+    },
+    {
+      "id": "Q04_H1",
+      "category": "geographic_dropoff_join",
+      "question": "In January 2024, which borough had the largest number of Green Taxi trip dropoffs? Return only the top borough with exactly two columns named borough and trip_count.",
+      "expected_columns": [
+        "borough",
+        "trip_count"
+      ],
+      "generation_order": [
+        "A",
+        "B"
+      ],
+      "gold": {
+        "sql": "SELECT z.Borough AS borough, COUNT(*) AS trip_count FROM green_taxi g JOIN taxi_zones z ON g.DOLocationID = z.LocationID GROUP BY z.Borough ORDER BY trip_count DESC, borough ASC LIMIT 1",
+        "columns": [
+          "borough",
+          "trip_count"
+        ],
+        "rows": [
+          [
+            "Manhattan",
+            33062
+          ]
+        ],
+        "spark_seconds": 0.22687829099959345
+      },
+      "retrieval": {
+        "context": "=== SQL-SAFE RETRIEVED METADATA ===\nQuestion: In January 2024, which borough had the largest number of Green Taxi trip dropoffs? Return only the top borough with exactly two columns named borough and trip_count.\n\n=== SQL GENERATION CONSTRAINTS ===\n- Only DATASET names shown below are Spark table identifiers.\n- Only names under PHYSICAL COLUMNS are physical column identifiers.\n- PHYSICAL COLUMN names are fully qualified as dataset.column; use those exact physical identifiers in SQL.\n- Column names requested by the user for the result are output aliases unless they exactly match a listed PHYSICAL COLUMN.\n- Text following 'meaning:' is documentation, not an SQL identifier.\n- JOIN CONDITION lines are executable SQL conditions; use them directly when the described relationship is required.\n- SQL EXPRESSION/PREDICATE lines are executable SQL fragments; use them directly when their described meaning matches the question.\n- The registered yellow_taxi, green_taxi, and weather_hourly views already contain only January 2024 records.\n- Do not add a January 2024 date predicate unless the question asks for a narrower time range.\n\n=== RELEVANT DATASETS AND PHYSICAL COLUMNS ===\n\nDATASET green_taxi\ndescription: Curated Green Taxi trips for January 2024. Original TLC column names are preserved.\ngranularity: one row per taxi trip\nPHYSICAL COLUMNS:\n- green_taxi.DOLocationID:int\n  meaning: TLC taxi-zone identifier for the trip drop-off location.\n- green_taxi.RatecodeID:bigint\n- green_taxi.tolls_amount:double\n- green_taxi.trip_type:bigint\n\nDATASET taxi_zones\ndescription: Reference dataset mapping TLC LocationID values to borough, taxi-zone name, and service-zone classification.\ngranularity: one row per TLC taxi zone\nPHYSICAL COLUMNS:\n- taxi_zones.Borough:string\n  meaning: NYC borough associated with a TLC taxi zone.\n- taxi_zones.LocationID:int\n  meaning: Primary TLC identifier of a taxi zone.\n\n=== VALID SQL JOIN CONDITIONS ===\n- JOIN CONDITION: green_taxi.DOLocationID = taxi_zones.LocationID\n  meaning: Maps each Green Taxi drop-off LocationID to its TLC taxi-zone record.\n\n=== RELEVANT SQL EXPRESSIONS / PREDICATES ===\n- None required.",
+        "seconds": 0.33407614700013255,
+        "embedding_prompt_tokens": 39,
+        "selection": {
+          "datasets": [
+            "green_taxi",
+            "taxi_zones"
+          ],
+          "columns": [
+            "green_taxi.DOLocationID",
+            "green_taxi.RatecodeID",
+            "green_taxi.tolls_amount",
+            "green_taxi.trip_type",
+            "taxi_zones.Borough",
+            "taxi_zones.LocationID"
+          ],
+          "concepts": [
+            "borough",
+            "dropoff_zone_id",
+            "taxi_zone_id"
+          ],
+          "relationships": [
+            "green_dropoff_zone"
+          ],
+          "rules": []
+        },
+        "metadata_recall": 1.0,
+        "metadata_hits": 6,
+        "metadata_required": 6
+      },
+      "A": {
+        "configuration": "full_catalog",
+        "metadata_characters": 9498,
+        "metadata_words": 1056,
+        "prompt_characters": 10830,
+        "prompt_tokens": 2561,
+        "generated_tokens": 50,
+        "wall_seconds": 18.478913347000343,
+        "load_seconds": 0.317978416,
+        "prompt_eval_seconds": 5.077573,
+        "generation_seconds": 13.05801,
+        "sql": "SELECT borough, COUNT(*) AS trip_count\nFROM green_taxi\nJOIN taxi_zones ON green_taxi.DOLocationID = taxi_zones.LocationID\nGROUP BY borough\nORDER BY trip_count DESC\nLIMIT 1;",
+        "validation": {
+          "valid": true,
+          "tables": [
+            "green_taxi",
+            "taxi_zones"
+          ],
+          "output_columns": [
+            "borough",
+            "trip_count"
+          ],
+          "issues": []
+        },
+        "execution": {
+          "success": true,
+          "error": null,
+          "columns": [
+            "borough",
+            "trip_count"
+          ],
+          "rows": [
+            [
+              "Manhattan",
+              33062
+            ]
+          ],
+          "seconds": 0.2836139030000595
+        },
+        "result_correct": true
+      },
+      "B": {
+        "configuration": "relation_aware",
+        "metadata_characters": 2149,
+        "metadata_words": 300,
+        "prompt_characters": 3481,
+        "prompt_tokens": 783,
+        "generated_tokens": 69,
+        "wall_seconds": 47.30011915000023,
+        "load_seconds": 0.283894767,
+        "prompt_eval_seconds": 32.014136,
+        "generation_seconds": 14.92863,
+        "sql": "SELECT \n  borough,\n  COUNT(*) AS trip_count\nFROM \n  green_taxi\nJOIN \n  taxi_zones ON green_taxi.DOLocationID = taxi_zones.LocationID\nWHERE \n  borough IS NOT NULL\nGROUP BY \n  borough\nORDER BY \n  trip_count DESC\nLIMIT 1",
+        "validation": {
+          "valid": true,
+          "tables": [
+            "green_taxi",
+            "taxi_zones"
+          ],
+          "output_columns": [
+            "borough",
+            "trip_count"
+          ],
+          "issues": []
+        },
+        "execution": {
+          "success": true,
+          "error": null,
+          "columns": [
+            "borough",
+            "trip_count"
+          ],
+          "rows": [
+            [
+              "Manhattan",
+              33062
+            ]
+          ],
+          "seconds": 0.3740952739999557
+        },
+        "result_correct": true
+      },
+      "C": {
+        "initial_sql": "SELECT \n  borough,\n  COUNT(*) AS trip_count\nFROM \n  green_taxi\nJOIN \n  taxi_zones ON green_taxi.DOLocationID = taxi_zones.LocationID\nWHERE \n  borough IS NOT NULL\nGROUP BY \n  borough\nORDER BY \n  trip_count DESC\nLIMIT 1",
+        "repair_attempted": false,
+        "repair": null,
+        "final_sql": "SELECT \n  borough,\n  COUNT(*) AS trip_count\nFROM \n  green_taxi\nJOIN \n  taxi_zones ON green_taxi.DOLocationID = taxi_zones.LocationID\nWHERE \n  borough IS NOT NULL\nGROUP BY \n  borough\nORDER BY \n  trip_count DESC\nLIMIT 1",
+        "validation": {
+          "valid": true,
+          "tables": [
+            "green_taxi",
+            "taxi_zones"
+          ],
+          "output_columns": [
+            "borough",
+            "trip_count"
+          ],
+          "issues": []
+        },
+        "execution": {
+          "success": true,
+          "error": null,
+          "columns": [
+            "borough",
+            "trip_count"
+          ],
+          "rows": [
+            [
+              "Manhattan",
+              33062
+            ]
+          ],
+          "seconds": 0.3740952739999557
+        },
+        "result_correct": true
+      }
+    },
+    {
+      "id": "Q04_H2",
+      "category": "geographic_dropoff_join",
+      "question": "Find the borough that was the most common Green Taxi dropoff destination during January 2024. Return one top result with exactly the columns borough and trip_count.",
+      "expected_columns": [
+        "borough",
+        "trip_count"
+      ],
+      "generation_order": [
+        "B",
+        "A"
+      ],
+      "gold": {
+        "sql": "SELECT z.Borough AS borough, COUNT(*) AS trip_count FROM green_taxi g JOIN taxi_zones z ON g.DOLocationID = z.LocationID GROUP BY z.Borough ORDER BY trip_count DESC, borough ASC LIMIT 1",
+        "columns": [
+          "borough",
+          "trip_count"
+        ],
+        "rows": [
+          [
+            "Manhattan",
+            33062
+          ]
+        ],
+        "spark_seconds": 0.24232463599992116
+      },
+      "retrieval": {
+        "context": "=== SQL-SAFE RETRIEVED METADATA ===\nQuestion: Find the borough that was the most common Green Taxi dropoff destination during January 2024. Return one top result with exactly the columns borough and trip_count.\n\n=== SQL GENERATION CONSTRAINTS ===\n- Only DATASET names shown below are Spark table identifiers.\n- Only names under PHYSICAL COLUMNS are physical column identifiers.\n- PHYSICAL COLUMN names are fully qualified as dataset.column; use those exact physical identifiers in SQL.\n- Column names requested by the user for the result are output aliases unless they exactly match a listed PHYSICAL COLUMN.\n- Text following 'meaning:' is documentation, not an SQL identifier.\n- JOIN CONDITION lines are executable SQL conditions; use them directly when the described relationship is required.\n- SQL EXPRESSION/PREDICATE lines are executable SQL fragments; use them directly when their described meaning matches the question.\n- The registered yellow_taxi, green_taxi, and weather_hourly views already contain only January 2024 records.\n- Do not add a January 2024 date predicate unless the question asks for a narrower time range.\n\n=== RELEVANT DATASETS AND PHYSICAL COLUMNS ===\n\nDATASET green_taxi\ndescription: Curated Green Taxi trips for January 2024. Original TLC column names are preserved.\ngranularity: one row per taxi trip\nPHYSICAL COLUMNS:\n- green_taxi.DOLocationID:int\n  meaning: TLC taxi-zone identifier for the trip drop-off location.\n- green_taxi.PULocationID:int\n  meaning: TLC taxi-zone identifier for the trip pickup location.\n- green_taxi.mta_tax:double\n- green_taxi.tolls_amount:double\n\nDATASET taxi_zones\ndescription: Reference dataset mapping TLC LocationID values to borough, taxi-zone name, and service-zone classification.\ngranularity: one row per TLC taxi zone\nPHYSICAL COLUMNS:\n- taxi_zones.Borough:string\n  meaning: NYC borough associated with a TLC taxi zone.\n- taxi_zones.LocationID:int\n  meaning: Primary TLC identifier of a taxi zone.\n\n=== VALID SQL JOIN CONDITIONS ===\n- JOIN CONDITION: green_taxi.DOLocationID = taxi_zones.LocationID\n  meaning: Maps each Green Taxi drop-off LocationID to its TLC taxi-zone record.\n\n=== RELEVANT SQL EXPRESSIONS / PREDICATES ===\n- None required.",
+        "seconds": 0.31588264900005925,
+        "embedding_prompt_tokens": 37,
+        "selection": {
+          "datasets": [
+            "green_taxi",
+            "taxi_zones"
+          ],
+          "columns": [
+            "green_taxi.DOLocationID",
+            "green_taxi.PULocationID",
+            "green_taxi.mta_tax",
+            "green_taxi.tolls_amount",
+            "taxi_zones.Borough",
+            "taxi_zones.LocationID"
+          ],
+          "concepts": [
+            "borough",
+            "dropoff_zone_id",
+            "pickup_zone_id",
+            "taxi_zone_id"
+          ],
+          "relationships": [
+            "green_dropoff_zone"
+          ],
+          "rules": []
+        },
+        "metadata_recall": 1.0,
+        "metadata_hits": 6,
+        "metadata_required": 6
+      },
+      "A": {
+        "configuration": "full_catalog",
+        "metadata_characters": 9498,
+        "metadata_words": 1056,
+        "prompt_characters": 10829,
+        "prompt_tokens": 2559,
+        "generated_tokens": 62,
+        "wall_seconds": 21.483580343000085,
+        "load_seconds": 0.292915699,
+        "prompt_eval_seconds": 4.714128,
+        "generation_seconds": 16.416707999,
+        "sql": "SELECT T2.borough, COUNT(*) AS trip_count\nFROM green_taxi AS T1\nJOIN taxi_zones AS T2\nON T1.DOLocationID = T2.LocationID\nGROUP BY T2.borough\nORDER BY trip_count DESC\nLIMIT 1",
+        "validation": {
+          "valid": true,
+          "tables": [
+            "green_taxi",
+            "taxi_zones"
+          ],
+          "output_columns": [
+            "borough",
+            "trip_count"
+          ],
+          "issues": []
+        },
+        "execution": {
+          "success": true,
+          "error": null,
+          "columns": [
+            "borough",
+            "trip_count"
+          ],
+          "rows": [
+            [
+              "Manhattan",
+              33062
+            ]
+          ],
+          "seconds": 0.28394461599964416
+        },
+        "result_correct": true
+      },
+      "B": {
+        "configuration": "relation_aware",
+        "metadata_characters": 2211,
+        "metadata_words": 308,
+        "prompt_characters": 3542,
+        "prompt_tokens": 792,
+        "generated_tokens": 117,
+        "wall_seconds": 58.659313483000005,
+        "load_seconds": 0.281973313,
+        "prompt_eval_seconds": 32.876716,
+        "generation_seconds": 25.47328,
+        "sql": "SELECT \n  t2.Borough AS borough,\n  COUNT(*) AS trip_count\nFROM \n  green_taxi AS t1\nJOIN \n  taxi_zones AS t2\nON \n  t1.DOLocationID = t2.LocationID\nWHERE \n  t1.pickup_datetime >= '2024-01-01' AND t1.pickup_datetime < '2024-02-01'\nGROUP BY \n  t2.Borough\nORDER BY \n  trip_count DESC\nLIMIT 1;",
+        "validation": {
+          "valid": false,
+          "tables": [
+            "green_taxi",
+            "taxi_zones"
+          ],
+          "output_columns": [],
+          "issues": [
+            {
+              "stage": "spark_analysis",
+              "message": "AnalysisException: [UNRESOLVED_COLUMN.WITH_SUGGESTION] A column or function parameter with name `t1`.`pickup_datetime` cannot be resolved. Did you mean one of the following? [`t1`.`lpep_pickup_datetime`, `t1`.`lpep_dropoff_datetime`, `t1`.`tip_amount`, `t1`.`trip_distance`, `t1`.`trip_type`].; line 11 pos 2;\n'GlobalLimit 1\n+- 'LocalLimit 1\n   +- 'Sort ['trip_count DESC NULLS LAST], true\n      +- 'Aggregate ['t2.Borough], ['t2.Borough AS borough#341, count(1) AS trip_count#342L]\n         +- 'Filter (('t1.pickup_datetime >= 2024-01-01) AND ('t1.pickup_datetime < 2024-02-01))\n            +- Join Inner, (DOLocationID#44 = LocationID#78)\n               :- SubqueryAlias t1\n               :  +- SubqueryAlias green_taxi\n               :     +- View (`green_taxi`, [VendorID#38,lpep_pickup_datetime#39,lpep_dropoff_datetime#40,store_and_fwd_flag#41,RatecodeID#42L,PULocationID#43,DOLocationID#44,passenger_count#45L,trip_distance#46,fare_amount#47,extra#48,mta_tax#49,tip_amount#50,tolls_amount#51,ehail_fee#52,improvement_surcharge#53,total_amount#54,payment_type#55L,trip_type#56L,congestion_surcharge#57])\n               :        +- Relation [VendorID#38,lpep_pickup_datetime#39,lpep_dropoff_datetime#40,store_and_fwd_flag#41,RatecodeID#42L,PULocationID#43,DOLocationID#44,passenger_count#45L,trip_distance#46,fare_amount#47,extra#48,mta_tax#49,tip_amount#50,tolls_amount#51,ehail_fee#52,improvement_surcharge#53,total_amount#54,payment_type#55L,trip_type#56L,congestion_surcharge#57] parquet\n               +- SubqueryAlias t2\n                  +- SubqueryAlias taxi_zones\n                     +- View (`taxi_zones`, [LocationID#78,Borough#79,Zone#80,service_zone#81])\n                        +- Relation [LocationID#78,Borough#79,Zone#80,service_zone#81] parquet\n"
+            }
+          ]
+        },
+        "execution": {
+          "success": false,
+          "error": "Not executed because validation failed.",
+          "columns": [],
+          "rows": [],
+          "seconds": 0.0
+        },
+        "result_correct": false
+      },
+      "C": {
+        "initial_sql": "SELECT \n  t2.Borough AS borough,\n  COUNT(*) AS trip_count\nFROM \n  green_taxi AS t1\nJOIN \n  taxi_zones AS t2\nON \n  t1.DOLocationID = t2.LocationID\nWHERE \n  t1.pickup_datetime >= '2024-01-01' AND t1.pickup_datetime < '2024-02-01'\nGROUP BY \n  t2.Borough\nORDER BY \n  trip_count DESC\nLIMIT 1;",
+        "repair_attempted": true,
+        "repair": {
+          "sql": "SELECT \n  t2.Borough AS borough,\n  COUNT(*) AS trip_count\nFROM \n  green_taxi AS t1\nJOIN \n  taxi_zones AS t2\nON \n  t1.DOLocationID = t2.LocationID\nGROUP BY \n  t2.Borough\nORDER BY \n  trip_count DESC\nLIMIT 1;",
+          "metrics": {
+            "wall_time_seconds": 76.93880027000023,
+            "prompt_eval_count": 1002,
+            "eval_count": 77,
+            "load_duration_seconds": 0.275853956,
+            "prompt_eval_duration_seconds": 59.760126,
+            "eval_duration_seconds": 16.826675
+          }
+        },
+        "final_sql": "SELECT \n  t2.Borough AS borough,\n  COUNT(*) AS trip_count\nFROM \n  green_taxi AS t1\nJOIN \n  taxi_zones AS t2\nON \n  t1.DOLocationID = t2.LocationID\nGROUP BY \n  t2.Borough\nORDER BY \n  trip_count DESC\nLIMIT 1;",
+        "validation": {
+          "valid": true,
+          "tables": [
+            "green_taxi",
+            "taxi_zones"
+          ],
+          "output_columns": [
+            "borough",
+            "trip_count"
+          ],
+          "issues": []
+        },
+        "execution": {
+          "success": true,
+          "error": null,
+          "columns": [
+            "borough",
+            "trip_count"
+          ],
+          "rows": [
+            [
+              "Manhattan",
+              33062
+            ]
+          ],
+          "seconds": 0.2377602679998745
+        },
+        "result_correct": true
+      }
+    },
+    {
+      "id": "Q05_H1",
+      "category": "cross_service_comparison",
+      "question": "What was the mean trip distance for each taxi service, Yellow and Green, in January 2024? Return one row per service with exactly two columns named taxi_type and average_trip_distance.",
+      "expected_columns": [
+        "taxi_type",
+        "average_trip_distance"
+      ],
+      "generation_order": [
+        "A",
+        "B"
+      ],
+      "gold": {
+        "sql": "SELECT 'Yellow' AS taxi_type, AVG(trip_distance) AS average_trip_distance FROM yellow_taxi UNION ALL SELECT 'Green' AS taxi_type, AVG(trip_distance) AS average_trip_distance FROM green_taxi",
+        "columns": [
+          "taxi_type",
+          "average_trip_distance"
+        ],
+        "rows": [
+          [
+            "Yellow",
+            3.229347612268583
+          ],
+          [
+            "Green",
+            2.6227749915823337
+          ]
+        ],
+        "spark_seconds": 0.3624871960000746
+      },
+      "retrieval": {
+        "context": "=== SQL-SAFE RETRIEVED METADATA ===\nQuestion: What was the mean trip distance for each taxi service, Yellow and Green, in January 2024? Return one row per service with exactly two columns named taxi_type and average_trip_distance.\n\n=== SQL GENERATION CONSTRAINTS ===\n- Only DATASET names shown below are Spark table identifiers.\n- Only names under PHYSICAL COLUMNS are physical column identifiers.\n- PHYSICAL COLUMN names are fully qualified as dataset.column; use those exact physical identifiers in SQL.\n- Column names requested by the user for the result are output aliases unless they exactly match a listed PHYSICAL COLUMN.\n- Text following 'meaning:' is documentation, not an SQL identifier.\n- JOIN CONDITION lines are executable SQL conditions; use them directly when the described relationship is required.\n- SQL EXPRESSION/PREDICATE lines are executable SQL fragments; use them directly when their described meaning matches the question.\n- The registered yellow_taxi, green_taxi, and weather_hourly views already contain only January 2024 records.\n- Do not add a January 2024 date predicate unless the question asks for a narrower time range.\n\n=== RELEVANT DATASETS AND PHYSICAL COLUMNS ===\n\nDATASET green_taxi\ndescription: Curated Green Taxi trips for January 2024. Original TLC column names are preserved.\ngranularity: one row per taxi trip\nPHYSICAL COLUMNS:\n- green_taxi.mta_tax:double\n- green_taxi.trip_distance:double\n  meaning: Recorded distance of a taxi trip in miles.\n\nDATASET yellow_taxi\ndescription: Curated Yellow Taxi trips for January 2024. Original TLC column names are preserved.\ngranularity: one row per taxi trip\nPHYSICAL COLUMNS:\n- yellow_taxi.trip_distance:double\n  meaning: Recorded distance of a taxi trip in miles.\n\n=== VALID SQL JOIN CONDITIONS ===\n- None required.\n\n=== RELEVANT SQL EXPRESSIONS / PREDICATES ===\n- None required.",
+        "seconds": 0.39317896700003985,
+        "embedding_prompt_tokens": 45,
+        "selection": {
+          "datasets": [
+            "green_taxi",
+            "yellow_taxi"
+          ],
+          "columns": [
+            "green_taxi.mta_tax",
+            "green_taxi.trip_distance",
+            "yellow_taxi.trip_distance"
+          ],
+          "concepts": [
+            "trip_distance"
+          ],
+          "relationships": [],
+          "rules": []
+        },
+        "metadata_recall": 1.0,
+        "metadata_hits": 4,
+        "metadata_required": 4
+      },
+      "A": {
+        "configuration": "full_catalog",
+        "metadata_characters": 9498,
+        "metadata_words": 1056,
+        "prompt_characters": 10849,
+        "prompt_tokens": 2565,
+        "generated_tokens": 79,
+        "wall_seconds": 26.93973209600017,
+        "load_seconds": 0.434950409,
+        "prompt_eval_seconds": 5.568793,
+        "generation_seconds": 20.866232,
+        "sql": "SELECT \n  'yellow' AS taxi_type,\n  AVG(trip_distance) AS average_trip_distance\nFROM \n  yellow_taxi\nGROUP BY \n  'yellow'\nUNION ALL\nSELECT \n  'green' AS taxi_type,\n  AVG(trip_distance) AS average_trip_distance\nFROM \n  green_taxi\nGROUP BY \n  'green';",
+        "validation": {
+          "valid": true,
+          "tables": [
+            "green_taxi",
+            "yellow_taxi"
+          ],
+          "output_columns": [
+            "taxi_type",
+            "average_trip_distance"
+          ],
+          "issues": []
+        },
+        "execution": {
+          "success": true,
+          "error": null,
+          "columns": [
+            "taxi_type",
+            "average_trip_distance"
+          ],
+          "rows": [
+            [
+              "yellow",
+              3.229347612268583
+            ],
+            [
+              "green",
+              2.6227749915823337
+            ]
+          ],
+          "seconds": 0.5503912849999324
+        },
+        "result_correct": true
+      },
+      "B": {
+        "configuration": "relation_aware",
+        "metadata_characters": 1862,
+        "metadata_words": 272,
+        "prompt_characters": 3213,
+        "prompt_tokens": 722,
+        "generated_tokens": 71,
+        "wall_seconds": 43.51366202000008,
+        "load_seconds": 0.340428836,
+        "prompt_eval_seconds": 28.093559,
+        "generation_seconds": 15.012708,
+        "sql": "SELECT \n  'Yellow' AS taxi_type,\n  AVG(yellow_taxi.trip_distance) AS average_trip_distance\nFROM \n  yellow_taxi\nUNION ALL\nSELECT \n  'Green' AS taxi_type,\n  AVG(green_taxi.trip_distance) AS average_trip_distance\nFROM \n  green_taxi;",
+        "validation": {
+          "valid": true,
+          "tables": [
+            "green_taxi",
+            "yellow_taxi"
+          ],
+          "output_columns": [
+            "taxi_type",
+            "average_trip_distance"
+          ],
+          "issues": []
+        },
+        "execution": {
+          "success": true,
+          "error": null,
+          "columns": [
+            "taxi_type",
+            "average_trip_distance"
+          ],
+          "rows": [
+            [
+              "Yellow",
+              3.229347612268583
+            ],
+            [
+              "Green",
+              2.6227749915823337
+            ]
+          ],
+          "seconds": 0.2542276280000806
+        },
+        "result_correct": true
+      },
+      "C": {
+        "initial_sql": "SELECT \n  'Yellow' AS taxi_type,\n  AVG(yellow_taxi.trip_distance) AS average_trip_distance\nFROM \n  yellow_taxi\nUNION ALL\nSELECT \n  'Green' AS taxi_type,\n  AVG(green_taxi.trip_distance) AS average_trip_distance\nFROM \n  green_taxi;",
+        "repair_attempted": false,
+        "repair": null,
+        "final_sql": "SELECT \n  'Yellow' AS taxi_type,\n  AVG(yellow_taxi.trip_distance) AS average_trip_distance\nFROM \n  yellow_taxi\nUNION ALL\nSELECT \n  'Green' AS taxi_type,\n  AVG(green_taxi.trip_distance) AS average_trip_distance\nFROM \n  green_taxi;",
+        "validation": {
+          "valid": true,
+          "tables": [
+            "green_taxi",
+            "yellow_taxi"
+          ],
+          "output_columns": [
+            "taxi_type",
+            "average_trip_distance"
+          ],
+          "issues": []
+        },
+        "execution": {
+          "success": true,
+          "error": null,
+          "columns": [
+            "taxi_type",
+            "average_trip_distance"
+          ],
+          "rows": [
+            [
+              "Yellow",
+              3.229347612268583
+            ],
+            [
+              "Green",
+              2.6227749915823337
+            ]
+          ],
+          "seconds": 0.2542276280000806
+        },
+        "result_correct": true
+      }
+    },
+    {
+      "id": "Q05_H2",
+      "category": "cross_service_comparison",
+      "question": "Compare Yellow Taxi with Green Taxi by their average trip distance for January 2024. Produce one row for each service and exactly the columns taxi_type and average_trip_distance.",
+      "expected_columns": [
+        "taxi_type",
+        "average_trip_distance"
+      ],
+      "generation_order": [
+        "B",
+        "A"
+      ],
+      "gold": {
+        "sql": "SELECT 'Yellow' AS taxi_type, AVG(trip_distance) AS average_trip_distance FROM yellow_taxi UNION ALL SELECT 'Green' AS taxi_type, AVG(trip_distance) AS average_trip_distance FROM green_taxi",
+        "columns": [
+          "taxi_type",
+          "average_trip_distance"
+        ],
+        "rows": [
+          [
+            "Yellow",
+            3.229347612268583
+          ],
+          [
+            "Green",
+            2.6227749915823337
+          ]
+        ],
+        "spark_seconds": 0.2312597669997558
+      },
+      "retrieval": {
+        "context": "=== SQL-SAFE RETRIEVED METADATA ===\nQuestion: Compare Yellow Taxi with Green Taxi by their average trip distance for January 2024. Produce one row for each service and exactly the columns taxi_type and average_trip_distance.\n\n=== SQL GENERATION CONSTRAINTS ===\n- Only DATASET names shown below are Spark table identifiers.\n- Only names under PHYSICAL COLUMNS are physical column identifiers.\n- PHYSICAL COLUMN names are fully qualified as dataset.column; use those exact physical identifiers in SQL.\n- Column names requested by the user for the result are output aliases unless they exactly match a listed PHYSICAL COLUMN.\n- Text following 'meaning:' is documentation, not an SQL identifier.\n- JOIN CONDITION lines are executable SQL conditions; use them directly when the described relationship is required.\n- SQL EXPRESSION/PREDICATE lines are executable SQL fragments; use them directly when their described meaning matches the question.\n- The registered yellow_taxi, green_taxi, and weather_hourly views already contain only January 2024 records.\n- Do not add a January 2024 date predicate unless the question asks for a narrower time range.\n\n=== RELEVANT DATASETS AND PHYSICAL COLUMNS ===\n\nDATASET green_taxi\ndescription: Curated Green Taxi trips for January 2024. Original TLC column names are preserved.\ngranularity: one row per taxi trip\nPHYSICAL COLUMNS:\n- green_taxi.tolls_amount:double\n- green_taxi.trip_distance:double\n  meaning: Recorded distance of a taxi trip in miles.\n\nDATASET yellow_taxi\ndescription: Curated Yellow Taxi trips for January 2024. Original TLC column names are preserved.\ngranularity: one row per taxi trip\nPHYSICAL COLUMNS:\n- yellow_taxi.Airport_fee:double\n- yellow_taxi.tolls_amount:double\n- yellow_taxi.trip_distance:double\n  meaning: Recorded distance of a taxi trip in miles.\n\n=== VALID SQL JOIN CONDITIONS ===\n- None required.\n\n=== RELEVANT SQL EXPRESSIONS / PREDICATES ===\n- None required.",
+        "seconds": 0.33477172000016253,
+        "embedding_prompt_tokens": 41,
+        "selection": {
+          "datasets": [
+            "green_taxi",
+            "yellow_taxi"
+          ],
+          "columns": [
+            "green_taxi.tolls_amount",
+            "green_taxi.trip_distance",
+            "yellow_taxi.Airport_fee",
+            "yellow_taxi.tolls_amount",
+            "yellow_taxi.trip_distance"
+          ],
+          "concepts": [
+            "trip_distance"
+          ],
+          "relationships": [],
+          "rules": []
+        },
+        "metadata_recall": 1.0,
+        "metadata_hits": 4,
+        "metadata_required": 4
+      },
+      "A": {
+        "configuration": "full_catalog",
+        "metadata_characters": 9498,
+        "metadata_words": 1056,
+        "prompt_characters": 10843,
+        "prompt_tokens": 2561,
+        "generated_tokens": 161,
+        "wall_seconds": 48.51078902600011,
+        "load_seconds": 0.256157723,
+        "prompt_eval_seconds": 5.034058,
+        "generation_seconds": 43.149939,
+        "sql": "SELECT \n  'yellow cab' AS taxi_type,\n  AVG(yellow_taxi.trip_distance) AS average_trip_distance\nFROM \n  yellow_taxi\nWHERE \n  tpep_pickup_datetime >= '2024-01-01' AND \n  tpep_pickup_datetime < '2024-02-01'\nUNION ALL\nSELECT \n  'green cab' AS taxi_type,\n  AVG(green_taxi.trip_distance) AS average_trip_distance\nFROM \n  green_taxi\nWHERE \n  lpep_pickup_datetime >= '2024-01-01' AND \n  lpep_pickup_datetime < '2024-02-01'",
+        "validation": {
+          "valid": true,
+          "tables": [
+            "green_taxi",
+            "yellow_taxi"
+          ],
+          "output_columns": [
+            "taxi_type",
+            "average_trip_distance"
+          ],
+          "issues": []
+        },
+        "execution": {
+          "success": true,
+          "error": null,
+          "columns": [
+            "taxi_type",
+            "average_trip_distance"
+          ],
+          "rows": [
+            [
+              "yellow cab",
+              3.229347612268583
+            ],
+            [
+              "green cab",
+              2.6227749915823337
+            ]
+          ],
+          "seconds": 0.41402570199988986
+        },
+        "result_correct": false
+      },
+      "B": {
+        "configuration": "relation_aware",
+        "metadata_characters": 1928,
+        "metadata_words": 274,
+        "prompt_characters": 3273,
+        "prompt_tokens": 735,
+        "generated_tokens": 75,
+        "wall_seconds": 45.31472248499995,
+        "load_seconds": 0.321011918,
+        "prompt_eval_seconds": 29.052299,
+        "generation_seconds": 15.918207,
+        "sql": "SELECT \n  'yellow_taxi' AS taxi_type,\n  AVG(yellow_taxi.trip_distance) AS average_trip_distance\nFROM \n  yellow_taxi\nUNION ALL\nSELECT \n  'green_taxi' AS taxi_type,\n  AVG(green_taxi.trip_distance) AS average_trip_distance\nFROM \n  green_taxi;",
+        "validation": {
+          "valid": true,
+          "tables": [
+            "green_taxi",
+            "yellow_taxi"
+          ],
+          "output_columns": [
+            "taxi_type",
+            "average_trip_distance"
+          ],
+          "issues": []
+        },
+        "execution": {
+          "success": true,
+          "error": null,
+          "columns": [
+            "taxi_type",
+            "average_trip_distance"
+          ],
+          "rows": [
+            [
+              "yellow_taxi",
+              3.229347612268583
+            ],
+            [
+              "green_taxi",
+              2.6227749915823337
+            ]
+          ],
+          "seconds": 0.19143749700015178
+        },
+        "result_correct": false
+      },
+      "C": {
+        "initial_sql": "SELECT \n  'yellow_taxi' AS taxi_type,\n  AVG(yellow_taxi.trip_distance) AS average_trip_distance\nFROM \n  yellow_taxi\nUNION ALL\nSELECT \n  'green_taxi' AS taxi_type,\n  AVG(green_taxi.trip_distance) AS average_trip_distance\nFROM \n  green_taxi;",
+        "repair_attempted": false,
+        "repair": null,
+        "final_sql": "SELECT \n  'yellow_taxi' AS taxi_type,\n  AVG(yellow_taxi.trip_distance) AS average_trip_distance\nFROM \n  yellow_taxi\nUNION ALL\nSELECT \n  'green_taxi' AS taxi_type,\n  AVG(green_taxi.trip_distance) AS average_trip_distance\nFROM \n  green_taxi;",
+        "validation": {
+          "valid": true,
+          "tables": [
+            "green_taxi",
+            "yellow_taxi"
+          ],
+          "output_columns": [
+            "taxi_type",
+            "average_trip_distance"
+          ],
+          "issues": []
+        },
+        "execution": {
+          "success": true,
+          "error": null,
+          "columns": [
+            "taxi_type",
+            "average_trip_distance"
+          ],
+          "rows": [
+            [
+              "yellow_taxi",
+              3.229347612268583
+            ],
+            [
+              "green_taxi",
+              2.6227749915823337
+            ]
+          ],
+          "seconds": 0.19143749700015178
+        },
+        "result_correct": false
+      }
+    },
+    {
+      "id": "Q06_H1",
+      "category": "weather_temporal_join",
+      "question": "For Yellow Taxi rides that began in rainy hours during January 2024, what was the average trip distance? Return exactly one column named average_trip_distance.",
+      "expected_columns": [
+        "average_trip_distance"
+      ],
+      "generation_order": [
+        "A",
+        "B"
+      ],
+      "gold": {
+        "sql": "SELECT AVG(y.trip_distance) AS average_trip_distance FROM yellow_taxi y JOIN weather_hourly w ON date_trunc('hour', y.tpep_pickup_datetime) = w.weather_hour WHERE w.has_precipitation = TRUE",
+        "columns": [
+          "average_trip_distance"
+        ],
+        "rows": [
+          [
+            3.118357853464959
+          ]
+        ],
+        "spark_seconds": 1.316198102999806
+      },
+      "retrieval": {
+        "context": "=== SQL-SAFE RETRIEVED METADATA ===\nQuestion: For Yellow Taxi rides that began in rainy hours during January 2024, what was the average trip distance? Return exactly one column named average_trip_distance.\n\n=== SQL GENERATION CONSTRAINTS ===\n- Only DATASET names shown below are Spark table identifiers.\n- Only names under PHYSICAL COLUMNS are physical column identifiers.\n- PHYSICAL COLUMN names are fully qualified as dataset.column; use those exact physical identifiers in SQL.\n- Column names requested by the user for the result are output aliases unless they exactly match a listed PHYSICAL COLUMN.\n- Text following 'meaning:' is documentation, not an SQL identifier.\n- JOIN CONDITION lines are executable SQL conditions; use them directly when the described relationship is required.\n- SQL EXPRESSION/PREDICATE lines are executable SQL fragments; use them directly when their described meaning matches the question.\n- The registered yellow_taxi, green_taxi, and weather_hourly views already contain only January 2024 records.\n- Do not add a January 2024 date predicate unless the question asks for a narrower time range.\n\n=== RELEVANT DATASETS AND PHYSICAL COLUMNS ===\n\nDATASET weather_hourly\ndescription: Hourly weather representation for NYC Central Park during January 2024, derived from NOAA Local Climatological Data.\ngranularity: one row per clock hour\nPHYSICAL COLUMNS:\n- weather_hourly.has_precipitation:boolean\n  meaning: Three-valued precipitation status: true means precipitation occurred, false means dry, null means unknown.\n- weather_hourly.weather_hour:timestamp_ntz\n  meaning: Clock-hour bucket represented by an hourly weather record.\n\nDATASET yellow_taxi\ndescription: Curated Yellow Taxi trips for January 2024. Original TLC column names are preserved.\ngranularity: one row per taxi trip\nPHYSICAL COLUMNS:\n- yellow_taxi.Airport_fee:double\n- yellow_taxi.tolls_amount:double\n- yellow_taxi.tpep_pickup_datetime:timestamp_ntz\n  meaning: Date and time when a taxi trip begins.\n- yellow_taxi.trip_distance:double\n  meaning: Recorded distance of a taxi trip in miles.\n\n=== VALID SQL JOIN CONDITIONS ===\n- JOIN CONDITION: date_trunc('hour', yellow_taxi.tpep_pickup_datetime) = weather_hourly.weather_hour\n  meaning: Aligns a Yellow Taxi pickup timestamp with the corresponding hourly NYC weather bucket.\n\n=== RELEVANT SQL EXPRESSIONS / PREDICATES ===\n- SQL EXPRESSION/PREDICATE: weather_hourly.has_precipitation = TRUE\n  meaning: An hour is rainy when NOAA indicates measurable or trace precipitation.\n  result: Includes trace precipitation. Missing weather is not classified as rainy.",
+        "seconds": 0.3400299840000116,
+        "embedding_prompt_tokens": 37,
+        "selection": {
+          "datasets": [
+            "weather_hourly",
+            "yellow_taxi"
+          ],
+          "columns": [
+            "weather_hourly.has_precipitation",
+            "weather_hourly.weather_hour",
+            "yellow_taxi.Airport_fee",
+            "yellow_taxi.tolls_amount",
+            "yellow_taxi.tpep_pickup_datetime",
+            "yellow_taxi.trip_distance"
+          ],
+          "concepts": [
+            "pickup_datetime",
+            "precipitation_status",
+            "trip_distance",
+            "weather_hour"
+          ],
+          "relationships": [
+            "yellow_pickup_weather_hour"
+          ],
+          "rules": [
+            "rainy_hour"
+          ]
+        },
+        "metadata_recall": 1.0,
+        "metadata_hits": 8,
+        "metadata_required": 8
+      },
+      "A": {
+        "configuration": "full_catalog",
+        "metadata_characters": 9498,
+        "metadata_words": 1056,
+        "prompt_characters": 10824,
+        "prompt_tokens": 2558,
+        "generated_tokens": 63,
+        "wall_seconds": 21.328617600000143,
+        "load_seconds": 0.325542394,
+        "prompt_eval_seconds": 4.568089,
+        "generation_seconds": 16.410104,
+        "sql": "SELECT AVG(yellow_taxi.trip_distance) AS average_trip_distance\nFROM yellow_taxi\nJOIN weather_hourly ON date_trunc('hour', yellow_taxi.tpep_pickup_datetime) = weather_hourly.weather_hour\nWHERE weather_hourly.has_precipitation = TRUE;",
+        "validation": {
+          "valid": true,
+          "tables": [
+            "weather_hourly",
+            "yellow_taxi"
+          ],
+          "output_columns": [
+            "average_trip_distance"
+          ],
+          "issues": []
+        },
+        "execution": {
+          "success": true,
+          "error": null,
+          "columns": [
+            "average_trip_distance"
+          ],
+          "rows": [
+            [
+              3.118357853464959
+            ]
+          ],
+          "seconds": 0.9802412060003007
+        },
+        "result_correct": true
+      },
+      "B": {
+        "configuration": "relation_aware",
+        "metadata_characters": 2601,
+        "metadata_words": 343,
+        "prompt_characters": 3927,
+        "prompt_tokens": 872,
+        "generated_tokens": 63,
+        "wall_seconds": 49.314450173000296,
+        "load_seconds": 0.255774911,
+        "prompt_eval_seconds": 35.667044,
+        "generation_seconds": 13.317216,
+        "sql": "SELECT AVG(yellow_taxi.trip_distance) AS average_trip_distance\nFROM yellow_taxi\nJOIN weather_hourly ON date_trunc('hour', yellow_taxi.tpep_pickup_datetime) = weather_hourly.weather_hour\nWHERE weather_hourly.has_precipitation = TRUE;",
+        "validation": {
+          "valid": true,
+          "tables": [
+            "weather_hourly",
+            "yellow_taxi"
+          ],
+          "output_columns": [
+            "average_trip_distance"
+          ],
+          "issues": []
+        },
+        "execution": {
+          "success": true,
+          "error": null,
+          "columns": [
+            "average_trip_distance"
+          ],
+          "rows": [
+            [
+              3.118357853464959
+            ]
+          ],
+          "seconds": 0.7435174229999575
+        },
+        "result_correct": true
+      },
+      "C": {
+        "initial_sql": "SELECT AVG(yellow_taxi.trip_distance) AS average_trip_distance\nFROM yellow_taxi\nJOIN weather_hourly ON date_trunc('hour', yellow_taxi.tpep_pickup_datetime) = weather_hourly.weather_hour\nWHERE weather_hourly.has_precipitation = TRUE;",
+        "repair_attempted": false,
+        "repair": null,
+        "final_sql": "SELECT AVG(yellow_taxi.trip_distance) AS average_trip_distance\nFROM yellow_taxi\nJOIN weather_hourly ON date_trunc('hour', yellow_taxi.tpep_pickup_datetime) = weather_hourly.weather_hour\nWHERE weather_hourly.has_precipitation = TRUE;",
+        "validation": {
+          "valid": true,
+          "tables": [
+            "weather_hourly",
+            "yellow_taxi"
+          ],
+          "output_columns": [
+            "average_trip_distance"
+          ],
+          "issues": []
+        },
+        "execution": {
+          "success": true,
+          "error": null,
+          "columns": [
+            "average_trip_distance"
+          ],
+          "rows": [
+            [
+              3.118357853464959
+            ]
+          ],
+          "seconds": 0.7435174229999575
+        },
+        "result_correct": true
+      }
+    },
+    {
+      "id": "Q06_H2",
+      "category": "weather_temporal_join",
+      "question": "Calculate the mean distance of January 2024 Yellow Taxi trips whose pickup occurred during an hour with precipitation. Output exactly one column called average_trip_distance.",
+      "expected_columns": [
+        "average_trip_distance"
+      ],
+      "generation_order": [
+        "B",
+        "A"
+      ],
+      "gold": {
+        "sql": "SELECT AVG(y.trip_distance) AS average_trip_distance FROM yellow_taxi y JOIN weather_hourly w ON date_trunc('hour', y.tpep_pickup_datetime) = w.weather_hour WHERE w.has_precipitation = TRUE",
+        "columns": [
+          "average_trip_distance"
+        ],
+        "rows": [
+          [
+            3.118357853464959
+          ]
+        ],
+        "spark_seconds": 0.8069011819998195
+      },
+      "retrieval": {
+        "context": "=== SQL-SAFE RETRIEVED METADATA ===\nQuestion: Calculate the mean distance of January 2024 Yellow Taxi trips whose pickup occurred during an hour with precipitation. Output exactly one column called average_trip_distance.\n\n=== SQL GENERATION CONSTRAINTS ===\n- Only DATASET names shown below are Spark table identifiers.\n- Only names under PHYSICAL COLUMNS are physical column identifiers.\n- PHYSICAL COLUMN names are fully qualified as dataset.column; use those exact physical identifiers in SQL.\n- Column names requested by the user for the result are output aliases unless they exactly match a listed PHYSICAL COLUMN.\n- Text following 'meaning:' is documentation, not an SQL identifier.\n- JOIN CONDITION lines are executable SQL conditions; use them directly when the described relationship is required.\n- SQL EXPRESSION/PREDICATE lines are executable SQL fragments; use them directly when their described meaning matches the question.\n- The registered yellow_taxi, green_taxi, and weather_hourly views already contain only January 2024 records.\n- Do not add a January 2024 date predicate unless the question asks for a narrower time range.\n\n=== RELEVANT DATASETS AND PHYSICAL COLUMNS ===\n\nDATASET yellow_taxi\ndescription: Curated Yellow Taxi trips for January 2024. Original TLC column names are preserved.\ngranularity: one row per taxi trip\nPHYSICAL COLUMNS:\n- yellow_taxi.mta_tax:double\n- yellow_taxi.tolls_amount:double\n- yellow_taxi.trip_distance:double\n  meaning: Recorded distance of a taxi trip in miles.\n\n=== VALID SQL JOIN CONDITIONS ===\n- None required.\n\n=== RELEVANT SQL EXPRESSIONS / PREDICATES ===\n- None required.",
+        "seconds": 0.31505697299985513,
+        "embedding_prompt_tokens": 36,
+        "selection": {
+          "datasets": [
+            "yellow_taxi"
+          ],
+          "columns": [
+            "yellow_taxi.mta_tax",
+            "yellow_taxi.tolls_amount",
+            "yellow_taxi.trip_distance"
+          ],
+          "concepts": [
+            "trip_distance"
+          ],
+          "relationships": [],
+          "rules": []
+        },
+        "metadata_recall": 0.25,
+        "metadata_hits": 2,
+        "metadata_required": 8
+      },
+      "A": {
+        "configuration": "full_catalog",
+        "metadata_characters": 9498,
+        "metadata_words": 1056,
+        "prompt_characters": 10839,
+        "prompt_tokens": 2557,
+        "generated_tokens": 60,
+        "wall_seconds": 20.798700875999657,
+        "load_seconds": 0.255971924,
+        "prompt_eval_seconds": 4.431956,
+        "generation_seconds": 16.050911,
+        "sql": "SELECT AVG(trip_distance) AS average_trip_distance\nFROM yellow_taxi\nJOIN weather_hourly ON date_trunc('hour', yellow_taxi.tpep_pickup_datetime) = weather_hourly.weather_hour\nWHERE weather_hourly.has_precipitation = TRUE;",
+        "validation": {
+          "valid": true,
+          "tables": [
+            "weather_hourly",
+            "yellow_taxi"
+          ],
+          "output_columns": [
+            "average_trip_distance"
+          ],
+          "issues": []
+        },
+        "execution": {
+          "success": true,
+          "error": null,
+          "columns": [
+            "average_trip_distance"
+          ],
+          "rows": [
+            [
+              3.118357853464959
+            ]
+          ],
+          "seconds": 0.8107716750000691
+        },
+        "result_correct": true
+      },
+      "B": {
+        "configuration": "relation_aware",
+        "metadata_characters": 1629,
+        "metadata_words": 234,
+        "prompt_characters": 2970,
+        "prompt_tokens": 652,
+        "generated_tokens": 70,
+        "wall_seconds": 37.226101782000114,
+        "load_seconds": 0.287103301,
+        "prompt_eval_seconds": 22.321752,
+        "generation_seconds": 14.589324,
+        "sql": "SELECT AVG(yellow_taxi.trip_distance) AS average_trip_distance\nFROM yellow_taxi\nJOIN weather_hourly ON yellow_taxi.pickup_datetime >= weather_hourly.datetime AND yellow_taxi.pickup_datetime < weather_hourly.datetime + INTERVAL '1 hour'\nWHERE weather_hourly.precipitation > 0;",
+        "validation": {
+          "valid": false,
+          "tables": [
+            "weather_hourly",
+            "yellow_taxi"
+          ],
+          "output_columns": [],
+          "issues": [
+            {
+              "stage": "spark_analysis",
+              "message": "AnalysisException: [UNRESOLVED_COLUMN.WITH_SUGGESTION] A column or function parameter with name `yellow_taxi`.`pickup_datetime` cannot be resolved. Did you mean one of the following? [`yellow_taxi`.`tpep_pickup_datetime`, `yellow_taxi`.`tip_amount`, `yellow_taxi`.`tpep_dropoff_datetime`, `yellow_taxi`.`trip_distance`, `yellow_taxi`.`Airport_fee`].; line 3 pos 23;\n'Project ['AVG('yellow_taxi.trip_distance) AS average_trip_distance#608]\n+- 'Filter ('weather_hourly.precipitation > 0)\n   +- 'Join Inner, (('yellow_taxi.pickup_datetime >= 'weather_hourly.datetime) AND ('yellow_taxi.pickup_datetime < ('weather_hourly.datetime + INTERVAL '01' HOUR)))\n      :- SubqueryAlias yellow_taxi\n      :  +- View (`yellow_taxi`, [VendorID#0,tpep_pickup_datetime#1,tpep_dropoff_datetime#2,passenger_count#3L,trip_distance#4,RatecodeID#5L,store_and_fwd_flag#6,PULocationID#7,DOLocationID#8,payment_type#9L,fare_amount#10,extra#11,mta_tax#12,tip_amount#13,tolls_amount#14,improvement_surcharge#15,total_amount#16,congestion_surcharge#17,Airport_fee#18])\n      :     +- Relation [VendorID#0,tpep_pickup_datetime#1,tpep_dropoff_datetime#2,passenger_count#3L,trip_distance#4,RatecodeID#5L,store_and_fwd_flag#6,PULocationID#7,DOLocationID#8,payment_type#9L,fare_amount#10,extra#11,mta_tax#12,tip_amount#13,tolls_amount#14,improvement_surcharge#15,total_amount#16,congestion_surcharge#17,Airport_fee#18] parquet\n      +- SubqueryAlias weather_hourly\n         +- View (`weather_hourly`, [weather_hour#86,observation_time#87,STATION#88,NAME#89,REPORT_TYPE#90,SOURCE#91,latitude#92,longitude#93,elevation_ft#94,temperature_f_raw#95,temperature_f#96,relative_humidity_raw#97,relative_humidity#98,precipitation_raw#99,precipitation_in#100,precipitation_trace#101,has_precipitation#102,HourlyPresentWeatherType#103,HourlyWindDirection#104,wind_speed_raw#105,wind_speed_mph#106,visibility_raw#107,visibility_miles#108])\n            +- Relation [weather_hour#86,observation_time#87,STATION#88,NAME#89,REPORT_TYPE#90,SOURCE#91,latitude#92,longitude#93,elevation_ft#94,temperature_f_raw#95,temperature_f#96,relative_humidity_raw#97,relative_humidity#98,precipitation_raw#99,precipitation_in#100,precipitation_trace#101,has_precipitation#102,HourlyPresentWeatherType#103,HourlyWindDirection#104,wind_speed_raw#105,wind_speed_mph#106,visibility_raw#107,visibility_miles#108] parquet\n"
+            }
+          ]
+        },
+        "execution": {
+          "success": false,
+          "error": "Not executed because validation failed.",
+          "columns": [],
+          "rows": [],
+          "seconds": 0.0
+        },
+        "result_correct": false
+      },
+      "C": {
+        "initial_sql": "SELECT AVG(yellow_taxi.trip_distance) AS average_trip_distance\nFROM yellow_taxi\nJOIN weather_hourly ON yellow_taxi.pickup_datetime >= weather_hourly.datetime AND yellow_taxi.pickup_datetime < weather_hourly.datetime + INTERVAL '1 hour'\nWHERE weather_hourly.precipitation > 0;",
+        "repair_attempted": true,
+        "repair": {
+          "sql": "SELECT AVG(yellow_taxi.trip_distance) AS average_trip_distance\nFROM yellow_taxi\nJOIN weather_hourly ON yellow_taxi.pickup_datetime >= weather_hourly.datetime AND yellow_taxi.pickup_datetime < weather_hourly.datetime + INTERVAL '1 hour'\nWHERE weather_hourly.precipitation > 0;",
+          "metrics": {
+            "wall_time_seconds": 64.95273161100022,
+            "prompt_eval_count": 820,
+            "eval_count": 70,
+            "load_duration_seconds": 0.256918859,
+            "prompt_eval_duration_seconds": 48.806398,
+            "eval_duration_seconds": 15.815675
+          }
+        },
+        "final_sql": "SELECT AVG(yellow_taxi.trip_distance) AS average_trip_distance\nFROM yellow_taxi\nJOIN weather_hourly ON yellow_taxi.pickup_datetime >= weather_hourly.datetime AND yellow_taxi.pickup_datetime < weather_hourly.datetime + INTERVAL '1 hour'\nWHERE weather_hourly.precipitation > 0;",
+        "validation": {
+          "valid": false,
+          "tables": [
+            "weather_hourly",
+            "yellow_taxi"
+          ],
+          "output_columns": [],
+          "issues": [
+            {
+              "stage": "spark_analysis",
+              "message": "AnalysisException: [UNRESOLVED_COLUMN.WITH_SUGGESTION] A column or function parameter with name `yellow_taxi`.`pickup_datetime` cannot be resolved. Did you mean one of the following? [`yellow_taxi`.`tpep_pickup_datetime`, `yellow_taxi`.`tip_amount`, `yellow_taxi`.`tpep_dropoff_datetime`, `yellow_taxi`.`trip_distance`, `yellow_taxi`.`Airport_fee`].; line 3 pos 23;\n'Project ['AVG('yellow_taxi.trip_distance) AS average_trip_distance#609]\n+- 'Filter ('weather_hourly.precipitation > 0)\n   +- 'Join Inner, (('yellow_taxi.pickup_datetime >= 'weather_hourly.datetime) AND ('yellow_taxi.pickup_datetime < ('weather_hourly.datetime + INTERVAL '01' HOUR)))\n      :- SubqueryAlias yellow_taxi\n      :  +- View (`yellow_taxi`, [VendorID#0,tpep_pickup_datetime#1,tpep_dropoff_datetime#2,passenger_count#3L,trip_distance#4,RatecodeID#5L,store_and_fwd_flag#6,PULocationID#7,DOLocationID#8,payment_type#9L,fare_amount#10,extra#11,mta_tax#12,tip_amount#13,tolls_amount#14,improvement_surcharge#15,total_amount#16,congestion_surcharge#17,Airport_fee#18])\n      :     +- Relation [VendorID#0,tpep_pickup_datetime#1,tpep_dropoff_datetime#2,passenger_count#3L,trip_distance#4,RatecodeID#5L,store_and_fwd_flag#6,PULocationID#7,DOLocationID#8,payment_type#9L,fare_amount#10,extra#11,mta_tax#12,tip_amount#13,tolls_amount#14,improvement_surcharge#15,total_amount#16,congestion_surcharge#17,Airport_fee#18] parquet\n      +- SubqueryAlias weather_hourly\n         +- View (`weather_hourly`, [weather_hour#86,observation_time#87,STATION#88,NAME#89,REPORT_TYPE#90,SOURCE#91,latitude#92,longitude#93,elevation_ft#94,temperature_f_raw#95,temperature_f#96,relative_humidity_raw#97,relative_humidity#98,precipitation_raw#99,precipitation_in#100,precipitation_trace#101,has_precipitation#102,HourlyPresentWeatherType#103,HourlyWindDirection#104,wind_speed_raw#105,wind_speed_mph#106,visibility_raw#107,visibility_miles#108])\n            +- Relation [weather_hour#86,observation_time#87,STATION#88,NAME#89,REPORT_TYPE#90,SOURCE#91,latitude#92,longitude#93,elevation_ft#94,temperature_f_raw#95,temperature_f#96,relative_humidity_raw#97,relative_humidity#98,precipitation_raw#99,precipitation_in#100,precipitation_trace#101,has_precipitation#102,HourlyPresentWeatherType#103,HourlyWindDirection#104,wind_speed_raw#105,wind_speed_mph#106,visibility_raw#107,visibility_miles#108] parquet\n"
+            }
+          ]
+        },
+        "execution": {
+          "success": false,
+          "error": "Not executed because repaired SQL failed validation.",
+          "columns": [],
+          "rows": [],
+          "seconds": 0.0
+        },
+        "result_correct": false
+      }
+    },
+    {
+      "id": "Q07_H1",
+      "category": "weather_semantic_rule",
+      "question": "Count the Green Taxi trips in January 2024 whose pickup took place during a dry hour. Return exactly one column named trip_count.",
+      "expected_columns": [
+        "trip_count"
+      ],
+      "generation_order": [
+        "A",
+        "B"
+      ],
+      "gold": {
+        "sql": "SELECT COUNT(*) AS trip_count FROM green_taxi g JOIN weather_hourly w ON date_trunc('hour', g.lpep_pickup_datetime) = w.weather_hour WHERE w.has_precipitation = FALSE",
+        "columns": [
+          "trip_count"
+        ],
+        "rows": [
+          [
+            44932
+          ]
+        ],
+        "spark_seconds": 0.2972242460000416
+      },
+      "retrieval": {
+        "context": "=== SQL-SAFE RETRIEVED METADATA ===\nQuestion: Count the Green Taxi trips in January 2024 whose pickup took place during a dry hour. Return exactly one column named trip_count.\n\n=== SQL GENERATION CONSTRAINTS ===\n- Only DATASET names shown below are Spark table identifiers.\n- Only names under PHYSICAL COLUMNS are physical column identifiers.\n- PHYSICAL COLUMN names are fully qualified as dataset.column; use those exact physical identifiers in SQL.\n- Column names requested by the user for the result are output aliases unless they exactly match a listed PHYSICAL COLUMN.\n- Text following 'meaning:' is documentation, not an SQL identifier.\n- JOIN CONDITION lines are executable SQL conditions; use them directly when the described relationship is required.\n- SQL EXPRESSION/PREDICATE lines are executable SQL fragments; use them directly when their described meaning matches the question.\n- The registered yellow_taxi, green_taxi, and weather_hourly views already contain only January 2024 records.\n- Do not add a January 2024 date predicate unless the question asks for a narrower time range.\n\n=== RELEVANT DATASETS AND PHYSICAL COLUMNS ===\n\nDATASET green_taxi\ndescription: Curated Green Taxi trips for January 2024. Original TLC column names are preserved.\ngranularity: one row per taxi trip\nPHYSICAL COLUMNS:\n- green_taxi.lpep_pickup_datetime:timestamp_ntz\n  meaning: Date and time when a taxi trip begins.\n- green_taxi.mta_tax:double\n- green_taxi.passenger_count:bigint\n  meaning: Recorded number of passengers for a taxi trip.\n- green_taxi.tolls_amount:double\n- green_taxi.trip_type:bigint\n\nDATASET weather_hourly\ndescription: Hourly weather representation for NYC Central Park during January 2024, derived from NOAA Local Climatological Data.\ngranularity: one row per clock hour\nPHYSICAL COLUMNS:\n- weather_hourly.has_precipitation:boolean\n  meaning: Three-valued precipitation status: true means precipitation occurred, false means dry, null means unknown.\n- weather_hourly.weather_hour:timestamp_ntz\n  meaning: Clock-hour bucket represented by an hourly weather record.\n\n=== VALID SQL JOIN CONDITIONS ===\n- JOIN CONDITION: date_trunc('hour', green_taxi.lpep_pickup_datetime) = weather_hourly.weather_hour\n  meaning: Aligns a Green Taxi pickup timestamp with the corresponding hourly NYC weather bucket.\n\n=== RELEVANT SQL EXPRESSIONS / PREDICATES ===\n- SQL EXPRESSION/PREDICATE: weather_hourly.has_precipitation = FALSE\n  meaning: An hour is dry only when precipitation status is explicitly false.\n  result: Missing precipitation status is not interpreted as dry.",
+        "seconds": 0.32343505500011815,
+        "embedding_prompt_tokens": 32,
+        "selection": {
+          "datasets": [
+            "green_taxi",
+            "weather_hourly"
+          ],
+          "columns": [
+            "green_taxi.lpep_pickup_datetime",
+            "green_taxi.mta_tax",
+            "green_taxi.passenger_count",
+            "green_taxi.tolls_amount",
+            "green_taxi.trip_type",
+            "weather_hourly.has_precipitation",
+            "weather_hourly.weather_hour"
+          ],
+          "concepts": [
+            "passenger_count",
+            "pickup_datetime",
+            "precipitation_status",
+            "weather_hour"
+          ],
+          "relationships": [
+            "green_pickup_weather_hour"
+          ],
+          "rules": [
+            "dry_hour"
+          ]
+        },
+        "metadata_recall": 1.0,
+        "metadata_hits": 7,
+        "metadata_required": 7
+      },
+      "A": {
+        "configuration": "full_catalog",
+        "metadata_characters": 9498,
+        "metadata_words": 1056,
+        "prompt_characters": 10794,
+        "prompt_tokens": 2554,
+        "generated_tokens": 56,
+        "wall_seconds": 19.829334669999753,
+        "load_seconds": 0.286741559,
+        "prompt_eval_seconds": 4.319446,
+        "generation_seconds": 15.156118,
+        "sql": "SELECT COUNT(*) AS trip_count\nFROM green_taxi\nJOIN weather_hourly ON date_trunc('hour', green_taxi.lpep_pickup_datetime) = weather_hourly.weather_hour\nWHERE weather_hourly.has_precipitation = FALSE;",
+        "validation": {
+          "valid": true,
+          "tables": [
+            "green_taxi",
+            "weather_hourly"
+          ],
+          "output_columns": [
+            "trip_count"
+          ],
+          "issues": []
+        },
+        "execution": {
+          "success": true,
+          "error": null,
+          "columns": [
+            "trip_count"
+          ],
+          "rows": [
+            [
+              44932
+            ]
+          ],
+          "seconds": 0.22563711100019646
+        },
+        "result_correct": true
+      },
+      "B": {
+        "configuration": "relation_aware",
+        "metadata_characters": 2573,
+        "metadata_words": 341,
+        "prompt_characters": 3869,
+        "prompt_tokens": 870,
+        "generated_tokens": 57,
+        "wall_seconds": 50.17908826299981,
+        "load_seconds": 0.264372452,
+        "prompt_eval_seconds": 37.372596,
+        "generation_seconds": 12.471679,
+        "sql": "SELECT COUNT(*) AS trip_count\nFROM green_taxi\nJOIN weather_hourly\nON date_trunc('hour', green_taxi.lpep_pickup_datetime) = weather_hourly.weather_hour\nWHERE weather_hourly.has_precipitation = FALSE;",
+        "validation": {
+          "valid": true,
+          "tables": [
+            "green_taxi",
+            "weather_hourly"
+          ],
+          "output_columns": [
+            "trip_count"
+          ],
+          "issues": []
+        },
+        "execution": {
+          "success": true,
+          "error": null,
+          "columns": [
+            "trip_count"
+          ],
+          "rows": [
+            [
+              44932
+            ]
+          ],
+          "seconds": 0.20298108199995113
+        },
+        "result_correct": true
+      },
+      "C": {
+        "initial_sql": "SELECT COUNT(*) AS trip_count\nFROM green_taxi\nJOIN weather_hourly\nON date_trunc('hour', green_taxi.lpep_pickup_datetime) = weather_hourly.weather_hour\nWHERE weather_hourly.has_precipitation = FALSE;",
+        "repair_attempted": false,
+        "repair": null,
+        "final_sql": "SELECT COUNT(*) AS trip_count\nFROM green_taxi\nJOIN weather_hourly\nON date_trunc('hour', green_taxi.lpep_pickup_datetime) = weather_hourly.weather_hour\nWHERE weather_hourly.has_precipitation = FALSE;",
+        "validation": {
+          "valid": true,
+          "tables": [
+            "green_taxi",
+            "weather_hourly"
+          ],
+          "output_columns": [
+            "trip_count"
+          ],
+          "issues": []
+        },
+        "execution": {
+          "success": true,
+          "error": null,
+          "columns": [
+            "trip_count"
+          ],
+          "rows": [
+            [
+              44932
+            ]
+          ],
+          "seconds": 0.20298108199995113
+        },
+        "result_correct": true
+      }
+    },
+    {
+      "id": "Q07_H2",
+      "category": "weather_semantic_rule",
+      "question": "How many Green Taxi rides started in hours classified as dry during January 2024? Output exactly one column called trip_count.",
+      "expected_columns": [
+        "trip_count"
+      ],
+      "generation_order": [
+        "B",
+        "A"
+      ],
+      "gold": {
+        "sql": "SELECT COUNT(*) AS trip_count FROM green_taxi g JOIN weather_hourly w ON date_trunc('hour', g.lpep_pickup_datetime) = w.weather_hour WHERE w.has_precipitation = FALSE",
+        "columns": [
+          "trip_count"
+        ],
+        "rows": [
+          [
+            44932
+          ]
+        ],
+        "spark_seconds": 0.22731046799981414
+      },
+      "retrieval": {
+        "context": "=== SQL-SAFE RETRIEVED METADATA ===\nQuestion: How many Green Taxi rides started in hours classified as dry during January 2024? Output exactly one column called trip_count.\n\n=== SQL GENERATION CONSTRAINTS ===\n- Only DATASET names shown below are Spark table identifiers.\n- Only names under PHYSICAL COLUMNS are physical column identifiers.\n- PHYSICAL COLUMN names are fully qualified as dataset.column; use those exact physical identifiers in SQL.\n- Column names requested by the user for the result are output aliases unless they exactly match a listed PHYSICAL COLUMN.\n- Text following 'meaning:' is documentation, not an SQL identifier.\n- JOIN CONDITION lines are executable SQL conditions; use them directly when the described relationship is required.\n- SQL EXPRESSION/PREDICATE lines are executable SQL fragments; use them directly when their described meaning matches the question.\n- The registered yellow_taxi, green_taxi, and weather_hourly views already contain only January 2024 records.\n- Do not add a January 2024 date predicate unless the question asks for a narrower time range.\n\n=== RELEVANT DATASETS AND PHYSICAL COLUMNS ===\n\nDATASET green_taxi\ndescription: Curated Green Taxi trips for January 2024. Original TLC column names are preserved.\ngranularity: one row per taxi trip\nPHYSICAL COLUMNS:\n- green_taxi.lpep_pickup_datetime:timestamp_ntz\n  meaning: Date and time when a taxi trip begins.\n- green_taxi.mta_tax:double\n- green_taxi.passenger_count:bigint\n  meaning: Recorded number of passengers for a taxi trip.\n- green_taxi.tolls_amount:double\n- green_taxi.trip_type:bigint\n\nDATASET weather_hourly\ndescription: Hourly weather representation for NYC Central Park during January 2024, derived from NOAA Local Climatological Data.\ngranularity: one row per clock hour\nPHYSICAL COLUMNS:\n- weather_hourly.has_precipitation:boolean\n  meaning: Three-valued precipitation status: true means precipitation occurred, false means dry, null means unknown.\n- weather_hourly.weather_hour:timestamp_ntz\n  meaning: Clock-hour bucket represented by an hourly weather record.\n\n=== VALID SQL JOIN CONDITIONS ===\n- JOIN CONDITION: date_trunc('hour', green_taxi.lpep_pickup_datetime) = weather_hourly.weather_hour\n  meaning: Aligns a Green Taxi pickup timestamp with the corresponding hourly NYC weather bucket.\n\n=== RELEVANT SQL EXPRESSIONS / PREDICATES ===\n- SQL EXPRESSION/PREDICATE: weather_hourly.has_precipitation = FALSE\n  meaning: An hour is dry only when precipitation status is explicitly false.\n  result: Missing precipitation status is not interpreted as dry.",
+        "seconds": 0.29436594399999194,
+        "embedding_prompt_tokens": 30,
+        "selection": {
+          "datasets": [
+            "green_taxi",
+            "weather_hourly"
+          ],
+          "columns": [
+            "green_taxi.lpep_pickup_datetime",
+            "green_taxi.mta_tax",
+            "green_taxi.passenger_count",
+            "green_taxi.tolls_amount",
+            "green_taxi.trip_type",
+            "weather_hourly.has_precipitation",
+            "weather_hourly.weather_hour"
+          ],
+          "concepts": [
+            "passenger_count",
+            "pickup_datetime",
+            "precipitation_status",
+            "weather_hour"
+          ],
+          "relationships": [
+            "green_pickup_weather_hour"
+          ],
+          "rules": [
+            "dry_hour"
+          ]
+        },
+        "metadata_recall": 1.0,
+        "metadata_hits": 7,
+        "metadata_required": 7
+      },
+      "A": {
+        "configuration": "full_catalog",
+        "metadata_characters": 9498,
+        "metadata_words": 1056,
+        "prompt_characters": 10791,
+        "prompt_tokens": 2552,
+        "generated_tokens": 56,
+        "wall_seconds": 19.301815015000102,
+        "load_seconds": 0.315054445,
+        "prompt_eval_seconds": 3.74869,
+        "generation_seconds": 15.176331,
+        "sql": "SELECT COUNT(*) AS trip_count\nFROM green_taxi\nJOIN weather_hourly ON date_trunc('hour', green_taxi.lpep_pickup_datetime) = weather_hourly.weather_hour\nWHERE weather_hourly.has_precipitation = FALSE;",
+        "validation": {
+          "valid": true,
+          "tables": [
+            "green_taxi",
+            "weather_hourly"
+          ],
+          "output_columns": [
+            "trip_count"
+          ],
+          "issues": []
+        },
+        "execution": {
+          "success": true,
+          "error": null,
+          "columns": [
+            "trip_count"
+          ],
+          "rows": [
+            [
+              44932
+            ]
+          ],
+          "seconds": 0.17378665300020657
+        },
+        "result_correct": true
+      },
+      "B": {
+        "configuration": "relation_aware",
+        "metadata_characters": 2570,
+        "metadata_words": 339,
+        "prompt_characters": 3863,
+        "prompt_tokens": 866,
+        "generated_tokens": 57,
+        "wall_seconds": 49.97446473800028,
+        "load_seconds": 0.276854528,
+        "prompt_eval_seconds": 37.192658,
+        "generation_seconds": 12.475841,
+        "sql": "SELECT COUNT(*) AS trip_count\nFROM green_taxi\nJOIN weather_hourly\nON date_trunc('hour', green_taxi.lpep_pickup_datetime) = weather_hourly.weather_hour\nWHERE weather_hourly.has_precipitation = FALSE;",
+        "validation": {
+          "valid": true,
+          "tables": [
+            "green_taxi",
+            "weather_hourly"
+          ],
+          "output_columns": [
+            "trip_count"
+          ],
+          "issues": []
+        },
+        "execution": {
+          "success": true,
+          "error": null,
+          "columns": [
+            "trip_count"
+          ],
+          "rows": [
+            [
+              44932
+            ]
+          ],
+          "seconds": 0.16011608699955104
+        },
+        "result_correct": true
+      },
+      "C": {
+        "initial_sql": "SELECT COUNT(*) AS trip_count\nFROM green_taxi\nJOIN weather_hourly\nON date_trunc('hour', green_taxi.lpep_pickup_datetime) = weather_hourly.weather_hour\nWHERE weather_hourly.has_precipitation = FALSE;",
+        "repair_attempted": false,
+        "repair": null,
+        "final_sql": "SELECT COUNT(*) AS trip_count\nFROM green_taxi\nJOIN weather_hourly\nON date_trunc('hour', green_taxi.lpep_pickup_datetime) = weather_hourly.weather_hour\nWHERE weather_hourly.has_precipitation = FALSE;",
+        "validation": {
+          "valid": true,
+          "tables": [
+            "green_taxi",
+            "weather_hourly"
+          ],
+          "output_columns": [
+            "trip_count"
+          ],
+          "issues": []
+        },
+        "execution": {
+          "success": true,
+          "error": null,
+          "columns": [
+            "trip_count"
+          ],
+          "rows": [
+            [
+              44932
+            ]
+          ],
+          "seconds": 0.16011608699955104
+        },
+        "result_correct": true
+      }
+    },
+    {
+      "id": "Q08_H1",
+      "category": "three_source_query",
+      "question": "Among Yellow Taxi trips picked up during rainy hours in January 2024, which pickup borough had the greatest trip count? Return only the top borough with exactly two columns named borough and trip_count.",
+      "expected_columns": [
+        "borough",
+        "trip_count"
+      ],
+      "generation_order": [
+        "A",
+        "B"
+      ],
+      "gold": {
+        "sql": "SELECT z.Borough AS borough, COUNT(*) AS trip_count FROM yellow_taxi y JOIN taxi_zones z ON y.PULocationID = z.LocationID JOIN weather_hourly w ON date_trunc('hour', y.tpep_pickup_datetime) = w.weather_hour WHERE w.has_precipitation = TRUE GROUP BY z.Borough ORDER BY trip_count DESC, borough ASC LIMIT 1",
+        "columns": [
+          "borough",
+          "trip_count"
+        ],
+        "rows": [
+          [
+            "Manhattan",
+            552813
+          ]
+        ],
+        "spark_seconds": 1.4768692830002692
+      },
+      "retrieval": {
+        "context": "=== SQL-SAFE RETRIEVED METADATA ===\nQuestion: Among Yellow Taxi trips picked up during rainy hours in January 2024, which pickup borough had the greatest trip count? Return only the top borough with exactly two columns named borough and trip_count.\n\n=== SQL GENERATION CONSTRAINTS ===\n- Only DATASET names shown below are Spark table identifiers.\n- Only names under PHYSICAL COLUMNS are physical column identifiers.\n- PHYSICAL COLUMN names are fully qualified as dataset.column; use those exact physical identifiers in SQL.\n- Column names requested by the user for the result are output aliases unless they exactly match a listed PHYSICAL COLUMN.\n- Text following 'meaning:' is documentation, not an SQL identifier.\n- JOIN CONDITION lines are executable SQL conditions; use them directly when the described relationship is required.\n- SQL EXPRESSION/PREDICATE lines are executable SQL fragments; use them directly when their described meaning matches the question.\n- The registered yellow_taxi, green_taxi, and weather_hourly views already contain only January 2024 records.\n- Do not add a January 2024 date predicate unless the question asks for a narrower time range.\n\n=== RELEVANT DATASETS AND PHYSICAL COLUMNS ===\n\nDATASET taxi_zones\ndescription: Reference dataset mapping TLC LocationID values to borough, taxi-zone name, and service-zone classification.\ngranularity: one row per TLC taxi zone\nPHYSICAL COLUMNS:\n- taxi_zones.Borough:string\n  meaning: NYC borough associated with a TLC taxi zone.\n- taxi_zones.LocationID:int\n  meaning: Primary TLC identifier of a taxi zone.\n\nDATASET weather_hourly\ndescription: Hourly weather representation for NYC Central Park during January 2024, derived from NOAA Local Climatological Data.\ngranularity: one row per clock hour\nPHYSICAL COLUMNS:\n- weather_hourly.has_precipitation:boolean\n  meaning: Three-valued precipitation status: true means precipitation occurred, false means dry, null means unknown.\n- weather_hourly.weather_hour:timestamp_ntz\n  meaning: Clock-hour bucket represented by an hourly weather record.\n\nDATASET yellow_taxi\ndescription: Curated Yellow Taxi trips for January 2024. Original TLC column names are preserved.\ngranularity: one row per taxi trip\nPHYSICAL COLUMNS:\n- yellow_taxi.PULocationID:int\n  meaning: TLC taxi-zone identifier for the trip pickup location.\n- yellow_taxi.RatecodeID:bigint\n- yellow_taxi.tolls_amount:double\n- yellow_taxi.tpep_pickup_datetime:timestamp_ntz\n  meaning: Date and time when a taxi trip begins.\n\n=== VALID SQL JOIN CONDITIONS ===\n- JOIN CONDITION: date_trunc('hour', yellow_taxi.tpep_pickup_datetime) = weather_hourly.weather_hour\n  meaning: Aligns a Yellow Taxi pickup timestamp with the corresponding hourly NYC weather bucket.\n- JOIN CONDITION: yellow_taxi.PULocationID = taxi_zones.LocationID\n  meaning: Maps each Yellow Taxi pickup LocationID to its TLC taxi-zone record.\n\n=== RELEVANT SQL EXPRESSIONS / PREDICATES ===\n- SQL EXPRESSION/PREDICATE: weather_hourly.has_precipitation = TRUE\n  meaning: An hour is rainy when NOAA indicates measurable or trace precipitation.\n  result: Includes trace precipitation. Missing weather is not classified as rainy.",
+        "seconds": 0.3574740879998899,
+        "embedding_prompt_tokens": 44,
+        "selection": {
+          "datasets": [
+            "taxi_zones",
+            "weather_hourly",
+            "yellow_taxi"
+          ],
+          "columns": [
+            "taxi_zones.Borough",
+            "taxi_zones.LocationID",
+            "weather_hourly.has_precipitation",
+            "weather_hourly.weather_hour",
+            "yellow_taxi.PULocationID",
+            "yellow_taxi.RatecodeID",
+            "yellow_taxi.tolls_amount",
+            "yellow_taxi.tpep_pickup_datetime"
+          ],
+          "concepts": [
+            "borough",
+            "pickup_datetime",
+            "pickup_zone_id",
+            "precipitation_status",
+            "taxi_zone_id",
+            "weather_hour"
+          ],
+          "relationships": [
+            "yellow_pickup_weather_hour",
+            "yellow_pickup_zone"
+          ],
+          "rules": [
+            "rainy_hour"
+          ]
+        },
+        "metadata_recall": 1.0,
+        "metadata_hits": 12,
+        "metadata_required": 12
+      },
+      "A": {
+        "configuration": "full_catalog",
+        "metadata_characters": 9498,
+        "metadata_words": 1056,
+        "prompt_characters": 10867,
+        "prompt_tokens": 2566,
+        "generated_tokens": 97,
+        "wall_seconds": 32.93858121299991,
+        "load_seconds": 0.417684873,
+        "prompt_eval_seconds": 5.949949,
+        "generation_seconds": 26.539418,
+        "sql": "SELECT \n  borough,\n  COUNT(*) AS trip_count\nFROM \n  yellow_taxi\nJOIN \n  taxi_zones ON yellow_taxi.PULocationID = taxi_zones.LocationID\nWHERE \n  yellow_pickup_weather_hour(yellow_taxi) IN (\n    SELECT weather_hour\n    FROM weather_hourly\n    WHERE rainy_hour(weather_hourly)\n  )\nGROUP BY \n  borough\nORDER BY \n  trip_count DESC\nLIMIT 1;",
+        "validation": {
+          "valid": false,
+          "tables": [
+            "taxi_zones",
+            "weather_hourly",
+            "yellow_taxi"
+          ],
+          "output_columns": [],
+          "issues": [
+            {
+              "stage": "spark_analysis",
+              "message": "AnalysisException: [UNRESOLVED_ROUTINE] Cannot resolve function `yellow_pickup_weather_hour` on search path [`system`.`builtin`, `system`.`session`, `spark_catalog`.`default`].; line 9 pos 2"
+            }
+          ]
+        },
+        "execution": {
+          "success": false,
+          "error": "Not executed because validation failed.",
+          "columns": [],
+          "rows": [],
+          "seconds": 0.0
+        },
+        "result_correct": false
+      },
+      "B": {
+        "configuration": "relation_aware",
+        "metadata_characters": 3159,
+        "metadata_words": 416,
+        "prompt_characters": 4528,
+        "prompt_tokens": 1003,
+        "generated_tokens": 106,
+        "wall_seconds": 70.23367527800019,
+        "load_seconds": 0.378952019,
+        "prompt_eval_seconds": 45.910245,
+        "generation_seconds": 23.861273,
+        "sql": "SELECT \n  borough AS borough,\n  COUNT(*) AS trip_count\nFROM \n  yellow_taxi\nJOIN \n  weather_hourly ON date_trunc('hour', yellow_taxi.tpep_pickup_datetime) = weather_hourly.weather_hour\nJOIN \n  taxi_zones ON yellow_taxi.PULocationID = taxi_zones.LocationID\nWHERE \n  weather_hourly.has_precipitation = TRUE\nGROUP BY \n  borough\nORDER BY \n  trip_count DESC\nLIMIT 1",
+        "validation": {
+          "valid": true,
+          "tables": [
+            "taxi_zones",
+            "weather_hourly",
+            "yellow_taxi"
+          ],
+          "output_columns": [
+            "borough",
+            "trip_count"
+          ],
+          "issues": []
+        },
+        "execution": {
+          "success": true,
+          "error": null,
+          "columns": [
+            "borough",
+            "trip_count"
+          ],
+          "rows": [
+            [
+              "Manhattan",
+              552813
+            ]
+          ],
+          "seconds": 1.5956271879999804
+        },
+        "result_correct": true
+      },
+      "C": {
+        "initial_sql": "SELECT \n  borough AS borough,\n  COUNT(*) AS trip_count\nFROM \n  yellow_taxi\nJOIN \n  weather_hourly ON date_trunc('hour', yellow_taxi.tpep_pickup_datetime) = weather_hourly.weather_hour\nJOIN \n  taxi_zones ON yellow_taxi.PULocationID = taxi_zones.LocationID\nWHERE \n  weather_hourly.has_precipitation = TRUE\nGROUP BY \n  borough\nORDER BY \n  trip_count DESC\nLIMIT 1",
+        "repair_attempted": false,
+        "repair": null,
+        "final_sql": "SELECT \n  borough AS borough,\n  COUNT(*) AS trip_count\nFROM \n  yellow_taxi\nJOIN \n  weather_hourly ON date_trunc('hour', yellow_taxi.tpep_pickup_datetime) = weather_hourly.weather_hour\nJOIN \n  taxi_zones ON yellow_taxi.PULocationID = taxi_zones.LocationID\nWHERE \n  weather_hourly.has_precipitation = TRUE\nGROUP BY \n  borough\nORDER BY \n  trip_count DESC\nLIMIT 1",
+        "validation": {
+          "valid": true,
+          "tables": [
+            "taxi_zones",
+            "weather_hourly",
+            "yellow_taxi"
+          ],
+          "output_columns": [
+            "borough",
+            "trip_count"
+          ],
+          "issues": []
+        },
+        "execution": {
+          "success": true,
+          "error": null,
+          "columns": [
+            "borough",
+            "trip_count"
+          ],
+          "rows": [
+            [
+              "Manhattan",
+              552813
+            ]
+          ],
+          "seconds": 1.5956271879999804
+        },
+        "result_correct": true
+      }
+    },
+    {
+      "id": "Q08_H2",
+      "category": "three_source_query",
+      "question": "Find the pickup borough with the most January 2024 Yellow Taxi rides occurring during hours with precipitation. Return just the leading borough using exactly the columns borough and trip_count.",
+      "expected_columns": [
+        "borough",
+        "trip_count"
+      ],
+      "generation_order": [
+        "B",
+        "A"
+      ],
+      "gold": {
+        "sql": "SELECT z.Borough AS borough, COUNT(*) AS trip_count FROM yellow_taxi y JOIN taxi_zones z ON y.PULocationID = z.LocationID JOIN weather_hourly w ON date_trunc('hour', y.tpep_pickup_datetime) = w.weather_hour WHERE w.has_precipitation = TRUE GROUP BY z.Borough ORDER BY trip_count DESC, borough ASC LIMIT 1",
+        "columns": [
+          "borough",
+          "trip_count"
+        ],
+        "rows": [
+          [
+            "Manhattan",
+            552813
+          ]
+        ],
+        "spark_seconds": 1.0986500509998223
+      },
+      "retrieval": {
+        "context": "=== SQL-SAFE RETRIEVED METADATA ===\nQuestion: Find the pickup borough with the most January 2024 Yellow Taxi rides occurring during hours with precipitation. Return just the leading borough using exactly the columns borough and trip_count.\n\n=== SQL GENERATION CONSTRAINTS ===\n- Only DATASET names shown below are Spark table identifiers.\n- Only names under PHYSICAL COLUMNS are physical column identifiers.\n- PHYSICAL COLUMN names are fully qualified as dataset.column; use those exact physical identifiers in SQL.\n- Column names requested by the user for the result are output aliases unless they exactly match a listed PHYSICAL COLUMN.\n- Text following 'meaning:' is documentation, not an SQL identifier.\n- JOIN CONDITION lines are executable SQL conditions; use them directly when the described relationship is required.\n- SQL EXPRESSION/PREDICATE lines are executable SQL fragments; use them directly when their described meaning matches the question.\n- The registered yellow_taxi, green_taxi, and weather_hourly views already contain only January 2024 records.\n- Do not add a January 2024 date predicate unless the question asks for a narrower time range.\n\n=== RELEVANT DATASETS AND PHYSICAL COLUMNS ===\n\nDATASET taxi_zones\ndescription: Reference dataset mapping TLC LocationID values to borough, taxi-zone name, and service-zone classification.\ngranularity: one row per TLC taxi zone\nPHYSICAL COLUMNS:\n- taxi_zones.Borough:string\n  meaning: NYC borough associated with a TLC taxi zone.\n- taxi_zones.LocationID:int\n  meaning: Primary TLC identifier of a taxi zone.\n\nDATASET yellow_taxi\ndescription: Curated Yellow Taxi trips for January 2024. Original TLC column names are preserved.\ngranularity: one row per taxi trip\nPHYSICAL COLUMNS:\n- yellow_taxi.PULocationID:int\n  meaning: TLC taxi-zone identifier for the trip pickup location.\n- yellow_taxi.RatecodeID:bigint\n- yellow_taxi.tolls_amount:double\n\n=== VALID SQL JOIN CONDITIONS ===\n- JOIN CONDITION: yellow_taxi.PULocationID = taxi_zones.LocationID\n  meaning: Maps each Yellow Taxi pickup LocationID to its TLC taxi-zone record.\n\n=== RELEVANT SQL EXPRESSIONS / PREDICATES ===\n- None required.",
+        "seconds": 0.3305794259999857,
+        "embedding_prompt_tokens": 39,
+        "selection": {
+          "datasets": [
+            "taxi_zones",
+            "yellow_taxi"
+          ],
+          "columns": [
+            "taxi_zones.Borough",
+            "taxi_zones.LocationID",
+            "yellow_taxi.PULocationID",
+            "yellow_taxi.RatecodeID",
+            "yellow_taxi.tolls_amount"
+          ],
+          "concepts": [
+            "borough",
+            "pickup_zone_id",
+            "taxi_zone_id"
+          ],
+          "relationships": [
+            "yellow_pickup_zone"
+          ],
+          "rules": []
+        },
+        "metadata_recall": 0.5,
+        "metadata_hits": 6,
+        "metadata_required": 12
+      },
+      "A": {
+        "configuration": "full_catalog",
+        "metadata_characters": 9498,
+        "metadata_words": 1056,
+        "prompt_characters": 10858,
+        "prompt_tokens": 2561,
+        "generated_tokens": 114,
+        "wall_seconds": 35.83280830500007,
+        "load_seconds": 0.27030607,
+        "prompt_eval_seconds": 4.947408,
+        "generation_seconds": 30.550474,
+        "sql": "SELECT \n  borough,\n  COUNT(*) AS trip_count\nFROM \n  yellow_taxi\nJOIN \n  taxi_zones ON yellow_taxi.PULocationID = taxi_zones.LocationID\nWHERE \n  date_trunc('hour', yellow_taxi.tpep_pickup_datetime) IN (\n    SELECT weather_hourly.weather_hour\n    FROM \n      weather_hourly\n    WHERE \n      weather_hourly.has_precipitation = TRUE\n  )\nGROUP BY \n  borough\nORDER BY \n  trip_count DESC\nLIMIT 1;",
+        "validation": {
+          "valid": true,
+          "tables": [
+            "taxi_zones",
+            "weather_hourly",
+            "yellow_taxi"
+          ],
+          "output_columns": [
+            "borough",
+            "trip_count"
+          ],
+          "issues": []
+        },
+        "execution": {
+          "success": true,
+          "error": null,
+          "columns": [
+            "borough",
+            "trip_count"
+          ],
+          "rows": [
+            [
+              "Manhattan",
+              552813
+            ]
+          ],
+          "seconds": 1.2038804759999948
+        },
+        "result_correct": true
+      },
+      "B": {
+        "configuration": "relation_aware",
+        "metadata_characters": 2150,
+        "metadata_words": 300,
+        "prompt_characters": 3510,
+        "prompt_tokens": 772,
+        "generated_tokens": 149,
+        "wall_seconds": 63.962598510000134,
+        "load_seconds": 0.287639498,
+        "prompt_eval_seconds": 30.989028,
+        "generation_seconds": 32.641756,
+        "sql": "SELECT \n  borough AS borough,\n  COUNT(*) AS trip_count\nFROM \n  yellow_taxi\nJOIN \n  taxi_zones ON yellow_taxi.PULocationID = taxi_zones.LocationID\nJOIN \n  weather_hourly ON yellow_taxi.Pickup_datetime BETWEEN weather_hourly.datetime AND DATE_ADD(weather_hourly.datetime, 1)\nWHERE \n  EXTRACT(MONTH FROM yellow_taxi.Pickup_datetime) = 1\n  AND EXTRACT(YEAR FROM yellow_taxi.Pickup_datetime) = 2024\n  AND weather_hourly.precipitation > 0\nGROUP BY \n  borough\nORDER BY \n  trip_count DESC\nLIMIT 1;",
+        "validation": {
+          "valid": false,
+          "tables": [
+            "taxi_zones",
+            "weather_hourly",
+            "yellow_taxi"
+          ],
+          "output_columns": [],
+          "issues": [
+            {
+              "stage": "spark_analysis",
+              "message": "AnalysisException: [UNRESOLVED_COLUMN.WITH_SUGGESTION] A column or function parameter with name `yellow_taxi`.`Pickup_datetime` cannot be resolved. Did you mean one of the following? [`yellow_taxi`.`tpep_pickup_datetime`, `yellow_taxi`.`tip_amount`, `yellow_taxi`.`trip_distance`, `yellow_taxi`.`Airport_fee`, `yellow_taxi`.`RatecodeID`].; line 9 pos 20;\n'GlobalLimit 1\n+- 'LocalLimit 1\n   +- 'Sort ['trip_count DESC NULLS LAST], true\n      +- 'Aggregate ['borough], ['borough AS borough#694, count(1) AS trip_count#695L]\n         +- 'Filter ((('extract(MONTH, 'yellow_taxi.Pickup_datetime) = 1) AND ('extract(YEAR, 'yellow_taxi.Pickup_datetime) = 2024)) AND ('weather_hourly.precipitation > 0))\n            +- 'Join Inner, (('yellow_taxi.Pickup_datetime >= 'weather_hourly.datetime) AND ('yellow_taxi.Pickup_datetime <= 'DATE_ADD('weather_hourly.datetime, 1)))\n               :- Join Inner, (PULocationID#7 = LocationID#78)\n               :  :- SubqueryAlias yellow_taxi\n               :  :  +- View (`yellow_taxi`, [VendorID#0,tpep_pickup_datetime#1,tpep_dropoff_datetime#2,passenger_count#3L,trip_distance#4,RatecodeID#5L,store_and_fwd_flag#6,PULocationID#7,DOLocationID#8,payment_type#9L,fare_amount#10,extra#11,mta_tax#12,tip_amount#13,tolls_amount#14,improvement_surcharge#15,total_amount#16,congestion_surcharge#17,Airport_fee#18])\n               :  :     +- Relation [VendorID#0,tpep_pickup_datetime#1,tpep_dropoff_datetime#2,passenger_count#3L,trip_distance#4,RatecodeID#5L,store_and_fwd_flag#6,PULocationID#7,DOLocationID#8,payment_type#9L,fare_amount#10,extra#11,mta_tax#12,tip_amount#13,tolls_amount#14,improvement_surcharge#15,total_amount#16,congestion_surcharge#17,Airport_fee#18] parquet\n               :  +- SubqueryAlias taxi_zones\n               :     +- View (`taxi_zones`, [LocationID#78,Borough#79,Zone#80,service_zone#81])\n               :        +- Relation [LocationID#78,Borough#79,Zone#80,service_zone#81] parquet\n               +- SubqueryAlias weather_hourly\n                  +- View (`weather_hourly`, [weather_hour#86,observation_time#87,STATION#88,NAME#89,REPORT_TYPE#90,SOURCE#91,latitude#92,longitude#93,elevation_ft#94,temperature_f_raw#95,temperature_f#96,relative_humidity_raw#97,relative_humidity#98,precipitation_raw#99,precipitation_in#100,precipitation_trace#101,has_precipitation#102,HourlyPresentWeatherType#103,HourlyWindDirection#104,wind_speed_raw#105,wind_speed_mph#106,visibility_raw#107,visibility_miles#108])\n                     +- Relation [weather_hour#86,observation_time#87,STATION#88,NAME#89,REPORT_TYPE#90,SOURCE#91,latitude#92,longitude#93,elevation_ft#94,temperature_f_raw#95,temperature_f#96,relative_humidity_raw#97,relative_humidity#98,precipitation_raw#99,precipitation_in#100,precipitation_trace#101,has_precipitation#102,HourlyPresentWeatherType#103,HourlyWindDirection#104,wind_speed_raw#105,wind_speed_mph#106,visibility_raw#107,visibility_miles#108] parquet\n"
+            }
+          ]
+        },
+        "execution": {
+          "success": false,
+          "error": "Not executed because validation failed.",
+          "columns": [],
+          "rows": [],
+          "seconds": 0.0
+        },
+        "result_correct": false
+      },
+      "C": {
+        "initial_sql": "SELECT \n  borough AS borough,\n  COUNT(*) AS trip_count\nFROM \n  yellow_taxi\nJOIN \n  taxi_zones ON yellow_taxi.PULocationID = taxi_zones.LocationID\nJOIN \n  weather_hourly ON yellow_taxi.Pickup_datetime BETWEEN weather_hourly.datetime AND DATE_ADD(weather_hourly.datetime, 1)\nWHERE \n  EXTRACT(MONTH FROM yellow_taxi.Pickup_datetime) = 1\n  AND EXTRACT(YEAR FROM yellow_taxi.Pickup_datetime) = 2024\n  AND weather_hourly.precipitation > 0\nGROUP BY \n  borough\nORDER BY \n  trip_count DESC\nLIMIT 1;",
+        "repair_attempted": true,
+        "repair": {
+          "sql": "SELECT \n  borough AS borough,\n  COUNT(*) AS trip_count\nFROM \n  yellow_taxi\nJOIN \n  taxi_zones ON yellow_taxi.PULocationID = taxi_zones.LocationID\nJOIN \n  weather_hourly ON yellow_taxi.Pickup_datetime BETWEEN weather_hourly.datetime AND DATE_ADD(weather_hourly.datetime, 1)\nWHERE \n  EXTRACT(MONTH FROM yellow_taxi.Pickup_datetime) = 1\n  AND EXTRACT(YEAR FROM yellow_taxi.Pickup_datetime) = 2024\n  AND weather_hourly.precipitation > 0\nGROUP BY \n  borough\nORDER BY \n  trip_count DESC\nLIMIT 1;",
+          "metrics": {
+            "wall_time_seconds": 93.75447526300013,
+            "prompt_eval_count": 1018,
+            "eval_count": 149,
+            "load_duration_seconds": 0.270144224,
+            "prompt_eval_duration_seconds": 60.190196,
+            "eval_duration_seconds": 33.232196
+          }
+        },
+        "final_sql": "SELECT \n  borough AS borough,\n  COUNT(*) AS trip_count\nFROM \n  yellow_taxi\nJOIN \n  taxi_zones ON yellow_taxi.PULocationID = taxi_zones.LocationID\nJOIN \n  weather_hourly ON yellow_taxi.Pickup_datetime BETWEEN weather_hourly.datetime AND DATE_ADD(weather_hourly.datetime, 1)\nWHERE \n  EXTRACT(MONTH FROM yellow_taxi.Pickup_datetime) = 1\n  AND EXTRACT(YEAR FROM yellow_taxi.Pickup_datetime) = 2024\n  AND weather_hourly.precipitation > 0\nGROUP BY \n  borough\nORDER BY \n  trip_count DESC\nLIMIT 1;",
+        "validation": {
+          "valid": false,
+          "tables": [
+            "taxi_zones",
+            "weather_hourly",
+            "yellow_taxi"
+          ],
+          "output_columns": [],
+          "issues": [
+            {
+              "stage": "spark_analysis",
+              "message": "AnalysisException: [UNRESOLVED_COLUMN.WITH_SUGGESTION] A column or function parameter with name `yellow_taxi`.`Pickup_datetime` cannot be resolved. Did you mean one of the following? [`yellow_taxi`.`tpep_pickup_datetime`, `yellow_taxi`.`tip_amount`, `yellow_taxi`.`trip_distance`, `yellow_taxi`.`Airport_fee`, `yellow_taxi`.`RatecodeID`].; line 9 pos 20;\n'GlobalLimit 1\n+- 'LocalLimit 1\n   +- 'Sort ['trip_count DESC NULLS LAST], true\n      +- 'Aggregate ['borough], ['borough AS borough#697, count(1) AS trip_count#698L]\n         +- 'Filter ((('extract(MONTH, 'yellow_taxi.Pickup_datetime) = 1) AND ('extract(YEAR, 'yellow_taxi.Pickup_datetime) = 2024)) AND ('weather_hourly.precipitation > 0))\n            +- 'Join Inner, (('yellow_taxi.Pickup_datetime >= 'weather_hourly.datetime) AND ('yellow_taxi.Pickup_datetime <= 'DATE_ADD('weather_hourly.datetime, 1)))\n               :- Join Inner, (PULocationID#7 = LocationID#78)\n               :  :- SubqueryAlias yellow_taxi\n               :  :  +- View (`yellow_taxi`, [VendorID#0,tpep_pickup_datetime#1,tpep_dropoff_datetime#2,passenger_count#3L,trip_distance#4,RatecodeID#5L,store_and_fwd_flag#6,PULocationID#7,DOLocationID#8,payment_type#9L,fare_amount#10,extra#11,mta_tax#12,tip_amount#13,tolls_amount#14,improvement_surcharge#15,total_amount#16,congestion_surcharge#17,Airport_fee#18])\n               :  :     +- Relation [VendorID#0,tpep_pickup_datetime#1,tpep_dropoff_datetime#2,passenger_count#3L,trip_distance#4,RatecodeID#5L,store_and_fwd_flag#6,PULocationID#7,DOLocationID#8,payment_type#9L,fare_amount#10,extra#11,mta_tax#12,tip_amount#13,tolls_amount#14,improvement_surcharge#15,total_amount#16,congestion_surcharge#17,Airport_fee#18] parquet\n               :  +- SubqueryAlias taxi_zones\n               :     +- View (`taxi_zones`, [LocationID#78,Borough#79,Zone#80,service_zone#81])\n               :        +- Relation [LocationID#78,Borough#79,Zone#80,service_zone#81] parquet\n               +- SubqueryAlias weather_hourly\n                  +- View (`weather_hourly`, [weather_hour#86,observation_time#87,STATION#88,NAME#89,REPORT_TYPE#90,SOURCE#91,latitude#92,longitude#93,elevation_ft#94,temperature_f_raw#95,temperature_f#96,relative_humidity_raw#97,relative_humidity#98,precipitation_raw#99,precipitation_in#100,precipitation_trace#101,has_precipitation#102,HourlyPresentWeatherType#103,HourlyWindDirection#104,wind_speed_raw#105,wind_speed_mph#106,visibility_raw#107,visibility_miles#108])\n                     +- Relation [weather_hour#86,observation_time#87,STATION#88,NAME#89,REPORT_TYPE#90,SOURCE#91,latitude#92,longitude#93,elevation_ft#94,temperature_f_raw#95,temperature_f#96,relative_humidity_raw#97,relative_humidity#98,precipitation_raw#99,precipitation_in#100,precipitation_trace#101,has_precipitation#102,HourlyPresentWeatherType#103,HourlyWindDirection#104,wind_speed_raw#105,wind_speed_mph#106,visibility_raw#107,visibility_miles#108] parquet\n"
+            }
+          ]
+        },
+        "execution": {
+          "success": false,
+          "error": "Not executed because repaired SQL failed validation.",
+          "columns": [],
+          "rows": [],
+          "seconds": 0.0
+        },
+        "result_correct": false
+      }
+    },
+    {
+      "id": "Q09_H1",
+      "category": "weather_only",
+      "question": "What was the mean air temperature across rainy hours in January 2024? Return exactly one column named average_temperature_f.",
+      "expected_columns": [
+        "average_temperature_f"
+      ],
+      "generation_order": [
+        "A",
+        "B"
+      ],
+      "gold": {
+        "sql": "SELECT AVG(temperature_f) AS average_temperature_f FROM weather_hourly WHERE has_precipitation = TRUE",
+        "columns": [
+          "average_temperature_f"
+        ],
+        "rows": [
+          [
+            39.790419161676645
+          ]
+        ],
+        "spark_seconds": 0.09720840099998895
+      },
+      "retrieval": {
+        "context": "=== SQL-SAFE RETRIEVED METADATA ===\nQuestion: What was the mean air temperature across rainy hours in January 2024? Return exactly one column named average_temperature_f.\n\n=== SQL GENERATION CONSTRAINTS ===\n- Only DATASET names shown below are Spark table identifiers.\n- Only names under PHYSICAL COLUMNS are physical column identifiers.\n- PHYSICAL COLUMN names are fully qualified as dataset.column; use those exact physical identifiers in SQL.\n- Column names requested by the user for the result are output aliases unless they exactly match a listed PHYSICAL COLUMN.\n- Text following 'meaning:' is documentation, not an SQL identifier.\n- JOIN CONDITION lines are executable SQL conditions; use them directly when the described relationship is required.\n- SQL EXPRESSION/PREDICATE lines are executable SQL fragments; use them directly when their described meaning matches the question.\n- The registered yellow_taxi, green_taxi, and weather_hourly views already contain only January 2024 records.\n- Do not add a January 2024 date predicate unless the question asks for a narrower time range.\n\n=== RELEVANT DATASETS AND PHYSICAL COLUMNS ===\n\nDATASET weather_hourly\ndescription: Hourly weather representation for NYC Central Park during January 2024, derived from NOAA Local Climatological Data.\ngranularity: one row per clock hour\nPHYSICAL COLUMNS:\n- weather_hourly.has_precipitation:boolean\n  meaning: Three-valued precipitation status: true means precipitation occurred, false means dry, null means unknown.\n- weather_hourly.precipitation_raw:string\n- weather_hourly.temperature_f:double\n  meaning: Observed dry-bulb air temperature in degrees Fahrenheit.\n- weather_hourly.temperature_f_raw:string\n\n=== VALID SQL JOIN CONDITIONS ===\n- None required.\n\n=== RELEVANT SQL EXPRESSIONS / PREDICATES ===\n- SQL EXPRESSION/PREDICATE: weather_hourly.has_precipitation = TRUE\n  meaning: An hour is rainy when NOAA indicates measurable or trace precipitation.\n  result: Includes trace precipitation. Missing weather is not classified as rainy.",
+        "seconds": 0.34166189899997335,
+        "embedding_prompt_tokens": 30,
+        "selection": {
+          "datasets": [
+            "weather_hourly"
+          ],
+          "columns": [
+            "weather_hourly.has_precipitation",
+            "weather_hourly.precipitation_raw",
+            "weather_hourly.temperature_f",
+            "weather_hourly.temperature_f_raw"
+          ],
+          "concepts": [
+            "precipitation_status",
+            "temperature"
+          ],
+          "relationships": [],
+          "rules": [
+            "rainy_hour"
+          ]
+        },
+        "metadata_recall": 1.0,
+        "metadata_hits": 4,
+        "metadata_required": 4
+      },
+      "A": {
+        "configuration": "full_catalog",
+        "metadata_characters": 9498,
+        "metadata_words": 1056,
+        "prompt_characters": 10789,
+        "prompt_tokens": 2551,
+        "generated_tokens": 29,
+        "wall_seconds": 11.824094732000049,
+        "load_seconds": 0.311995352,
+        "prompt_eval_seconds": 3.981581,
+        "generation_seconds": 7.465448,
+        "sql": "SELECT AVG(weather_hourly.temperature_f) AS average_temperature_f\nFROM weather_hourly\nWHERE weather_hourly.has_precipitation = TRUE",
+        "validation": {
+          "valid": true,
+          "tables": [
+            "weather_hourly"
+          ],
+          "output_columns": [
+            "average_temperature_f"
+          ],
+          "issues": []
+        },
+        "execution": {
+          "success": true,
+          "error": null,
+          "columns": [
+            "average_temperature_f"
+          ],
+          "rows": [
+            [
+              39.790419161676645
+            ]
+          ],
+          "seconds": 0.1177610680001635
+        },
+        "result_correct": true
+      },
+      "B": {
+        "configuration": "relation_aware",
+        "metadata_characters": 2032,
+        "metadata_words": 272,
+        "prompt_characters": 3323,
+        "prompt_tokens": 725,
+        "generated_tokens": 34,
+        "wall_seconds": 34.4801265860001,
+        "load_seconds": 0.277786153,
+        "prompt_eval_seconds": 27.181382,
+        "generation_seconds": 6.96095,
+        "sql": "SELECT AVG(weather_hourly.temperature_f) AS average_temperature_f\nFROM weather_hourly\nWHERE weather_hourly.has_precipitation = TRUE;",
+        "validation": {
+          "valid": true,
+          "tables": [
+            "weather_hourly"
+          ],
+          "output_columns": [
+            "average_temperature_f"
+          ],
+          "issues": []
+        },
+        "execution": {
+          "success": true,
+          "error": null,
+          "columns": [
+            "average_temperature_f"
+          ],
+          "rows": [
+            [
+              39.790419161676645
+            ]
+          ],
+          "seconds": 0.07168982300026983
+        },
+        "result_correct": true
+      },
+      "C": {
+        "initial_sql": "SELECT AVG(weather_hourly.temperature_f) AS average_temperature_f\nFROM weather_hourly\nWHERE weather_hourly.has_precipitation = TRUE;",
+        "repair_attempted": false,
+        "repair": null,
+        "final_sql": "SELECT AVG(weather_hourly.temperature_f) AS average_temperature_f\nFROM weather_hourly\nWHERE weather_hourly.has_precipitation = TRUE;",
+        "validation": {
+          "valid": true,
+          "tables": [
+            "weather_hourly"
+          ],
+          "output_columns": [
+            "average_temperature_f"
+          ],
+          "issues": []
+        },
+        "execution": {
+          "success": true,
+          "error": null,
+          "columns": [
+            "average_temperature_f"
+          ],
+          "rows": [
+            [
+              39.790419161676645
+            ]
+          ],
+          "seconds": 0.07168982300026983
+        },
+        "result_correct": true
+      }
+    },
+    {
+      "id": "Q09_H2",
+      "category": "weather_only",
+      "question": "Calculate the average temperature for January 2024 hours in which precipitation occurred. Output exactly one column called average_temperature_f.",
+      "expected_columns": [
+        "average_temperature_f"
+      ],
+      "generation_order": [
+        "B",
+        "A"
+      ],
+      "gold": {
+        "sql": "SELECT AVG(temperature_f) AS average_temperature_f FROM weather_hourly WHERE has_precipitation = TRUE",
+        "columns": [
+          "average_temperature_f"
+        ],
+        "rows": [
+          [
+            39.790419161676645
+          ]
+        ],
+        "spark_seconds": 0.10242420200029301
+      },
+      "retrieval": {
+        "context": "=== SQL-SAFE RETRIEVED METADATA ===\nQuestion: Calculate the average temperature for January 2024 hours in which precipitation occurred. Output exactly one column called average_temperature_f.\n\n=== SQL GENERATION CONSTRAINTS ===\n- Only DATASET names shown below are Spark table identifiers.\n- Only names under PHYSICAL COLUMNS are physical column identifiers.\n- PHYSICAL COLUMN names are fully qualified as dataset.column; use those exact physical identifiers in SQL.\n- Column names requested by the user for the result are output aliases unless they exactly match a listed PHYSICAL COLUMN.\n- Text following 'meaning:' is documentation, not an SQL identifier.\n- JOIN CONDITION lines are executable SQL conditions; use them directly when the described relationship is required.\n- SQL EXPRESSION/PREDICATE lines are executable SQL fragments; use them directly when their described meaning matches the question.\n- The registered yellow_taxi, green_taxi, and weather_hourly views already contain only January 2024 records.\n- Do not add a January 2024 date predicate unless the question asks for a narrower time range.\n\n=== RELEVANT DATASETS AND PHYSICAL COLUMNS ===\n\nDATASET weather_hourly\ndescription: Hourly weather representation for NYC Central Park during January 2024, derived from NOAA Local Climatological Data.\ngranularity: one row per clock hour\nPHYSICAL COLUMNS:\n- weather_hourly.has_precipitation:boolean\n  meaning: Three-valued precipitation status: true means precipitation occurred, false means dry, null means unknown.\n- weather_hourly.precipitation_raw:string\n- weather_hourly.temperature_f:double\n  meaning: Observed dry-bulb air temperature in degrees Fahrenheit.\n- weather_hourly.temperature_f_raw:string\n\n=== VALID SQL JOIN CONDITIONS ===\n- None required.\n\n=== RELEVANT SQL EXPRESSIONS / PREDICATES ===\n- None required.",
+        "seconds": 0.3431738790000054,
+        "embedding_prompt_tokens": 30,
+        "selection": {
+          "datasets": [
+            "weather_hourly"
+          ],
+          "columns": [
+            "weather_hourly.has_precipitation",
+            "weather_hourly.precipitation_raw",
+            "weather_hourly.temperature_f",
+            "weather_hourly.temperature_f_raw"
+          ],
+          "concepts": [
+            "precipitation_status",
+            "temperature"
+          ],
+          "relationships": [],
+          "rules": []
+        },
+        "metadata_recall": 0.75,
+        "metadata_hits": 3,
+        "metadata_required": 4
+      },
+      "A": {
+        "configuration": "full_catalog",
+        "metadata_characters": 9498,
+        "metadata_words": 1056,
+        "prompt_characters": 10810,
+        "prompt_tokens": 2551,
+        "generated_tokens": 34,
+        "wall_seconds": 13.008177316000001,
+        "load_seconds": 0.257549035,
+        "prompt_eval_seconds": 3.988485,
+        "generation_seconds": 8.715152,
+        "sql": "SELECT AVG(weather_hourly.temperature_f) AS average_temperature_f\nFROM weather_hourly\nWHERE weather_hourly.has_precipitation = TRUE;",
+        "validation": {
+          "valid": true,
+          "tables": [
+            "weather_hourly"
+          ],
+          "output_columns": [
+            "average_temperature_f"
+          ],
+          "issues": []
+        },
+        "execution": {
+          "success": true,
+          "error": null,
+          "columns": [
+            "average_temperature_f"
+          ],
+          "rows": [
+            [
+              39.790419161676645
+            ]
+          ],
+          "seconds": 0.08777206000013393
+        },
+        "result_correct": true
+      },
+      "B": {
+        "configuration": "relation_aware",
+        "metadata_characters": 1835,
+        "metadata_words": 246,
+        "prompt_characters": 3147,
+        "prompt_tokens": 680,
+        "generated_tokens": 34,
+        "wall_seconds": 31.454733748999843,
+        "load_seconds": 0.296796327,
+        "prompt_eval_seconds": 24.295246,
+        "generation_seconds": 6.834652,
+        "sql": "SELECT AVG(weather_hourly.temperature_f) AS average_temperature_f\nFROM weather_hourly\nWHERE weather_hourly.has_precipitation = TRUE;",
+        "validation": {
+          "valid": true,
+          "tables": [
+            "weather_hourly"
+          ],
+          "output_columns": [
+            "average_temperature_f"
+          ],
+          "issues": []
+        },
+        "execution": {
+          "success": true,
+          "error": null,
+          "columns": [
+            "average_temperature_f"
+          ],
+          "rows": [
+            [
+              39.790419161676645
+            ]
+          ],
+          "seconds": 0.06965272500019637
+        },
+        "result_correct": true
+      },
+      "C": {
+        "initial_sql": "SELECT AVG(weather_hourly.temperature_f) AS average_temperature_f\nFROM weather_hourly\nWHERE weather_hourly.has_precipitation = TRUE;",
+        "repair_attempted": false,
+        "repair": null,
+        "final_sql": "SELECT AVG(weather_hourly.temperature_f) AS average_temperature_f\nFROM weather_hourly\nWHERE weather_hourly.has_precipitation = TRUE;",
+        "validation": {
+          "valid": true,
+          "tables": [
+            "weather_hourly"
+          ],
+          "output_columns": [
+            "average_temperature_f"
+          ],
+          "issues": []
+        },
+        "execution": {
+          "success": true,
+          "error": null,
+          "columns": [
+            "average_temperature_f"
+          ],
+          "rows": [
+            [
+              39.790419161676645
+            ]
+          ],
+          "seconds": 0.06965272500019637
+        },
+        "result_correct": true
+      }
+    },
+    {
+      "id": "Q10_H1",
+      "category": "temporal_grouping",
+      "question": "For Yellow Taxi pickups occurring during rainy hours in January 2024, which hour of the day had the highest pickup count? Return only the top hour with exactly two columns named hour_of_day and trip_count.",
+      "expected_columns": [
+        "hour_of_day",
+        "trip_count"
+      ],
+      "generation_order": [
+        "A",
+        "B"
+      ],
+      "gold": {
+        "sql": "SELECT hour(y.tpep_pickup_datetime) AS hour_of_day, COUNT(*) AS trip_count FROM yellow_taxi y JOIN weather_hourly w ON date_trunc('hour', y.tpep_pickup_datetime) = w.weather_hour WHERE w.has_precipitation = TRUE GROUP BY hour(y.tpep_pickup_datetime) ORDER BY trip_count DESC, hour_of_day ASC LIMIT 1",
+        "columns": [
+          "hour_of_day",
+          "trip_count"
+        ],
+        "rows": [
+          [
+            12,
+            54447
+          ]
+        ],
+        "spark_seconds": 1.1950216410000394
+      },
+      "retrieval": {
+        "context": "=== SQL-SAFE RETRIEVED METADATA ===\nQuestion: For Yellow Taxi pickups occurring during rainy hours in January 2024, which hour of the day had the highest pickup count? Return only the top hour with exactly two columns named hour_of_day and trip_count.\n\n=== SQL GENERATION CONSTRAINTS ===\n- Only DATASET names shown below are Spark table identifiers.\n- Only names under PHYSICAL COLUMNS are physical column identifiers.\n- PHYSICAL COLUMN names are fully qualified as dataset.column; use those exact physical identifiers in SQL.\n- Column names requested by the user for the result are output aliases unless they exactly match a listed PHYSICAL COLUMN.\n- Text following 'meaning:' is documentation, not an SQL identifier.\n- JOIN CONDITION lines are executable SQL conditions; use them directly when the described relationship is required.\n- SQL EXPRESSION/PREDICATE lines are executable SQL fragments; use them directly when their described meaning matches the question.\n- The registered yellow_taxi, green_taxi, and weather_hourly views already contain only January 2024 records.\n- Do not add a January 2024 date predicate unless the question asks for a narrower time range.\n\n=== RELEVANT DATASETS AND PHYSICAL COLUMNS ===\n\nDATASET weather_hourly\ndescription: Hourly weather representation for NYC Central Park during January 2024, derived from NOAA Local Climatological Data.\ngranularity: one row per clock hour\nPHYSICAL COLUMNS:\n- weather_hourly.has_precipitation:boolean\n  meaning: Three-valued precipitation status: true means precipitation occurred, false means dry, null means unknown.\n- weather_hourly.weather_hour:timestamp_ntz\n  meaning: Clock-hour bucket represented by an hourly weather record.\n\nDATASET yellow_taxi\ndescription: Curated Yellow Taxi trips for January 2024. Original TLC column names are preserved.\ngranularity: one row per taxi trip\nPHYSICAL COLUMNS:\n- yellow_taxi.PULocationID:int\n  meaning: TLC taxi-zone identifier for the trip pickup location.\n- yellow_taxi.tolls_amount:double\n- yellow_taxi.tpep_pickup_datetime:timestamp_ntz\n  meaning: Date and time when a taxi trip begins.\n\n=== VALID SQL JOIN CONDITIONS ===\n- JOIN CONDITION: date_trunc('hour', yellow_taxi.tpep_pickup_datetime) = weather_hourly.weather_hour\n  meaning: Aligns a Yellow Taxi pickup timestamp with the corresponding hourly NYC weather bucket.\n\n=== RELEVANT SQL EXPRESSIONS / PREDICATES ===\n- SQL EXPRESSION/PREDICATE: weather_hourly.has_precipitation = TRUE\n  meaning: An hour is rainy when NOAA indicates measurable or trace precipitation.\n  result: Includes trace precipitation. Missing weather is not classified as rainy.\n- SQL EXPRESSION/PREDICATE: hour(yellow_taxi.tpep_pickup_datetime)\n  meaning: Extracts the integer clock hour of day from a Yellow Taxi pickup timestamp.\n  result: Returns an integer from 0 to 23. Use this for grouping pickups by clock hour across different dates.",
+        "seconds": 0.3646544499999891,
+        "embedding_prompt_tokens": 49,
+        "selection": {
+          "datasets": [
+            "weather_hourly",
+            "yellow_taxi"
+          ],
+          "columns": [
+            "weather_hourly.has_precipitation",
+            "weather_hourly.weather_hour",
+            "yellow_taxi.PULocationID",
+            "yellow_taxi.tolls_amount",
+            "yellow_taxi.tpep_pickup_datetime"
+          ],
+          "concepts": [
+            "hour_of_day",
+            "pickup_datetime",
+            "pickup_zone_id",
+            "precipitation_status",
+            "weather_hour"
+          ],
+          "relationships": [
+            "yellow_pickup_weather_hour"
+          ],
+          "rules": [
+            "rainy_hour",
+            "yellow_pickup_hour_of_day"
+          ]
+        },
+        "metadata_recall": 1.0,
+        "metadata_hits": 8,
+        "metadata_required": 8
+      },
+      "A": {
+        "configuration": "full_catalog",
+        "metadata_characters": 9498,
+        "metadata_words": 1056,
+        "prompt_characters": 10870,
+        "prompt_tokens": 2569,
+        "generated_tokens": 89,
+        "wall_seconds": 29.917957081000168,
+        "load_seconds": 0.391988835,
+        "prompt_eval_seconds": 5.69861,
+        "generation_seconds": 23.802064,
+        "sql": "SELECT \n  hour_of_day,\n  COUNT(*) AS trip_count\nFROM \n  yellow_taxi\nJOIN \n  weather_hourly ON date_trunc('hour', yellow_taxi.tpep_pickup_datetime) = weather_hourly.weather_hour\nWHERE \n  weather_hourly.has_precipitation = TRUE\nGROUP BY \n  hour_of_day\nORDER BY \n  trip_count DESC\nLIMIT 1;",
+        "validation": {
+          "valid": false,
+          "tables": [
+            "weather_hourly",
+            "yellow_taxi"
+          ],
+          "output_columns": [],
+          "issues": [
+            {
+              "stage": "spark_analysis",
+              "message": "AnalysisException: [UNRESOLVED_COLUMN.WITH_SUGGESTION] A column or function parameter with name `hour_of_day` cannot be resolved. Did you mean one of the following? [`yellow_taxi`.`extra`, `weather_hourly`.`NAME`, `yellow_taxi`.`mta_tax`, `weather_hourly`.`SOURCE`, `yellow_taxi`.`VendorID`].; line 2 pos 2;\n'GlobalLimit 1\n+- 'LocalLimit 1\n   +- 'Sort ['trip_count DESC NULLS LAST], true\n      +- 'Aggregate ['hour_of_day], ['hour_of_day, count(1) AS trip_count#786L]\n         +- Filter (has_precipitation#102 = true)\n            +- Join Inner, (date_trunc(hour, cast(tpep_pickup_datetime#1 as timestamp), Some(Etc/UTC)) = cast(weather_hour#86 as timestamp))\n               :- SubqueryAlias yellow_taxi\n               :  +- View (`yellow_taxi`, [VendorID#0,tpep_pickup_datetime#1,tpep_dropoff_datetime#2,passenger_count#3L,trip_distance#4,RatecodeID#5L,store_and_fwd_flag#6,PULocationID#7,DOLocationID#8,payment_type#9L,fare_amount#10,extra#11,mta_tax#12,tip_amount#13,tolls_amount#14,improvement_surcharge#15,total_amount#16,congestion_surcharge#17,Airport_fee#18])\n               :     +- Relation [VendorID#0,tpep_pickup_datetime#1,tpep_dropoff_datetime#2,passenger_count#3L,trip_distance#4,RatecodeID#5L,store_and_fwd_flag#6,PULocationID#7,DOLocationID#8,payment_type#9L,fare_amount#10,extra#11,mta_tax#12,tip_amount#13,tolls_amount#14,improvement_surcharge#15,total_amount#16,congestion_surcharge#17,Airport_fee#18] parquet\n               +- SubqueryAlias weather_hourly\n                  +- View (`weather_hourly`, [weather_hour#86,observation_time#87,STATION#88,NAME#89,REPORT_TYPE#90,SOURCE#91,latitude#92,longitude#93,elevation_ft#94,temperature_f_raw#95,temperature_f#96,relative_humidity_raw#97,relative_humidity#98,precipitation_raw#99,precipitation_in#100,precipitation_trace#101,has_precipitation#102,HourlyPresentWeatherType#103,HourlyWindDirection#104,wind_speed_raw#105,wind_speed_mph#106,visibility_raw#107,visibility_miles#108])\n                     +- Relation [weather_hour#86,observation_time#87,STATION#88,NAME#89,REPORT_TYPE#90,SOURCE#91,latitude#92,longitude#93,elevation_ft#94,temperature_f_raw#95,temperature_f#96,relative_humidity_raw#97,relative_humidity#98,precipitation_raw#99,precipitation_in#100,precipitation_trace#101,has_precipitation#102,HourlyPresentWeatherType#103,HourlyWindDirection#104,wind_speed_raw#105,wind_speed_mph#106,visibility_raw#107,visibility_miles#108] parquet\n"
+            }
+          ]
+        },
+        "execution": {
+          "success": false,
+          "error": "Not executed because validation failed.",
+          "columns": [],
+          "rows": [],
+          "seconds": 0.0
+        },
+        "result_correct": false
+      },
+      "B": {
+        "configuration": "relation_aware",
+        "metadata_characters": 2887,
+        "metadata_words": 388,
+        "prompt_characters": 4259,
+        "prompt_tokens": 950,
+        "generated_tokens": 110,
+        "wall_seconds": 69.61824339800023,
+        "load_seconds": 0.270387329,
+        "prompt_eval_seconds": 43.084445,
+        "generation_seconds": 26.203913,
+        "sql": "SELECT \n  hour(yellow_taxi.tpep_pickup_datetime) AS hour_of_day,\n  COUNT(yellow_taxi.PULocationID) AS trip_count\nFROM \n  yellow_taxi\nJOIN \n  weather_hourly ON date_trunc('hour', yellow_taxi.tpep_pickup_datetime) = weather_hourly.weather_hour\nWHERE \n  weather_hourly.has_precipitation = TRUE\nGROUP BY \n  hour_of_day\nORDER BY \n  trip_count DESC\nLIMIT 1;",
+        "validation": {
+          "valid": true,
+          "tables": [
+            "weather_hourly",
+            "yellow_taxi"
+          ],
+          "output_columns": [
+            "hour_of_day",
+            "trip_count"
+          ],
+          "issues": []
+        },
+        "execution": {
+          "success": true,
+          "error": null,
+          "columns": [
+            "hour_of_day",
+            "trip_count"
+          ],
+          "rows": [
+            [
+              12,
+              54447
+            ]
+          ],
+          "seconds": 1.3046278780002467
+        },
+        "result_correct": true
+      },
+      "C": {
+        "initial_sql": "SELECT \n  hour(yellow_taxi.tpep_pickup_datetime) AS hour_of_day,\n  COUNT(yellow_taxi.PULocationID) AS trip_count\nFROM \n  yellow_taxi\nJOIN \n  weather_hourly ON date_trunc('hour', yellow_taxi.tpep_pickup_datetime) = weather_hourly.weather_hour\nWHERE \n  weather_hourly.has_precipitation = TRUE\nGROUP BY \n  hour_of_day\nORDER BY \n  trip_count DESC\nLIMIT 1;",
+        "repair_attempted": false,
+        "repair": null,
+        "final_sql": "SELECT \n  hour(yellow_taxi.tpep_pickup_datetime) AS hour_of_day,\n  COUNT(yellow_taxi.PULocationID) AS trip_count\nFROM \n  yellow_taxi\nJOIN \n  weather_hourly ON date_trunc('hour', yellow_taxi.tpep_pickup_datetime) = weather_hourly.weather_hour\nWHERE \n  weather_hourly.has_precipitation = TRUE\nGROUP BY \n  hour_of_day\nORDER BY \n  trip_count DESC\nLIMIT 1;",
+        "validation": {
+          "valid": true,
+          "tables": [
+            "weather_hourly",
+            "yellow_taxi"
+          ],
+          "output_columns": [
+            "hour_of_day",
+            "trip_count"
+          ],
+          "issues": []
+        },
+        "execution": {
+          "success": true,
+          "error": null,
+          "columns": [
+            "hour_of_day",
+            "trip_count"
+          ],
+          "rows": [
+            [
+              12,
+              54447
+            ]
+          ],
+          "seconds": 1.3046278780002467
+        },
+        "result_correct": true
+      }
+    },
+    {
+      "id": "Q10_H2",
+      "category": "temporal_grouping",
+      "question": "During January 2024 rainy periods, at what clock hour did the largest number of Yellow Taxi pickups occur? Return just the leading hour using exactly the columns hour_of_day and trip_count.",
+      "expected_columns": [
+        "hour_of_day",
+        "trip_count"
+      ],
+      "generation_order": [
+        "B",
+        "A"
+      ],
+      "gold": {
+        "sql": "SELECT hour(y.tpep_pickup_datetime) AS hour_of_day, COUNT(*) AS trip_count FROM yellow_taxi y JOIN weather_hourly w ON date_trunc('hour', y.tpep_pickup_datetime) = w.weather_hour WHERE w.has_precipitation = TRUE GROUP BY hour(y.tpep_pickup_datetime) ORDER BY trip_count DESC, hour_of_day ASC LIMIT 1",
+        "columns": [
+          "hour_of_day",
+          "trip_count"
+        ],
+        "rows": [
+          [
+            12,
+            54447
+          ]
+        ],
+        "spark_seconds": 0.7726151159999972
+      },
+      "retrieval": {
+        "context": "=== SQL-SAFE RETRIEVED METADATA ===\nQuestion: During January 2024 rainy periods, at what clock hour did the largest number of Yellow Taxi pickups occur? Return just the leading hour using exactly the columns hour_of_day and trip_count.\n\n=== SQL GENERATION CONSTRAINTS ===\n- Only DATASET names shown below are Spark table identifiers.\n- Only names under PHYSICAL COLUMNS are physical column identifiers.\n- PHYSICAL COLUMN names are fully qualified as dataset.column; use those exact physical identifiers in SQL.\n- Column names requested by the user for the result are output aliases unless they exactly match a listed PHYSICAL COLUMN.\n- Text following 'meaning:' is documentation, not an SQL identifier.\n- JOIN CONDITION lines are executable SQL conditions; use them directly when the described relationship is required.\n- SQL EXPRESSION/PREDICATE lines are executable SQL fragments; use them directly when their described meaning matches the question.\n- The registered yellow_taxi, green_taxi, and weather_hourly views already contain only January 2024 records.\n- Do not add a January 2024 date predicate unless the question asks for a narrower time range.\n\n=== RELEVANT DATASETS AND PHYSICAL COLUMNS ===\n\nDATASET weather_hourly\ndescription: Hourly weather representation for NYC Central Park during January 2024, derived from NOAA Local Climatological Data.\ngranularity: one row per clock hour\nPHYSICAL COLUMNS:\n- weather_hourly.has_precipitation:boolean\n  meaning: Three-valued precipitation status: true means precipitation occurred, false means dry, null means unknown.\n- weather_hourly.weather_hour:timestamp_ntz\n  meaning: Clock-hour bucket represented by an hourly weather record.\n\nDATASET yellow_taxi\ndescription: Curated Yellow Taxi trips for January 2024. Original TLC column names are preserved.\ngranularity: one row per taxi trip\nPHYSICAL COLUMNS:\n- yellow_taxi.tolls_amount:double\n- yellow_taxi.tpep_pickup_datetime:timestamp_ntz\n  meaning: Date and time when a taxi trip begins.\n\n=== VALID SQL JOIN CONDITIONS ===\n- JOIN CONDITION: date_trunc('hour', yellow_taxi.tpep_pickup_datetime) = weather_hourly.weather_hour\n  meaning: Aligns a Yellow Taxi pickup timestamp with the corresponding hourly NYC weather bucket.\n\n=== RELEVANT SQL EXPRESSIONS / PREDICATES ===\n- SQL EXPRESSION/PREDICATE: weather_hourly.has_precipitation = TRUE\n  meaning: An hour is rainy when NOAA indicates measurable or trace precipitation.\n  result: Includes trace precipitation. Missing weather is not classified as rainy.\n- SQL EXPRESSION/PREDICATE: hour(yellow_taxi.tpep_pickup_datetime)\n  meaning: Extracts the integer clock hour of day from a Yellow Taxi pickup timestamp.\n  result: Returns an integer from 0 to 23. Use this for grouping pickups by clock hour across different dates.",
+        "seconds": 0.3416928530000405,
+        "embedding_prompt_tokens": 45,
+        "selection": {
+          "datasets": [
+            "weather_hourly",
+            "yellow_taxi"
+          ],
+          "columns": [
+            "weather_hourly.has_precipitation",
+            "weather_hourly.weather_hour",
+            "yellow_taxi.tolls_amount",
+            "yellow_taxi.tpep_pickup_datetime"
+          ],
+          "concepts": [
+            "hour_of_day",
+            "pickup_datetime",
+            "precipitation_status",
+            "weather_hour"
+          ],
+          "relationships": [
+            "yellow_pickup_weather_hour"
+          ],
+          "rules": [
+            "rainy_hour",
+            "yellow_pickup_hour_of_day"
+          ]
+        },
+        "metadata_recall": 1.0,
+        "metadata_hits": 8,
+        "metadata_required": 8
+      },
+      "A": {
+        "configuration": "full_catalog",
+        "metadata_characters": 9498,
+        "metadata_words": 1056,
+        "prompt_characters": 10854,
+        "prompt_tokens": 2565,
+        "generated_tokens": 89,
+        "wall_seconds": 30.049137602999963,
+        "load_seconds": 0.265085306,
+        "prompt_eval_seconds": 5.611592,
+        "generation_seconds": 24.090963,
+        "sql": "SELECT \n  hour_of_day,\n  COUNT(*) AS trip_count\nFROM \n  yellow_taxi\nJOIN \n  weather_hourly ON date_trunc('hour', yellow_taxi.tpep_pickup_datetime) = weather_hourly.weather_hour\nWHERE \n  weather_hourly.has_precipitation = TRUE\nGROUP BY \n  hour_of_day\nORDER BY \n  trip_count DESC\nLIMIT 1;",
+        "validation": {
+          "valid": false,
+          "tables": [
+            "weather_hourly",
+            "yellow_taxi"
+          ],
+          "output_columns": [],
+          "issues": [
+            {
+              "stage": "spark_analysis",
+              "message": "AnalysisException: [UNRESOLVED_COLUMN.WITH_SUGGESTION] A column or function parameter with name `hour_of_day` cannot be resolved. Did you mean one of the following? [`yellow_taxi`.`extra`, `weather_hourly`.`NAME`, `yellow_taxi`.`mta_tax`, `weather_hourly`.`SOURCE`, `yellow_taxi`.`VendorID`].; line 2 pos 2;\n'GlobalLimit 1\n+- 'LocalLimit 1\n   +- 'Sort ['trip_count DESC NULLS LAST], true\n      +- 'Aggregate ['hour_of_day], ['hour_of_day, count(1) AS trip_count#812L]\n         +- Filter (has_precipitation#102 = true)\n            +- Join Inner, (date_trunc(hour, cast(tpep_pickup_datetime#1 as timestamp), Some(Etc/UTC)) = cast(weather_hour#86 as timestamp))\n               :- SubqueryAlias yellow_taxi\n               :  +- View (`yellow_taxi`, [VendorID#0,tpep_pickup_datetime#1,tpep_dropoff_datetime#2,passenger_count#3L,trip_distance#4,RatecodeID#5L,store_and_fwd_flag#6,PULocationID#7,DOLocationID#8,payment_type#9L,fare_amount#10,extra#11,mta_tax#12,tip_amount#13,tolls_amount#14,improvement_surcharge#15,total_amount#16,congestion_surcharge#17,Airport_fee#18])\n               :     +- Relation [VendorID#0,tpep_pickup_datetime#1,tpep_dropoff_datetime#2,passenger_count#3L,trip_distance#4,RatecodeID#5L,store_and_fwd_flag#6,PULocationID#7,DOLocationID#8,payment_type#9L,fare_amount#10,extra#11,mta_tax#12,tip_amount#13,tolls_amount#14,improvement_surcharge#15,total_amount#16,congestion_surcharge#17,Airport_fee#18] parquet\n               +- SubqueryAlias weather_hourly\n                  +- View (`weather_hourly`, [weather_hour#86,observation_time#87,STATION#88,NAME#89,REPORT_TYPE#90,SOURCE#91,latitude#92,longitude#93,elevation_ft#94,temperature_f_raw#95,temperature_f#96,relative_humidity_raw#97,relative_humidity#98,precipitation_raw#99,precipitation_in#100,precipitation_trace#101,has_precipitation#102,HourlyPresentWeatherType#103,HourlyWindDirection#104,wind_speed_raw#105,wind_speed_mph#106,visibility_raw#107,visibility_miles#108])\n                     +- Relation [weather_hour#86,observation_time#87,STATION#88,NAME#89,REPORT_TYPE#90,SOURCE#91,latitude#92,longitude#93,elevation_ft#94,temperature_f_raw#95,temperature_f#96,relative_humidity_raw#97,relative_humidity#98,precipitation_raw#99,precipitation_in#100,precipitation_trace#101,has_precipitation#102,HourlyPresentWeatherType#103,HourlyWindDirection#104,wind_speed_raw#105,wind_speed_mph#106,visibility_raw#107,visibility_miles#108] parquet\n"
+            }
+          ]
+        },
+        "execution": {
+          "success": false,
+          "error": "Not executed because validation failed.",
+          "columns": [],
+          "rows": [],
+          "seconds": 0.0
+        },
+        "result_correct": false
+      },
+      "B": {
+        "configuration": "relation_aware",
+        "metadata_characters": 2774,
+        "metadata_words": 373,
+        "prompt_characters": 4130,
+        "prompt_tokens": 919,
+        "generated_tokens": 120,
+        "wall_seconds": 69.81022242100016,
+        "load_seconds": 0.312749254,
+        "prompt_eval_seconds": 41.936137,
+        "generation_seconds": 27.532184,
+        "sql": "SELECT \n  hour(yellow_taxi.tpep_pickup_datetime) AS hour_of_day,\n  COUNT(yellow_taxi.tpep_pickup_datetime) AS trip_count\nFROM \n  yellow_taxi\nJOIN \n  weather_hourly ON date_trunc('hour', yellow_taxi.tpep_pickup_datetime) = weather_hourly.weather_hour\nWHERE \n  weather_hourly.has_precipitation = TRUE\nGROUP BY \n  hour(yellow_taxi.tpep_pickup_datetime)\nORDER BY \n  trip_count DESC\nLIMIT 1;",
+        "validation": {
+          "valid": true,
+          "tables": [
+            "weather_hourly",
+            "yellow_taxi"
+          ],
+          "output_columns": [
+            "hour_of_day",
+            "trip_count"
+          ],
+          "issues": []
+        },
+        "execution": {
+          "success": true,
+          "error": null,
+          "columns": [
+            "hour_of_day",
+            "trip_count"
+          ],
+          "rows": [
+            [
+              12,
+              54447
+            ]
+          ],
+          "seconds": 1.0540314700001545
+        },
+        "result_correct": true
+      },
+      "C": {
+        "initial_sql": "SELECT \n  hour(yellow_taxi.tpep_pickup_datetime) AS hour_of_day,\n  COUNT(yellow_taxi.tpep_pickup_datetime) AS trip_count\nFROM \n  yellow_taxi\nJOIN \n  weather_hourly ON date_trunc('hour', yellow_taxi.tpep_pickup_datetime) = weather_hourly.weather_hour\nWHERE \n  weather_hourly.has_precipitation = TRUE\nGROUP BY \n  hour(yellow_taxi.tpep_pickup_datetime)\nORDER BY \n  trip_count DESC\nLIMIT 1;",
+        "repair_attempted": false,
+        "repair": null,
+        "final_sql": "SELECT \n  hour(yellow_taxi.tpep_pickup_datetime) AS hour_of_day,\n  COUNT(yellow_taxi.tpep_pickup_datetime) AS trip_count\nFROM \n  yellow_taxi\nJOIN \n  weather_hourly ON date_trunc('hour', yellow_taxi.tpep_pickup_datetime) = weather_hourly.weather_hour\nWHERE \n  weather_hourly.has_precipitation = TRUE\nGROUP BY \n  hour(yellow_taxi.tpep_pickup_datetime)\nORDER BY \n  trip_count DESC\nLIMIT 1;",
+        "validation": {
+          "valid": true,
+          "tables": [
+            "weather_hourly",
+            "yellow_taxi"
+          ],
+          "output_columns": [
+            "hour_of_day",
+            "trip_count"
+          ],
+          "issues": []
+        },
+        "execution": {
+          "success": true,
+          "error": null,
+          "columns": [
+            "hour_of_day",
+            "trip_count"
+          ],
+          "rows": [
+            [
+              12,
+              54447
+            ]
+          ],
+          "seconds": 1.0540314700001545
+        },
+        "result_correct": true
+      }
+    }
+  ]
+}

@@ -1,0 +1,126 @@
+{
+  "benchmark": {
+    "name": "NYC Metadata-Aware Text-to-Spark-SQL Held-Out Benchmark",
+    "version": "1.0",
+    "period": "January 2024",
+    "source_benchmark": "NYC Metadata-Aware Text-to-Spark-SQL Benchmark v1.0",
+    "development_freeze": "development-freeze-v1",
+    "description": "Held-out linguistic generalization set containing two previously unevaluated paraphrases for each of the ten frozen development intents."
+  },
+  "configuration": {
+    "model": "qwen2.5-coder:3b",
+    "temperature": 0,
+    "num_ctx": 4096,
+    "dense_top_k": 5,
+    "full_catalog_characters": 9498,
+    "full_catalog_words": 1056
+  },
+  "overall": {
+    "queries": 20,
+    "A": {
+      "validation_rate": 0.75,
+      "execution_rate": 0.75,
+      "result_accuracy": 0.7,
+      "mean_prompt_tokens": 2558.45,
+      "mean_prompt_eval_seconds": 12.52876895
+    },
+    "B": {
+      "validation_rate": 0.85,
+      "execution_rate": 0.85,
+      "result_accuracy": 0.8,
+      "mean_prompt_tokens": 776.35,
+      "mean_prompt_eval_seconds": 31.2786467,
+      "mean_retrieval_seconds": 0.33497809130002454
+    },
+    "C": {
+      "validation_rate": 0.9,
+      "execution_rate": 0.9,
+      "result_accuracy": 0.85,
+      "repair_attempts": 3,
+      "repair_validation_successes": 1,
+      "repair_validation_success_rate": 0.3333333333333333
+    },
+    "B_vs_A": {
+      "mean_prompt_token_reduction_percent": 69.65545545154292,
+      "mean_prompt_eval_time_reduction_percent": -149.65458956763666
+    }
+  },
+  "derived": {
+    "query_count": 20,
+    "correct_query_counts": {
+      "A": 14,
+      "B": 16,
+      "C": 17
+    },
+    "failure_ids": {
+      "A": [
+        "Q03_H1",
+        "Q03_H2",
+        "Q05_H2",
+        "Q08_H1",
+        "Q10_H1",
+        "Q10_H2"
+      ],
+      "B": [
+        "Q04_H2",
+        "Q05_H2",
+        "Q06_H2",
+        "Q08_H2"
+      ],
+      "C": [
+        "Q05_H2",
+        "Q06_H2",
+        "Q08_H2"
+      ]
+    },
+    "valid_but_incorrect_ids": {
+      "A": [
+        "Q05_H2"
+      ],
+      "B": [
+        "Q05_H2"
+      ],
+      "C": [
+        "Q05_H2"
+      ]
+    },
+    "retrieval_stratification": {
+      "perfect_recall_queries": 17,
+      "imperfect_recall_queries": 3,
+      "perfect_recall_accuracy": {
+        "B": 0.8823529411764706,
+        "C": 0.9411764705882353
+      },
+      "imperfect_recall_accuracy": {
+        "B": 0.3333333333333333,
+        "C": 0.3333333333333333
+      },
+      "imperfect_recall_ids": [
+        {
+          "id": "Q06_H2",
+          "recall": 0.25,
+          "B_correct": false,
+          "C_correct": false
+        },
+        {
+          "id": "Q08_H2",
+          "recall": 0.5,
+          "B_correct": false,
+          "C_correct": false
+        },
+        {
+          "id": "Q09_H2",
+          "recall": 0.75,
+          "B_correct": true,
+          "C_correct": true
+        }
+      ]
+    },
+    "repair": {
+      "attempts": 3,
+      "successful_result_repairs": [
+        "Q04_H2"
+      ]
+    }
+  }
+}
