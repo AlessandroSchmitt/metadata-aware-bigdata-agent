@@ -1,0 +1,251 @@
+{
+  "description": "Metadata-only hard-negative sources for the frozen catalog-scale experiment. They are not Spark execution datasets.",
+  "scales": {
+    "4": 0,
+    "8": 4,
+    "16": 12
+  },
+  "datasets": [
+    {
+      "name": "for_hire_vehicle_trips",
+      "display_name": "NYC For-Hire Vehicle Trips",
+      "description": "For-hire vehicle trip records with pickup and dropoff times, zone identifiers, and travelled distance.",
+      "granularity": "one row per for-hire vehicle trip",
+      "primary_time_column": "pickup_time",
+      "aliases": [
+        "for hire vehicle trips",
+        "fhv trips",
+        "rideshare trips"
+      ],
+      "columns": [
+        {"name": "pickup_time", "type": "timestamp_ntz", "semantic_concept": "pickup_datetime"},
+        {"name": "dropoff_time", "type": "timestamp_ntz", "semantic_concept": "dropoff_datetime"},
+        {"name": "pickup_zone_id", "type": "bigint"},
+        {"name": "dropoff_zone_id", "type": "bigint"},
+        {"name": "trip_miles", "type": "double", "semantic_concept": "trip_distance"},
+        {"name": "base_number", "type": "string"}
+      ]
+    },
+    {
+      "name": "bike_share_trips",
+      "display_name": "NYC Bike Share Trips",
+      "description": "Bike-share ride records with trip start and end times, stations, travelled distance, and rider type.",
+      "granularity": "one row per bike-share ride",
+      "primary_time_column": "started_at",
+      "aliases": [
+        "bike share trips",
+        "bicycle trips",
+        "citibike trips"
+      ],
+      "columns": [
+        {"name": "started_at", "type": "timestamp_ntz", "semantic_concept": "pickup_datetime"},
+        {"name": "ended_at", "type": "timestamp_ntz", "semantic_concept": "dropoff_datetime"},
+        {"name": "start_station_name", "type": "string"},
+        {"name": "end_station_name", "type": "string"},
+        {"name": "ride_distance_miles", "type": "double", "semantic_concept": "trip_distance"},
+        {"name": "member_type", "type": "string"}
+      ]
+    },
+    {
+      "name": "weather_daily",
+      "display_name": "NYC Daily Weather Summary",
+      "description": "Daily weather observations containing temperature summaries and precipitation status for New York City.",
+      "granularity": "one row per calendar day",
+      "primary_time_column": "weather_date",
+      "aliases": [
+        "daily weather",
+        "daily climate observations",
+        "weather summaries"
+      ],
+      "columns": [
+        {"name": "weather_date", "type": "date"},
+        {"name": "mean_temperature_f", "type": "double", "semantic_concept": "temperature"},
+        {"name": "max_temperature_f", "type": "double", "semantic_concept": "temperature"},
+        {"name": "min_temperature_f", "type": "double", "semantic_concept": "temperature"},
+        {"name": "had_precipitation", "type": "boolean", "semantic_concept": "precipitation_status"},
+        {"name": "precipitation_total_in", "type": "double"}
+      ]
+    },
+    {
+      "name": "nyc_neighborhoods",
+      "display_name": "NYC Neighborhood Reference",
+      "description": "Reference metadata for New York City neighborhoods, borough membership, area, and centroid coordinates.",
+      "granularity": "one row per neighborhood",
+      "primary_time_column": null,
+      "aliases": [
+        "nyc neighborhoods",
+        "neighborhood boundaries",
+        "borough neighborhoods"
+      ],
+      "columns": [
+        {"name": "neighborhood_id", "type": "string"},
+        {"name": "neighborhood_name", "type": "string"},
+        {"name": "borough_name", "type": "string", "semantic_concept": "borough"},
+        {"name": "area_sq_miles", "type": "double"},
+        {"name": "centroid_latitude", "type": "double"},
+        {"name": "centroid_longitude", "type": "double"}
+      ]
+    },
+    {
+      "name": "subway_entries",
+      "display_name": "NYC Subway Station Entries",
+      "description": "Subway station entry observations by timestamp, station, borough, and geographic location.",
+      "granularity": "one row per station entry observation",
+      "primary_time_column": "entry_time",
+      "aliases": [
+        "subway entries",
+        "metro entries",
+        "station entries"
+      ],
+      "columns": [
+        {"name": "entry_time", "type": "timestamp_ntz"},
+        {"name": "station_id", "type": "string"},
+        {"name": "station_name", "type": "string"},
+        {"name": "entries", "type": "bigint"},
+        {"name": "borough_name", "type": "string", "semantic_concept": "borough"},
+        {"name": "latitude", "type": "double"},
+        {"name": "longitude", "type": "double"}
+      ]
+    },
+    {
+      "name": "bus_vehicle_positions",
+      "display_name": "NYC Bus Vehicle Positions",
+      "description": "Observed bus vehicle positions with timestamps, routes, stops, boroughs, and vehicle speed.",
+      "granularity": "one row per vehicle observation",
+      "primary_time_column": "observed_at",
+      "aliases": [
+        "bus positions",
+        "bus vehicle locations",
+        "bus observations"
+      ],
+      "columns": [
+        {"name": "observed_at", "type": "timestamp_ntz"},
+        {"name": "route_id", "type": "string"},
+        {"name": "vehicle_id", "type": "string"},
+        {"name": "stop_name", "type": "string"},
+        {"name": "borough_name", "type": "string", "semantic_concept": "borough"},
+        {"name": "speed_mph", "type": "double"}
+      ]
+    },
+    {
+      "name": "traffic_speeds",
+      "display_name": "NYC Traffic Speed Observations",
+      "description": "Road traffic measurements with observation time, street segment, borough, speed, and travel time.",
+      "granularity": "one row per road-segment observation",
+      "primary_time_column": "measurement_time",
+      "aliases": [
+        "traffic speeds",
+        "road speeds",
+        "traffic observations"
+      ],
+      "columns": [
+        {"name": "measurement_time", "type": "timestamp_ntz"},
+        {"name": "segment_id", "type": "string"},
+        {"name": "street_name", "type": "string"},
+        {"name": "borough_name", "type": "string", "semantic_concept": "borough"},
+        {"name": "average_speed_mph", "type": "double"},
+        {"name": "travel_time_seconds", "type": "double"}
+      ]
+    },
+    {
+      "name": "parking_events",
+      "display_name": "NYC Parking Events",
+      "description": "Parking events with start and end times, geographic zone, borough, duration, and monetary charge.",
+      "granularity": "one row per parking event",
+      "primary_time_column": "event_start",
+      "aliases": [
+        "parking events",
+        "parking records",
+        "parking sessions"
+      ],
+      "columns": [
+        {"name": "event_start", "type": "timestamp_ntz"},
+        {"name": "event_end", "type": "timestamp_ntz"},
+        {"name": "zone_id", "type": "string"},
+        {"name": "borough_name", "type": "string", "semantic_concept": "borough"},
+        {"name": "duration_minutes", "type": "double"},
+        {"name": "fee_amount", "type": "double"}
+      ]
+    },
+    {
+      "name": "road_incidents",
+      "display_name": "NYC Road Incidents",
+      "description": "Road incident records with occurrence time, location, borough, severity, and closure time.",
+      "granularity": "one row per road incident",
+      "primary_time_column": "occurred_at",
+      "aliases": [
+        "road incidents",
+        "traffic incidents",
+        "street incidents"
+      ],
+      "columns": [
+        {"name": "occurred_at", "type": "timestamp_ntz"},
+        {"name": "incident_id", "type": "string"},
+        {"name": "borough_name", "type": "string", "semantic_concept": "borough"},
+        {"name": "location_name", "type": "string"},
+        {"name": "severity", "type": "string"},
+        {"name": "closed_at", "type": "timestamp_ntz"}
+      ]
+    },
+    {
+      "name": "street_segments",
+      "display_name": "NYC Street Segments",
+      "description": "Street-network reference records describing road segments, borough, length, speed limit, and road class.",
+      "granularity": "one row per street segment",
+      "primary_time_column": null,
+      "aliases": [
+        "street segments",
+        "road segments",
+        "street network"
+      ],
+      "columns": [
+        {"name": "segment_id", "type": "string"},
+        {"name": "street_name", "type": "string"},
+        {"name": "borough_name", "type": "string", "semantic_concept": "borough"},
+        {"name": "length_miles", "type": "double"},
+        {"name": "speed_limit_mph", "type": "double"},
+        {"name": "road_class", "type": "string"}
+      ]
+    },
+    {
+      "name": "air_quality_hourly",
+      "display_name": "NYC Hourly Air Quality",
+      "description": "Hourly air-quality observations by monitoring station including borough, temperature, particulate matter, and ozone.",
+      "granularity": "one row per station per hour",
+      "primary_time_column": "observation_hour",
+      "aliases": [
+        "hourly air quality",
+        "air quality observations",
+        "pollution observations"
+      ],
+      "columns": [
+        {"name": "observation_hour", "type": "timestamp_ntz"},
+        {"name": "station_id", "type": "string"},
+        {"name": "borough_name", "type": "string", "semantic_concept": "borough"},
+        {"name": "temperature_f", "type": "double", "semantic_concept": "temperature"},
+        {"name": "pm25", "type": "double"},
+        {"name": "ozone_ppb", "type": "double"}
+      ]
+    },
+    {
+      "name": "precipitation_stations",
+      "display_name": "NYC Hourly Precipitation Stations",
+      "description": "Hourly station observations containing temperature and precipitation measurements across New York City.",
+      "granularity": "one row per weather station per hour",
+      "primary_time_column": "observation_hour",
+      "aliases": [
+        "precipitation stations",
+        "hourly precipitation observations",
+        "weather station observations"
+      ],
+      "columns": [
+        {"name": "observation_hour", "type": "timestamp_ntz"},
+        {"name": "station_id", "type": "string"},
+        {"name": "station_name", "type": "string"},
+        {"name": "temperature_f", "type": "double", "semantic_concept": "temperature"},
+        {"name": "has_precipitation", "type": "boolean", "semantic_concept": "precipitation_status"},
+        {"name": "precipitation_in", "type": "double"}
+      ]
+    }
+  ]
+}
