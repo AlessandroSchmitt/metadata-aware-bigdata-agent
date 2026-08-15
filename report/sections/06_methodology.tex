@@ -1,1 +1,439 @@
 \section{Experimental Methodology}
+\label{sec:methodology}
+
+\subsection{Evaluation Goals}
+
+The experimental evaluation was designed to answer four related questions.
+
+First, the study evaluates whether relation-aware metadata retrieval improves
+Text-to-Spark-SQL correctness compared with providing the complete metadata
+catalog to the language model.
+
+Second, it measures whether metadata selection reduces the amount of prompt
+context and the corresponding model-evaluation cost.
+
+Third, it studies the behaviour of the retrieval layer when the metadata
+catalog grows and contains semantically related distractor sources.
+
+Fourth, it evaluates the Spark execution layer under increasing physical data
+volume.
+
+These goals deliberately separate two different notions of scalability:
+\emph{catalog scale}, which concerns the number of metadata sources available
+to the retrieval system, and \emph{data scale}, which concerns the number of
+physical records processed by Spark.
+
+
+\subsection{Development Benchmark}
+
+An initial benchmark of ten analytical intents was used during development.
+The questions cover single-source aggregation, filtering, geographic joins,
+cross-taxi comparisons, temporal joins with weather data, and multi-source
+queries involving both geographic and weather information.
+
+Each benchmark item contains a gold specification including the metadata
+required to answer the question. Depending on the analytical intent, this can
+include required datasets, physical columns, relationships, and semantic
+rules. The benchmark also contains a gold Spark SQL query and the expected
+result.
+
+The initial benchmark was used while implementing and correcting the
+retrieval logic. Consequently, after this tuning activity it was explicitly
+treated as a \emph{development set} and was not used as the main evidence for
+generalisation performance.
+
+This distinction is important because retrieval behaviour had already been
+observed on these questions while the architecture was still being modified.
+
+
+\subsection{Architecture Freeze}
+
+Before the final held-out evaluation, the metadata-aware architecture was
+frozen.
+
+The frozen implementation includes:
+
+\begin{itemize}
+
+    \item metadata catalog access;
+    \item metadata document construction;
+    \item local embedding support;
+    \item dense and lexical retrieval;
+    \item semantic-concept expansion;
+    \item dataset grounding;
+    \item relation-aware expansion;
+    \item semantic-rule expansion;
+    \item SQL-safe context rendering;
+    \item SQL validation;
+    \item one-shot repair.
+
+\end{itemize}
+
+After this freeze, the retrieval architecture was not tuned using the final
+held-out results. Git tags were used to preserve the exact implementation
+state associated with each evaluation phase.
+
+
+\subsection{Frozen Held-Out Benchmark}
+
+A separate held-out benchmark was constructed after the development
+architecture had been frozen.
+
+The held-out benchmark contains 20 natural-language questions, with two new
+paraphrases for each of the ten analytical intents represented in the
+development set. The wording of these questions was not used to tune the
+retriever before the benchmark was frozen.
+
+The underlying gold analytical specification for each intent remains fixed:
+the expected datasets, columns, relationships, semantic rules, output schema,
+gold SQL, and gold result correspond to the same intended computation.
+However, the natural-language formulation is new.
+
+The held-out benchmark itself was committed and tagged before the first final
+A/B/C system evaluation. This provides a clear separation between benchmark
+definition and result observation.
+
+
+\subsection{Experimental Configurations}
+
+The main Text-to-Spark-SQL experiment compares three configurations.
+
+\paragraph{Configuration A: Full Catalog.}
+
+Configuration A is the baseline. The language model receives the complete
+rendered metadata catalog for every question. No metadata retrieval is used to
+restrict the catalog before generation.
+
+This baseline represents the straightforward strategy of exposing all
+available metadata to the model. It also preserves internal semantic catalog
+information that is useful for describing the data but is not necessarily a
+physical SQL identifier.
+
+The generated SQL is validated before execution, but no repair attempt is
+performed.
+
+\paragraph{Configuration B: Relation-Aware Retrieval.}
+
+Configuration B uses the proposed metadata retrieval architecture. Dense and
+lexical evidence identify candidate metadata, after which semantic and
+relationship expansion add structurally required entities.
+
+Only the selected metadata is rendered into the SQL-safe context. The same
+language model and generation parameters used by Configuration A are then used
+to generate Spark SQL.
+
+The generated SQL is validated before execution, but no repair attempt is
+performed.
+
+\paragraph{Configuration C: Retrieval with Validation and Repair.}
+
+Configuration C uses the same relation-aware retrieval and SQL-safe context as
+Configuration B.
+
+The difference is that, when the initially generated SQL fails validation, the
+system can perform one repair attempt using the validator feedback. If the
+query is already valid, no repair is triggered.
+
+This design isolates the incremental contribution of one-shot repair from the
+contribution of metadata retrieval.
+
+
+\subsection{Controlled Generation Configuration}
+
+All A/B/C Text-to-Spark-SQL experiments use the same local
+\texttt{qwen2.5-coder:3b} model through Ollama.
+
+The principal generation parameters are fixed to:
+
+\begin{itemize}
+
+    \item temperature \(=0\);
+    \item context size \(=4096\) tokens.
+
+\end{itemize}
+
+Using the same model and deterministic temperature across configurations
+reduces the number of variables changed by the A/B comparison. The primary
+difference between A and B is therefore the metadata context supplied to the
+model.
+
+
+\subsection{Metadata Retrieval Metrics}
+
+Metadata retrieval is evaluated independently from SQL generation.
+
+For each held-out query, the selected metadata entities are compared with the
+gold required-metadata set.
+
+The evaluation uses:
+
+\begin{itemize}
+
+    \item \textbf{recall}, measuring the fraction of required metadata entities
+    successfully retrieved;
+
+    \item \textbf{precision}, measuring the fraction of retrieved metadata
+    entities that belong to the gold required set;
+
+    \item \textbf{F1}, combining precision and recall;
+
+    \item \textbf{perfect-recall queries}, counting questions for which all
+    required metadata entities are present;
+
+    \item \textbf{context size}, measured in characters;
+
+    \item \textbf{context reduction}, measured relative to the complete
+    catalog context;
+
+    \item \textbf{retrieval latency}.
+
+\end{itemize}
+
+Gold metadata can contain physical datasets, columns, relationships, and
+semantic rules. As a consequence, retrieval evaluation measures structural
+completeness rather than only nearest-neighbour relevance.
+
+
+\subsection{Text-to-Spark-SQL Metrics}
+
+Generated SQL is evaluated at multiple levels.
+
+\textbf{Validation rate} measures how often the generated query passes the
+parser, read-only constraints, physical schema analysis, and expected-output
+checks.
+
+\textbf{Execution rate} measures how often a generated query can be executed
+successfully using Spark.
+
+The principal correctness metric is \textbf{result accuracy}. A generated
+query is considered correct when its executed result matches the expected
+gold result under the benchmark comparison procedure.
+
+Result accuracy is preferred over exact SQL-string matching because different
+SQL formulations can express the same computation. Conversely, a query can be
+syntactically valid and executable while still returning the wrong analytical
+result. Validation success is therefore not treated as a substitute for
+semantic correctness.
+
+
+\subsection{Prompt-Efficiency Metrics}
+
+Prompt efficiency is evaluated by measuring the metadata-dependent input
+provided to the local model.
+
+The held-out A/B experiment records mean prompt-token count for both the
+complete-catalog baseline and the relation-aware configuration.
+
+The relative token reduction is calculated as:
+
+\[
+R_{\mathrm{tokens}}
+=
+1 -
+\frac{T_B}{T_A},
+\]
+
+where \(T_A\) is the mean prompt-token count for the full-catalog baseline and
+\(T_B\) is the mean count for relation-aware prompting.
+
+Retrieval latency is measured separately so that the cost of metadata
+selection is not hidden inside the LLM timing.
+
+
+\subsection{Controlled Latency Protocol}
+
+The original held-out execution revealed that model prompt-evaluation timing
+can be strongly influenced by runtime cache effects. In particular, repeated
+full-catalog prompts share a large common prefix, which can make later
+requests appear artificially inexpensive.
+
+For this reason, intrinsic A/B prompt cost is evaluated using a separate
+controlled latency benchmark rather than relying only on the sequential
+held-out timings.
+
+Three representative held-out questions with perfect metadata recall were
+selected:
+
+\begin{itemize}
+
+    \item one simple single-source analytical request;
+
+    \item one taxi--weather temporal query;
+
+    \item one three-source query involving taxi, geography, and weather.
+
+\end{itemize}
+
+Each A/B condition is executed twice in the controlled phase. A unique
+prefix-isolation header is inserted before the otherwise frozen prompt
+structure so that reuse of an identical long prefix is reduced.
+
+The benchmark records prompt-token count, prompt-evaluation time, generation
+time, API duration, and wall-clock time.
+
+A separate natural-cache phase executes the exact prompts without the
+isolation header. These measurements are retained to illustrate the practical
+effect of prefix reuse, but the prefix-isolated measurements are used as the
+primary latency comparison.
+
+Model cold-load time is measured separately and is not mixed with the
+warm-model prompt-evaluation comparison.
+
+
+\subsection{Repair Evaluation}
+
+Repair is evaluated only when Configuration C encounters an initially invalid
+query.
+
+The benchmark records:
+
+\begin{itemize}
+
+    \item the number of repair attempts;
+
+    \item the number of repaired queries that pass validation;
+
+    \item whether a repaired query improves final result accuracy.
+
+\end{itemize}
+
+A repair is not attempted for a query that is already valid. Consequently,
+the repair mechanism cannot correct a semantically incorrect query that passes
+validation.
+
+Likewise, repair cannot reliably recover from missing metadata if the
+retrieval stage failed to supply the physical schema or relationship required
+for the intended computation.
+
+
+\subsection{Catalog-Scale Experiment}
+
+A separate experiment evaluates metadata retrieval as the catalog grows.
+
+Three catalog sizes are considered:
+
+\begin{itemize}
+
+    \item 4 sources: the original physical data lake;
+
+    \item 8 sources: the original catalog plus 4 metadata-only hard-negative
+    sources;
+
+    \item 16 sources: the original catalog plus 12 metadata-only
+    hard-negative sources.
+
+\end{itemize}
+
+The additional sources are deliberately semantically related to the original
+urban-mobility, geographic, and weather domain. They include concepts such as
+alternative trip data, borough information, daily weather, transportation,
+traffic, and environmental observations.
+
+These sources are metadata-only distractors: no additional physical Spark data
+is executed in this experiment. The purpose is to increase catalog ambiguity
+while keeping the analytical gold answers unchanged.
+
+The distractor specification and the evaluation harness were frozen before
+the first catalog-scale run. No retrieval tuning was performed after observing
+the 4/8/16-source results.
+
+For each scale, a new metadata index is built and the same 20 frozen held-out
+questions are evaluated with the same dense Top-\(5\) retrieval setting.
+
+The experiment records:
+
+\begin{itemize}
+
+    \item number of datasets, columns, and metadata documents;
+
+    \item complete-catalog context size;
+
+    \item mean retrieved-context size;
+
+    \item perfect-recall query count;
+
+    \item macro precision, recall, and F1;
+
+    \item mean context reduction;
+
+    \item retrieval latency;
+
+    \item metadata-index construction cost.
+
+\end{itemize}
+
+
+\subsection{Catalog-Scale Error Analysis}
+
+After the catalog-scale results had been frozen, failures were analysed by
+comparing the missing and extra metadata entities at 4, 8, and 16 sources.
+
+This analysis is descriptive rather than corrective. The retrieval logic was
+not modified in response to the observed failures.
+
+The purpose of this analysis is to identify whether a loss of recall is caused
+by general catalog growth or by competition from particular semantically
+similar hard-negative metadata.
+
+
+\subsection{Data-Volume Scaling Experiment}
+
+Catalog growth and physical data growth are evaluated separately.
+
+The data-volume benchmark uses the curated Yellow Taxi dataset and four row
+counts:
+
+\begin{itemize}
+
+    \item 100,000 rows;
+    \item 500,000 rows;
+    \item 1,000,000 rows;
+    \item the complete 2,963,713-row curated Yellow Taxi dataset.
+
+\end{itemize}
+
+Each scale is materialized outside the timed query execution as a two-file
+Parquet dataset. The number of partitions is therefore held constant across
+the measured scales.
+
+Three Spark SQL workloads are evaluated:
+
+\begin{enumerate}
+
+    \item a scan with aggregate statistics;
+
+    \item grouping by pickup zone;
+
+    \item a temporal join between Yellow Taxi pickups and hourly weather.
+
+\end{enumerate}
+
+Each workload is executed three times for every scale. Scale order is
+alternated between repetitions to reduce systematic ordering effects, and no
+DataFrame is intentionally cached by the benchmark.
+
+The principal reported timing is the median of the three repetitions. Median
+runtime is used because short local Spark workloads are sensitive to
+one-time JVM, filesystem, and execution warm-up effects.
+
+The benchmark also records physical Parquet size and runtime relative to the
+100,000-row baseline.
+
+
+\subsection{Interpretation Constraints}
+
+The experiments are intended to evaluate the implemented prototype, not to
+establish universal performance claims for Spark, Qwen, Qdrant, or the
+underlying embedding model.
+
+In particular, language-model latency is specific to the CPU-only Codespaces
+environment, and the Spark data-volume experiment is limited to approximately
+three million Yellow Taxi records on two local worker threads.
+
+Similarly, the catalog-scale distractors are a controlled set of
+domain-related hard negatives rather than a complete simulation of an
+enterprise metadata catalog.
+
+The results are therefore interpreted as evidence about the behaviour and
+trade-offs of the proposed architecture under the defined experimental
+conditions.
