@@ -20,26 +20,31 @@
 \usepackage{url}
 \usepackage[hidelinks]{hyperref}
 \usepackage{caption}
+\usepackage{tikz}
+
+\usetikzlibrary{
+    arrows.meta,
+    positioning
+}
 
 \graphicspath{{figures/}}
 
-% ---------------------------------------------------------
-% Document information
-% ---------------------------------------------------------
+\captionsetup{
+    font=small,
+    labelfont=bf
+}
 
-\title{
-    \textbf{
-        Metadata-Aware Text-to-Spark-SQL\\
+% Show only major sections in the table of contents.
+% Subsections remain numbered in the document.
+\setcounter{tocdepth}{1}
+
+\hypersetup{
+    pdftitle={
+        Metadata-Aware Text-to-Spark-SQL
         for Cross-Source Data Lake Analytics
-    }
+    },
+    pdfauthor={Alessandro Schmitt}
 }
-
-\author{
-    Alessandro Schmitt\\
-    Matricola 577421
-}
-
-\date{}
 
 % ---------------------------------------------------------
 % Document
@@ -47,24 +52,93 @@
 
 \begin{document}
 
-\maketitle
+% ---------------------------------------------------------
+% Title page
+% ---------------------------------------------------------
+
+\begin{titlepage}
+\centering
+
+\vspace*{1.2cm}
+
+{\Large\textbf{Università degli Studi Roma Tre}\par}
+
+\vspace{0.45cm}
+
+{\large
+Big Data --- Academic Year 2025/2026\par
+}
+
+\vspace{0.15cm}
+
+{\large
+Prof. Riccardo Torlone\par
+}
+
+\vfill
+
+{\LARGE\bfseries
+Metadata-Aware Text-to-Spark-SQL\\[0.2cm]
+for Cross-Source Data Lake Analytics
+\par}
+
+\vspace{0.65cm}
+
+{\Large First Project Report\par}
+
+\vfill
+
+\begin{tabular}{rl}
+\textbf{Student:} & Alessandro Schmitt \\[0.15cm]
+\textbf{Matricola:} & 577421
+\end{tabular}
+
+\vspace{1.2cm}
+
+\end{titlepage}
+
+
+% ---------------------------------------------------------
+% Front matter
+% ---------------------------------------------------------
+
+\pagenumbering{roman}
 
 \begin{abstract}
-This report presents a metadata-aware Text-to-Spark-SQL system for
-cross-source analytics over a heterogeneous data lake.
-The system combines semantic metadata retrieval, relation-aware
-context expansion, SQL-safe metadata rendering, local large language
-model generation, SQL validation, optional one-shot repair, and
-Apache Spark execution.
 
-The experimental evaluation investigates query correctness, metadata
-retrieval quality, prompt efficiency, controlled inference latency,
-catalog scalability, and Spark data-volume scalability.
+Natural-language analytics over heterogeneous data lakes requires a system to
+identify not only the intended computation, but also the physical datasets,
+columns, cross-source relationships, and semantic rules needed to express that
+computation. This report presents a metadata-aware Text-to-Spark-SQL prototype
+that combines a structured metadata catalog, semantic retrieval,
+relation-aware expansion, SQL-safe context rendering, local language-model
+generation, SQL validation, optional one-shot repair, and Apache Spark
+execution.
+
+The system is evaluated on a frozen 20-question held-out benchmark over NYC
+taxi, geographic, and hourly weather data. Complete-catalog prompting achieves
+70\% result accuracy, relation-aware retrieval improves accuracy to 80\%, and
+validation with one-shot repair reaches 85\%. Relation-aware prompting also
+reduces mean prompt size by 69.66\%, while controlled prompt-evaluation time
+decreases by 70.29\% in the CPU-only experimental environment. Additional
+experiments separate metadata scalability from physical data scalability:
+catalog growth reveals a trade-off between bounded context size and retrieval
+recall, while Spark workloads are evaluated from 100,000 to 2,963,713 curated
+Yellow Taxi records.
+
 \end{abstract}
+
+\clearpage
 
 \tableofcontents
 
-\newpage
+\clearpage
+\pagenumbering{arabic}
+
+
+% ---------------------------------------------------------
+% Main report
+% ---------------------------------------------------------
 
 \input{sections/01_introduction}
 \input{sections/02_background}
@@ -76,10 +150,22 @@ catalog scalability, and Spark data-volume scalability.
 \input{sections/08_discussion}
 \input{sections/09_conclusions}
 
+
+% ---------------------------------------------------------
+% Bibliography
+% ---------------------------------------------------------
+
 \clearpage
+
 \bibliographystyle{plain}
 \bibliography{references}
 
+
+% ---------------------------------------------------------
+% Appendix
+% ---------------------------------------------------------
+
+\clearpage
 \appendix
 
 \input{sections/appendix_reproducibility}

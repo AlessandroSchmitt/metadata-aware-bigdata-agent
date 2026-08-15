@@ -21,6 +21,32 @@ stable curated representation rather than exposing the language model
 directly to raw source files.
 
 
+
+The source datasets are grounded in official data publications. NYC TLC
+publishes the taxi trip-record data together with schema documentation and
+Taxi Zone resources \cite{nyctlcTripData,nyctlcTripGuide}. Hourly
+environmental observations are derived from the NOAA/NCEI Local
+Climatological Data product \cite{noaaLCD}.
+
+Table~\ref{tab:core-datasets} summarizes the curated physical datasets used by
+the prototype.
+
+\begin{table}[htbp]
+\centering
+\caption{Core curated datasets used by the prototype.}
+\label{tab:core-datasets}
+\begin{tabular}{lrrl}
+\toprule
+Dataset & Rows & Columns & Analytical role \\
+\midrule
+Yellow Taxi & 2,963,713 & 19 & Transactional mobility \\
+Green Taxi & 56,429 & 20 & Transactional mobility \\
+Taxi Zones & 265 & 4 & Geographic reference \\
+Hourly Weather & 744 & 23 & Temporal/environmental \\
+\bottomrule
+\end{tabular}
+\end{table}
+
 \subsection{Yellow Taxi Trip Records}
 
 The Yellow Taxi dataset is the largest source in the project and represents

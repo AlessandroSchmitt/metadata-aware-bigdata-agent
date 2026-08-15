@@ -1,30 +1,21 @@
 \section{Discussion}
 \label{sec:discussion}
 
-\subsection{Main Findings}
+\subsection{Interpretation of the Main Result}
 
-The experimental results show that metadata selection is not merely a prompt
-compression technique. In the evaluated setting, relation-aware metadata
-retrieval improves both efficiency and final Text-to-Spark-SQL correctness.
+The experiments support the central hypothesis of the project: metadata
+selection is not merely a prompt-compression mechanism. In the evaluated
+setting, a smaller relation-aware and SQL-safe context produces better
+held-out results than complete-catalog prompting while also reducing model
+input cost.
 
-The complete-catalog baseline has access to all available metadata, yet it
-achieves lower held-out result accuracy than the relation-aware
-configuration. This indicates that providing more metadata is not necessarily
-beneficial when the additional context contains semantically useful but
-SQL-unsafe identifiers, unrelated schema elements, or competing concepts.
-
-The proposed approach improves the quality of the generation context by
-combining semantic relevance with structural information. The LLM receives
-fewer metadata entities, but those entities are more directly connected to
-the physical Spark SQL query that must be generated.
-
-The improvement from 70\% result accuracy with the complete catalog to 80\%
-with relation-aware retrieval supports this interpretation. The additional
-increase to 85\% with one-shot repair shows that validator feedback can recover
-a limited subset of remaining generation errors.
+The central interpretation is therefore qualitative as well as quantitative.
+The language model benefits when semantic descriptions are preserved but
+internal metadata identifiers and unrelated schema elements are prevented
+from competing with the physical Spark objects needed for execution.
 
 
-\subsection{Why the Complete Catalog Can Be Worse}
+\subsection{Why the Complete Catalog Can Underperform}
 
 At first sight, the complete catalog should appear advantageous because it
 contains all information needed to answer every benchmark question. However,
@@ -129,7 +120,7 @@ example by using adaptive retrieval depth, stronger structural reranking, or
 confidence-aware expansion.
 
 
-\subsection{Why the 8-to-16 Source Result Matters}
+\subsection{Interpreting the 8-to-16 Source Plateau}
 
 An interesting aspect of the catalog-scale experiment is that performance does
 not continue to degrade when the catalog increases from eight to sixteen

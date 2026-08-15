@@ -364,29 +364,8 @@ analytical workloads from 100,000 rows to the complete 2.96-million-row
 Yellow Taxi dataset, while the measured runtime remains manageable in the
 two-core experimental environment.
 
-
-\subsection{Summary of Main Findings}
-
-The experimental results provide four main findings.
-
-First, relation-aware SQL-safe metadata retrieval improves held-out result
-accuracy from 70\% to 80\% relative to complete-catalog prompting, and
-validation-driven one-shot repair further increases accuracy to 85\%.
-
-Second, the relation-aware context reduces mean prompt size by 69.66\% and
-reduces controlled prompt-evaluation time by 70.29\% in the CPU-only
-experimental environment.
-
-Third, relation-aware retrieval keeps prompt context approximately bounded as
-the metadata catalog grows, but semantically related hard negatives introduce
-a measurable recall trade-off. Macro recall decreases from 0.925 to 0.825
-when the first distractor sources are introduced, then remains stable as the
-catalog grows further.
-
-Fourth, the Spark execution layer successfully handles the evaluated
-data-volume range up to 2,963,713 curated Yellow Taxi records, with the
-temporal weather join exhibiting the clearest increase in runtime as volume
-grows.
-
-These findings are examined further in the discussion of system benefits,
-limitations, and failure modes in Section~\ref{sec:discussion}.
+Taken together, the experiments show that the metadata layer affects both
+downstream SQL correctness and model-processing cost, while the scaling
+experiments expose the limits of aggressive metadata selection and the
+behaviour of the Spark execution layer. These implications are analysed in
+Section~\ref{sec:discussion}.

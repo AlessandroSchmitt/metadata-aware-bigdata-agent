@@ -40,6 +40,76 @@ validation, repair control, and Spark execution. The LLM is used only where
 natural-language interpretation and SQL generation are required.
 
 
+
+Figure~\ref{fig:system-architecture} summarizes the complete processing
+pipeline and the separation between metadata grounding, generation,
+validation, and execution.
+
+\begin{figure}[htbp]
+\centering
+
+\begin{tikzpicture}[
+    node distance=4mm,
+    stage/.style={
+        draw,
+        rounded corners,
+        align=center,
+        text width=0.73\textwidth,
+        minimum height=8mm,
+        inner sep=4pt,
+        font=\small,
+        fill=gray!8
+    },
+    flow/.style={
+        -{Latex[length=2.4mm]},
+        thick
+    }
+]
+
+\node[stage] (question)
+    {Natural-language analytical question};
+
+\node[stage, below=of question] (catalog)
+    {Structured metadata catalog + local vector index};
+
+\node[stage, below=of catalog] (retrieval)
+    {Hybrid retrieval:
+    dense Top-5 + lexical and alias evidence};
+
+\node[stage, below=of retrieval] (expansion)
+    {Semantic grounding + relation-aware expansion};
+
+\node[stage, below=of expansion] (renderer)
+    {SQL-safe metadata context};
+
+\node[stage, below=of renderer] (llm)
+    {Qwen2.5-Coder 3B:
+    Text-to-Spark-SQL generation};
+
+\node[stage, below=of llm] (validation)
+    {SQLGlot + Spark validation
+    $\rightarrow$ optional one-shot repair};
+
+\node[stage, below=of validation] (spark)
+    {Spark SQL execution
+    $\rightarrow$ grounded analytical result};
+
+\draw[flow] (question) -- (catalog);
+\draw[flow] (catalog) -- (retrieval);
+\draw[flow] (retrieval) -- (expansion);
+\draw[flow] (expansion) -- (renderer);
+\draw[flow] (renderer) -- (llm);
+\draw[flow] (llm) -- (validation);
+\draw[flow] (validation) -- (spark);
+
+\end{tikzpicture}
+
+\caption{
+End-to-end metadata-aware Text-to-Spark-SQL architecture.
+}
+\label{fig:system-architecture}
+\end{figure}
+
 \subsection{Structured Metadata Catalog}
 
 The metadata catalog is the central source of structural and semantic
@@ -214,7 +284,7 @@ is unnecessary unless the user requests a narrower date range.
 \subsection{Text-to-Spark-SQL Generation}
 
 The SQL generation component uses the local
-\texttt{qwen2.5-coder:3b} model through Ollama. Generation is deterministic,
+\texttt{qwen2.5-coder:3b} model through Ollama \cite{hui2024qwen25coder}. Generation is deterministic,
 with temperature set to zero and a context window of 4096 tokens.
 
 The model receives the natural-language question together with either the full
