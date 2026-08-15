@@ -253,3 +253,9 @@ logs/
 
 # Generated catalog-scale SQLite catalogs
 data/catalog/scaling/
+
+# Generated Spark data-volume benchmark datasets
+data/benchmarks/volume_scaling/
+
+# Generated Spark data-volume benchmark datasets
+data/benchmarks/volume_scaling/
