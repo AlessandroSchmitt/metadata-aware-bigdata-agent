@@ -1,0 +1,15 @@
+\begin{table}[htbp]
+\centering
+\caption{Spark data-volume scaling using median runtime over three repetitions.}
+\label{tab:data-volume-scaling}
+\begin{tabular}{lrrrrr}
+\toprule
+Scale & Rows & Parquet MiB & Scan (s) & Grouping (s) & Weather join (s) \\
+\midrule
+100k & 100,000 & 2.31 & 0.140 & 0.226 & 0.274 \\
+500k & 500,000 & 11.44 & 0.140 & 0.293 & 0.406 \\
+1m & 1,000,000 & 23.24 & 0.146 & 0.224 & 0.615 \\
+Full & 2,963,713 & 72.58 & 0.199 & 0.492 & 1.350 \\
+\bottomrule
+\end{tabular}
+\end{table}

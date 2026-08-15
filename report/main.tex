@@ -1,0 +1,83 @@
+\documentclass[11pt,a4paper]{article}
+
+% ---------------------------------------------------------
+% Packages
+% ---------------------------------------------------------
+
+\usepackage[utf8]{inputenc}
+\usepackage[T1]{fontenc}
+\usepackage[english]{babel}
+
+\usepackage[
+    a4paper,
+    margin=2.5cm
+]{geometry}
+
+\usepackage{graphicx}
+\usepackage{booktabs}
+\usepackage{microtype}
+\usepackage{amsmath}
+\usepackage{url}
+\usepackage[hidelinks]{hyperref}
+\usepackage{caption}
+
+\graphicspath{{figures/}}
+
+% ---------------------------------------------------------
+% Document information
+% ---------------------------------------------------------
+
+\title{
+    \textbf{
+        Metadata-Aware Text-to-Spark-SQL\\
+        for Cross-Source Data Lake Analytics
+    }
+}
+
+\author{
+    Alessandro Schmitt\\
+    Matricola 577421
+}
+
+\date{}
+
+% ---------------------------------------------------------
+% Document
+% ---------------------------------------------------------
+
+\begin{document}
+
+\maketitle
+
+\begin{abstract}
+This report presents a metadata-aware Text-to-Spark-SQL system for
+cross-source analytics over a heterogeneous data lake.
+The system combines semantic metadata retrieval, relation-aware
+context expansion, SQL-safe metadata rendering, local large language
+model generation, SQL validation, optional one-shot repair, and
+Apache Spark execution.
+
+The experimental evaluation investigates query correctness, metadata
+retrieval quality, prompt efficiency, controlled inference latency,
+catalog scalability, and Spark data-volume scalability.
+\end{abstract}
+
+\tableofcontents
+
+\newpage
+
+\input{sections/01_introduction}
+\input{sections/02_background}
+\input{sections/03_data_lake}
+\input{sections/04_architecture}
+\input{sections/05_implementation}
+\input{sections/06_methodology}
+\input{sections/07_results}
+\input{sections/08_discussion}
+\input{sections/09_conclusions}
+
+\appendix
+
+\input{sections/appendix_reproducibility}
+
+\end{document}
