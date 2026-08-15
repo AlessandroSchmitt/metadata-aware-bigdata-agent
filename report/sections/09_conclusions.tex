@@ -1,1 +1,92 @@
 \section{Conclusions and Future Work}
+\label{sec:conclusions}
+
+This project investigated whether metadata-aware retrieval can improve
+Text-to-Spark-SQL generation over a heterogeneous data lake.
+
+The implemented prototype combines a structured metadata catalog, local
+semantic embeddings, relation-aware metadata retrieval, SQL-safe context
+rendering, a local language model, SQL validation, optional one-shot repair,
+and Apache Spark SQL execution.
+
+The central design choice is to avoid providing the complete metadata catalog
+to the language model for every request. Instead, the system retrieves and
+expands only the metadata considered relevant to the current analytical
+question, while explicitly preserving physical datasets, columns,
+relationships, and semantic rules required for execution.
+
+The experimental results support this approach.
+
+On the frozen held-out benchmark, complete-catalog prompting achieved 70\%
+result accuracy. Relation-aware metadata retrieval increased result accuracy
+to 80\%, and the addition of validation-driven one-shot repair increased it
+further to 85\%.
+
+At the same time, relation-aware prompting reduced mean prompt size from
+2558.45 to 776.35 tokens, corresponding to a 69.66\% reduction. In the
+controlled CPU-only latency experiment, mean prompt-evaluation time decreased
+from 182.58 seconds to 54.24 seconds, a reduction of 70.29\%.
+
+The catalog-scale experiment showed that the retrieved context remains
+approximately bounded while the complete metadata catalog grows. The full
+catalog increased from 9,498 characters with four sources to 16,651
+characters with sixteen sources, while the mean retrieved context remained
+close to 2,100 characters.
+
+This scalability benefit is accompanied by an important limitation. Macro
+metadata recall decreased from 0.925 to 0.825 after semantically related
+hard-negative sources were introduced. Error analysis showed that the
+degradation was caused primarily by competition around geographic and weather
+metadata rather than by catalog size alone.
+
+The held-out results also demonstrated the importance of retrieval
+completeness. Queries with perfect metadata recall achieved substantially
+higher downstream result accuracy than queries with missing required
+metadata. Validation and repair can correct some invalid SQL generations, but
+they cannot reliably compensate for relationships or schema information that
+were never retrieved.
+
+The Spark data-volume experiment evaluated the physical execution layer from
+100,000 rows up to the complete 2,963,713-row curated Yellow Taxi dataset.
+The temporal taxi--weather workload showed the clearest runtime growth, while
+the simpler workloads were strongly influenced by fixed execution and warm-up
+costs in the two-core local environment.
+
+Overall, the results suggest that metadata management is a central component
+of data-centric generative-AI systems for structured analytics. Improving the
+way metadata is selected and represented can improve both correctness and
+efficiency without changing the underlying language model.
+
+Future work could extend the prototype in several directions.
+
+First, retrieval could use an adaptive Top-\(k\) strategy or confidence-aware
+expansion rather than a fixed dense retrieval depth. This could improve recall
+when semantically similar catalog sources compete for the same retrieval
+budget.
+
+Second, structural reranking could make stronger use of catalog relationships,
+schema compatibility, cardinality information, and expected analytical
+operations before the final context is rendered.
+
+Third, the metadata catalog could incorporate richer provenance, data-quality
+statistics, source freshness, and additional semantic constraints.
+
+Fourth, the evaluation could be expanded to larger and more diverse
+cross-domain benchmarks, including catalogs that contain substantially more
+physical sources and unrelated business domains.
+
+Fifth, the Spark execution experiment could be repeated on a distributed
+cluster and with much larger physical datasets in order to study partitioning,
+shuffle behaviour, executor scaling, and resource utilisation.
+
+Finally, larger or alternative local language models could be evaluated using
+the same frozen metadata and benchmark infrastructure. This would make it
+possible to separate improvements caused by stronger language models from
+those caused by better metadata grounding.
+
+The main contribution of the project is therefore not a claim that
+relation-aware retrieval eliminates Text-to-SQL errors. Instead, the project
+provides a reproducible demonstration that metadata selection, structural
+expansion, SQL-safe representation, validation, and controlled evaluation can
+substantially influence the behaviour of language-model-based analytics over
+heterogeneous Big Data sources.
