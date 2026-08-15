@@ -1,1 +1,371 @@
 \section{Implementation}
+\label{sec:implementation}
+
+\subsection{Technology Stack}
+
+The prototype is implemented primarily in Python and uses Apache Spark as the
+structured data-processing engine.
+
+The main technologies are:
+
+\begin{itemize}
+
+    \item \textbf{Python 3.12} for orchestration, catalog management,
+    retrieval, validation, experimental evaluation, and reporting;
+
+    \item \textbf{PySpark 3.5.8} and \textbf{Java 17} for Spark SQL execution
+    over the curated Parquet data lake;
+
+    \item \textbf{SQLite} for the persistent structured metadata catalog;
+
+    \item \textbf{Qdrant} in local embedded mode for vector-based metadata
+    retrieval;
+
+    \item \textbf{Ollama} for running both the embedding model and the local
+    Text-to-SQL language model;
+
+    \item \texttt{embeddinggemma} for metadata embeddings;
+
+    \item \texttt{qwen2.5-coder:3b} for Spark SQL generation and optional
+    one-shot repair;
+
+    \item \textbf{SQLGlot} for SQL parsing and dialect-aware validation;
+
+    \item \textbf{Matplotlib} for generation of reproducible report figures.
+
+\end{itemize}
+
+All language-model inference is executed locally. No paid external model API
+is required by the final prototype.
+
+
+\subsection{Execution Environment}
+
+The implementation and experiments were executed in a GitHub Codespaces
+environment based on Ubuntu Linux.
+
+Spark runs locally using two worker threads. The principal experimental
+configuration uses:
+
+\begin{verbatim}
+--master local[2]
+--driver-memory 1g
+\end{verbatim}
+
+Spark SQL uses four shuffle partitions in the controlled data-volume
+benchmark, while adaptive query execution is enabled.
+
+The local execution environment is intentionally modest. It contains two CPU
+cores and no dedicated GPU. This constraint is relevant when interpreting
+language-model latency results: the measured inference times describe the
+CPU-only experimental environment and are not intended as general performance
+claims for the underlying model.
+
+
+\subsection{Repository Organization}
+
+The implementation is organized into separate directories for configuration,
+source code, scripts, datasets, and experimental artifacts.
+
+The principal structure is:
+
+\begin{verbatim}
+config/
+data/
+  raw/
+  curated/
+  catalog/
+artifacts/
+  benchmarks/
+  report/
+scripts/
+  catalog/
+  data/
+  experiments/
+  reporting/
+  retrieval/
+src/
+  metadata_agent/
+report/
+\end{verbatim}
+
+The \texttt{src/metadata\_agent} package contains reusable application
+components such as the catalog access layer, metadata document construction,
+embedding support, relation-aware retrieval, SQL validation, and repair
+logic.
+
+The \texttt{scripts/} hierarchy contains reproducible entry points for data
+preparation, metadata indexing, validation, experimental evaluation, and
+final report artifact generation.
+
+Configuration files are stored separately under \texttt{config/}. This keeps
+experimental inputs, such as benchmark questions and synthetic catalog-scale
+distractors, outside the implementation code.
+
+
+\subsection{Curated Data Storage}
+
+Raw source data and curated analytical datasets are stored separately.
+
+The curated Spark datasets are written in Parquet format. This choice provides
+a columnar representation directly supported by Spark SQL and avoids requiring
+a separate database server for physical query execution.
+
+The main curated paths correspond to January 2024 Yellow Taxi, Green Taxi,
+Taxi Zones, and hourly weather data. These physical paths are recorded in the
+metadata catalog together with schema, row-count, temporal, and semantic
+information.
+
+Generated raw and curated datasets are excluded from Git version control
+because they are reproducible and potentially large. Experimental benchmark
+summaries and final report artifacts, in contrast, are committed to the
+repository.
+
+
+\subsection{Metadata Catalog Implementation}
+
+The metadata catalog is materialized as a SQLite database. Its content is
+constructed from a versioned configuration file and the actual curated Spark
+schemas.
+
+The core tables include:
+
+\begin{itemize}
+
+    \item \texttt{datasets};
+    \item \texttt{columns};
+    \item \texttt{semantic\_concepts};
+    \item \texttt{column\_semantics};
+    \item \texttt{relationships};
+    \item \texttt{aliases};
+    \item \texttt{semantic\_rules};
+    \item \texttt{catalog\_meta}.
+
+\end{itemize}
+
+Physical column definitions are checked against the curated Parquet schemas
+during catalog construction. This reduces the risk of maintaining metadata
+that refers to schema elements that do not exist in the execution layer.
+
+The generated SQLite file is treated as a reproducible artifact rather than a
+source file and is therefore excluded from Git.
+
+
+\subsection{Metadata Document Construction and Embedding}
+
+The vector index does not embed the complete catalog as a single document.
+Instead, individual metadata entities are converted into separate textual
+documents.
+
+One document is generated for each physical column, semantic concept, dataset,
+relationship, and semantic rule. The base configuration therefore produces
+103 independently retrievable documents.
+
+Each document includes enough natural-language description to support
+semantic matching while its payload preserves the corresponding metadata
+entity type and key.
+
+Embeddings are produced locally using \texttt{embeddinggemma}. The resulting
+768-dimensional vectors are inserted into a Qdrant collection using cosine
+distance.
+
+The index can be rebuilt deterministically from the metadata catalog and is
+therefore not committed as a binary repository artifact.
+
+
+\subsection{Relation-Aware Retrieval Implementation}
+
+The relation-aware retriever is implemented as a deterministic Python
+component.
+
+For each question it combines:
+
+\begin{enumerate}
+
+    \item dense Top-\(k\) retrieval from Qdrant, with \(k=5\);
+
+    \item lexical matching against metadata names and aliases;
+
+    \item semantic-concept expansion toward physical columns;
+
+    \item dataset selection using explicit and inferred evidence;
+
+    \item relationship selection and endpoint expansion;
+
+    \item semantic-rule expansion when supported by the selected metadata.
+
+\end{enumerate}
+
+Explicit dataset mentions receive stronger priority than unrelated dense
+retrieval candidates. This prevents a semantically similar but physically
+different dataset from replacing a dataset named directly by the user.
+
+Relationship selection also uses query evidence to distinguish alternatives.
+For example, pickup-oriented and drop-off-oriented relationships connect the
+same taxi source with the same Taxi Zones source but require different
+physical columns.
+
+The retrieval implementation returns both a structured metadata selection and
+a rendered SQL-safe context. This makes it possible to evaluate retrieval
+quality independently from downstream LLM generation.
+
+
+\subsection{SQL-Safe Context Rendering}
+
+The renderer converts the internal metadata selection into the text included
+in the LLM prompt.
+
+The implementation explicitly distinguishes between metadata identifiers and
+physical Spark SQL identifiers. Internal concept names, alias names,
+relationship identifiers, and rule identifiers are not presented as if they
+were executable columns or tables.
+
+Physical schema objects are rendered using fully qualified names whenever
+appropriate. Join metadata is rendered as executable physical conditions, and
+semantic rules are rendered as executable predicates or expressions.
+
+The renderer also adds constraints explaining that the registered January
+2024 tables are already temporally restricted. This avoids encouraging the
+model to invent an unnecessary year or month column when no narrower date
+filter is requested.
+
+
+\subsection{Local LLM Configuration}
+
+Text-to-Spark-SQL generation is performed through Ollama using
+\texttt{qwen2.5-coder:3b}.
+
+The generation parameters are fixed to:
+
+\begin{itemize}
+
+    \item temperature \(=0\);
+    \item context size \(=4096\) tokens.
+
+\end{itemize}
+
+The deterministic temperature setting reduces sampling variability between
+benchmark runs.
+
+The same model is used for the complete-catalog baseline and for the
+relation-aware configurations. As a result, the main A/B comparison changes
+the metadata context rather than the language model.
+
+The repair configuration also uses the same local model, but its prompt
+contains the failed SQL and validator feedback in addition to the original
+question and retrieved context.
+
+
+\subsection{SQL Validation Implementation}
+
+Validation is implemented using both SQLGlot and Spark.
+
+SQLGlot first parses the generated query using the Spark dialect. The
+validator then checks that the request contains a single read-only query and
+that referenced tables belong to the allowed physical dataset set.
+
+Spark analysis provides the second validation layer. Because Spark resolves
+the query against the registered schemas, it can identify physical problems
+such as unknown columns, unknown relations, incompatible expressions, and
+other analysis errors.
+
+The benchmark also associates each question with an expected output schema.
+This allows the validator to detect cases in which the generated query returns
+the wrong result structure even if its SQL is otherwise executable.
+
+
+\subsection{One-Shot Repair Implementation}
+
+Repair is implemented as a separate component rather than as an unrestricted
+conversation loop.
+
+A repair is attempted only after validation failure. The repair prompt
+contains:
+
+\begin{itemize}
+
+    \item the original natural-language question;
+
+    \item the metadata context used for the original generation;
+
+    \item the invalid SQL query;
+
+    \item the validation error returned by the validator.
+
+\end{itemize}
+
+Only one repaired SQL candidate is generated. The candidate is passed through
+the same validation stage before any execution is attempted.
+
+This implementation deliberately prevents repair from using the gold query or
+gold result. It therefore tests whether validator feedback and already
+available metadata are sufficient to recover from a generation error.
+
+
+\subsection{Benchmark Configuration}
+
+Benchmark questions and gold specifications are stored as versioned JSON
+configuration files.
+
+Each benchmark item can include:
+
+\begin{itemize}
+
+    \item the natural-language question;
+
+    \item required datasets;
+
+    \item required physical columns;
+
+    \item required relationships;
+
+    \item required semantic rules;
+
+    \item expected output columns;
+
+    \item gold Spark SQL;
+
+    \item gold result information.
+
+\end{itemize}
+
+This representation supports evaluation at multiple levels. Metadata
+retrieval can be compared with the required metadata set, while generated SQL
+can be validated and ultimately compared by result rather than only by exact
+query text.
+
+
+\subsection{Experimental Artifact Management}
+
+Experimental outputs are written under \texttt{artifacts/benchmarks} as JSON
+or text files. These files contain the final numerical results used by the
+report.
+
+Temporary execution logs and rebuildable indexes are stored separately and
+excluded from version control.
+
+The final reporting pipeline reads only the frozen benchmark JSON files. It
+generates six figures in both PDF and PNG format and four summary tables in
+both LaTeX and CSV format. It does not rerun Spark, Ollama, retrieval, or any
+experimental benchmark.
+
+This separation ensures that report generation cannot modify the underlying
+experimental measurements.
+
+
+\subsection{Reproducibility Strategy}
+
+Reproducibility is supported at three levels.
+
+First, the environment and Python dependencies are explicitly versioned,
+including PySpark, SQLGlot, Qdrant client libraries, and Matplotlib.
+
+Second, benchmark configurations, experiment scripts, and generated summary
+results are committed to Git.
+
+Third, the project uses Git tags to separate experimental protocol freezes
+from observed results. Important evaluation stages were therefore committed
+and tagged before the corresponding benchmark was executed.
+
+This strategy is discussed in more detail in
+Appendix~\ref{sec:reproducibility}.
