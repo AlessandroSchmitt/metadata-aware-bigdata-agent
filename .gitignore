@@ -250,3 +250,6 @@ derby.log
 # ---------------------------------------------------------
 *.log
 logs/
+
+# Generated catalog-scale SQLite catalogs
+data/catalog/scaling/

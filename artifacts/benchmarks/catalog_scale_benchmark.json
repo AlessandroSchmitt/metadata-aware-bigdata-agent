@@ -1,0 +1,1753 @@
+{
+  "benchmark": {
+    "name": "Frozen Relation-Aware Metadata Catalog-Scale Benchmark",
+    "purpose": "Measure retrieval robustness and context compression as metadata catalog size grows from 4 to 8 to 16 sources.",
+    "development_freeze": "development-freeze-v1",
+    "development_commit": "c13bbffc4dbbdf865b23a4ff81b57e484b8a7a0b",
+    "heldout_benchmark": "heldout-benchmark-v1",
+    "heldout_commit": "76bc3a450d716e7d0522efa5f9a32933488a4d04",
+    "scales": [
+      4,
+      8,
+      16
+    ],
+    "dense_top_k": 5,
+    "embedding_model": "embeddinggemma",
+    "distractor_type": "synthetic metadata-only hard-negative sources"
+  },
+  "base_catalog_counts": {
+    "datasets": 4,
+    "columns": 66,
+    "semantic_concepts": 21,
+    "relationships": 6,
+    "aliases": 27,
+    "semantic_rules": 6
+  },
+  "results": {
+    "4": {
+      "catalog_counts": {
+        "datasets": 4,
+        "columns": 66,
+        "semantic_concepts": 21,
+        "relationships": 6,
+        "aliases": 27,
+        "semantic_rules": 6
+      },
+      "index": {
+        "qdrant_path": ".qdrant/catalog_scaling/scale_04",
+        "documents": 103,
+        "document_counts": {
+          "column": 66,
+          "concept": 21,
+          "dataset": 4,
+          "relationship": 6,
+          "rule": 6
+        },
+        "vector_size": 768,
+        "embedding_prompt_tokens": 6472,
+        "embedding_wall_seconds": 28.543312064003658,
+        "embedding_api_seconds": 28.473508714,
+        "qdrant_index_seconds": 0.3586415499994473,
+        "total_build_seconds": 28.958621028999914,
+        "stored_points": 103
+      },
+      "retrieval": {
+        "full_catalog_characters": 9498,
+        "full_catalog_words": 1056,
+        "full_catalog_lines": 164,
+        "summary": {
+          "queries": 20,
+          "perfect_recall_queries": 17,
+          "macro_recall": 0.925,
+          "macro_precision": 0.6623665223665224,
+          "macro_f1": 0.7535079299785182,
+          "mean_context_characters": 2160.65,
+          "mean_context_reduction_percent": 77.25152663718677,
+          "mean_retrieval_seconds": 0.35887813594999896,
+          "median_retrieval_seconds": 0.35794047099989257
+        },
+        "records": [
+          {
+            "id": "Q01_H1",
+            "category": "single_source_aggregation",
+            "recall": 1.0,
+            "precision": 0.5,
+            "f1": 0.6666666666666666,
+            "perfect_recall": true,
+            "hits": [
+              "column:yellow_taxi.trip_distance",
+              "dataset:yellow_taxi"
+            ],
+            "missing": [],
+            "extras": [
+              "column:yellow_taxi.mta_tax",
+              "column:yellow_taxi.tolls_amount"
+            ],
+            "selected_metadata_count": 4,
+            "context_characters": 1588,
+            "context_words": 230,
+            "context_reduction_percent": 83.28069067172036,
+            "retrieval_seconds": 0.3387438009995094
+          },
+          {
+            "id": "Q01_H2",
+            "category": "single_source_aggregation",
+            "recall": 1.0,
+            "precision": 0.5,
+            "f1": 0.6666666666666666,
+            "perfect_recall": true,
+            "hits": [
+              "column:yellow_taxi.trip_distance",
+              "dataset:yellow_taxi"
+            ],
+            "missing": [],
+            "extras": [
+              "column:yellow_taxi.mta_tax",
+              "column:yellow_taxi.tolls_amount"
+            ],
+            "selected_metadata_count": 4,
+            "context_characters": 1602,
+            "context_words": 231,
+            "context_reduction_percent": 83.13329121920404,
+            "retrieval_seconds": 0.3340779949994612
+          },
+          {
+            "id": "Q02_H1",
+            "category": "single_source_filter_aggregation",
+            "recall": 1.0,
+            "precision": 0.4,
+            "f1": 0.5714285714285715,
+            "perfect_recall": true,
+            "hits": [
+              "column:green_taxi.trip_distance",
+              "dataset:green_taxi"
+            ],
+            "missing": [],
+            "extras": [
+              "column:green_taxi.mta_tax",
+              "column:green_taxi.passenger_count",
+              "column:green_taxi.tolls_amount"
+            ],
+            "selected_metadata_count": 5,
+            "context_characters": 1669,
+            "context_words": 241,
+            "context_reduction_percent": 82.42787955359023,
+            "retrieval_seconds": 0.32390908200068225
+          },
+          {
+            "id": "Q02_H2",
+            "category": "single_source_filter_aggregation",
+            "recall": 1.0,
+            "precision": 0.4,
+            "f1": 0.5714285714285715,
+            "perfect_recall": true,
+            "hits": [
+              "column:green_taxi.trip_distance",
+              "dataset:green_taxi"
+            ],
+            "missing": [],
+            "extras": [
+              "column:green_taxi.mta_tax",
+              "column:green_taxi.passenger_count",
+              "column:green_taxi.tolls_amount"
+            ],
+            "selected_metadata_count": 5,
+            "context_characters": 1654,
+            "context_words": 239,
+            "context_reduction_percent": 82.58580753842915,
+            "retrieval_seconds": 0.3459370589989703
+          },
+          {
+            "id": "Q03_H1",
+            "category": "geographic_pickup_join",
+            "recall": 1.0,
+            "precision": 0.8571428571428571,
+            "f1": 0.923076923076923,
+            "perfect_recall": true,
+            "hits": [
+              "column:taxi_zones.LocationID",
+              "column:taxi_zones.Zone",
+              "column:yellow_taxi.PULocationID",
+              "dataset:taxi_zones",
+              "dataset:yellow_taxi",
+              "relationship:yellow_pickup_zone"
+            ],
+            "missing": [],
+            "extras": [
+              "column:yellow_taxi.DOLocationID"
+            ],
+            "selected_metadata_count": 7,
+            "context_characters": 2161,
+            "context_words": 304,
+            "context_reduction_percent": 77.24784165087387,
+            "retrieval_seconds": 0.38516759800040745
+          },
+          {
+            "id": "Q03_H2",
+            "category": "geographic_pickup_join",
+            "recall": 1.0,
+            "precision": 0.75,
+            "f1": 0.8571428571428571,
+            "perfect_recall": true,
+            "hits": [
+              "column:taxi_zones.LocationID",
+              "column:taxi_zones.Zone",
+              "column:yellow_taxi.PULocationID",
+              "dataset:taxi_zones",
+              "dataset:yellow_taxi",
+              "relationship:yellow_pickup_zone"
+            ],
+            "missing": [],
+            "extras": [
+              "column:yellow_taxi.DOLocationID",
+              "column:yellow_taxi.tolls_amount"
+            ],
+            "selected_metadata_count": 8,
+            "context_characters": 2179,
+            "context_words": 304,
+            "context_reduction_percent": 77.05832806906717,
+            "retrieval_seconds": 0.3880701660000341
+          },
+          {
+            "id": "Q04_H1",
+            "category": "geographic_dropoff_join",
+            "recall": 1.0,
+            "precision": 0.6666666666666666,
+            "f1": 0.8,
+            "perfect_recall": true,
+            "hits": [
+              "column:green_taxi.DOLocationID",
+              "column:taxi_zones.Borough",
+              "column:taxi_zones.LocationID",
+              "dataset:green_taxi",
+              "dataset:taxi_zones",
+              "relationship:green_dropoff_zone"
+            ],
+            "missing": [],
+            "extras": [
+              "column:green_taxi.RatecodeID",
+              "column:green_taxi.tolls_amount",
+              "column:green_taxi.trip_type"
+            ],
+            "selected_metadata_count": 9,
+            "context_characters": 2149,
+            "context_words": 300,
+            "context_reduction_percent": 77.374184038745,
+            "retrieval_seconds": 0.37095106299966574
+          },
+          {
+            "id": "Q04_H2",
+            "category": "geographic_dropoff_join",
+            "recall": 1.0,
+            "precision": 0.6666666666666666,
+            "f1": 0.8,
+            "perfect_recall": true,
+            "hits": [
+              "column:green_taxi.DOLocationID",
+              "column:taxi_zones.Borough",
+              "column:taxi_zones.LocationID",
+              "dataset:green_taxi",
+              "dataset:taxi_zones",
+              "relationship:green_dropoff_zone"
+            ],
+            "missing": [],
+            "extras": [
+              "column:green_taxi.PULocationID",
+              "column:green_taxi.mta_tax",
+              "column:green_taxi.tolls_amount"
+            ],
+            "selected_metadata_count": 9,
+            "context_characters": 2211,
+            "context_words": 308,
+            "context_reduction_percent": 76.72141503474415,
+            "retrieval_seconds": 0.4195643459988787
+          },
+          {
+            "id": "Q05_H1",
+            "category": "cross_service_comparison",
+            "recall": 1.0,
+            "precision": 0.8,
+            "f1": 0.888888888888889,
+            "perfect_recall": true,
+            "hits": [
+              "column:green_taxi.trip_distance",
+              "column:yellow_taxi.trip_distance",
+              "dataset:green_taxi",
+              "dataset:yellow_taxi"
+            ],
+            "missing": [],
+            "extras": [
+              "column:green_taxi.mta_tax"
+            ],
+            "selected_metadata_count": 5,
+            "context_characters": 1862,
+            "context_words": 272,
+            "context_reduction_percent": 80.39587281532954,
+            "retrieval_seconds": 0.36780919000011636
+          },
+          {
+            "id": "Q05_H2",
+            "category": "cross_service_comparison",
+            "recall": 1.0,
+            "precision": 0.5714285714285714,
+            "f1": 0.7272727272727273,
+            "perfect_recall": true,
+            "hits": [
+              "column:green_taxi.trip_distance",
+              "column:yellow_taxi.trip_distance",
+              "dataset:green_taxi",
+              "dataset:yellow_taxi"
+            ],
+            "missing": [],
+            "extras": [
+              "column:green_taxi.tolls_amount",
+              "column:yellow_taxi.Airport_fee",
+              "column:yellow_taxi.tolls_amount"
+            ],
+            "selected_metadata_count": 7,
+            "context_characters": 1928,
+            "context_words": 274,
+            "context_reduction_percent": 79.70098968203833,
+            "retrieval_seconds": 0.3601382590004505
+          },
+          {
+            "id": "Q06_H1",
+            "category": "weather_temporal_join",
+            "recall": 1.0,
+            "precision": 0.8,
+            "f1": 0.888888888888889,
+            "perfect_recall": true,
+            "hits": [
+              "column:weather_hourly.has_precipitation",
+              "column:weather_hourly.weather_hour",
+              "column:yellow_taxi.tpep_pickup_datetime",
+              "column:yellow_taxi.trip_distance",
+              "dataset:weather_hourly",
+              "dataset:yellow_taxi",
+              "relationship:yellow_pickup_weather_hour",
+              "rule:rainy_hour"
+            ],
+            "missing": [],
+            "extras": [
+              "column:yellow_taxi.Airport_fee",
+              "column:yellow_taxi.tolls_amount"
+            ],
+            "selected_metadata_count": 10,
+            "context_characters": 2601,
+            "context_words": 343,
+            "context_reduction_percent": 72.6152874289324,
+            "retrieval_seconds": 0.35941862400068203
+          },
+          {
+            "id": "Q06_H2",
+            "category": "weather_temporal_join",
+            "recall": 0.25,
+            "precision": 0.5,
+            "f1": 0.3333333333333333,
+            "perfect_recall": false,
+            "hits": [
+              "column:yellow_taxi.trip_distance",
+              "dataset:yellow_taxi"
+            ],
+            "missing": [
+              "column:weather_hourly.has_precipitation",
+              "column:weather_hourly.weather_hour",
+              "column:yellow_taxi.tpep_pickup_datetime",
+              "dataset:weather_hourly",
+              "relationship:yellow_pickup_weather_hour",
+              "rule:rainy_hour"
+            ],
+            "extras": [
+              "column:yellow_taxi.mta_tax",
+              "column:yellow_taxi.tolls_amount"
+            ],
+            "selected_metadata_count": 4,
+            "context_characters": 1629,
+            "context_words": 234,
+            "context_reduction_percent": 82.849020846494,
+            "retrieval_seconds": 0.37473580000005313
+          },
+          {
+            "id": "Q07_H1",
+            "category": "weather_semantic_rule",
+            "recall": 1.0,
+            "precision": 0.6363636363636364,
+            "f1": 0.7777777777777778,
+            "perfect_recall": true,
+            "hits": [
+              "column:green_taxi.lpep_pickup_datetime",
+              "column:weather_hourly.has_precipitation",
+              "column:weather_hourly.weather_hour",
+              "dataset:green_taxi",
+              "dataset:weather_hourly",
+              "relationship:green_pickup_weather_hour",
+              "rule:dry_hour"
+            ],
+            "missing": [],
+            "extras": [
+              "column:green_taxi.mta_tax",
+              "column:green_taxi.passenger_count",
+              "column:green_taxi.tolls_amount",
+              "column:green_taxi.trip_type"
+            ],
+            "selected_metadata_count": 11,
+            "context_characters": 2573,
+            "context_words": 341,
+            "context_reduction_percent": 72.91008633396505,
+            "retrieval_seconds": 0.3216393570000946
+          },
+          {
+            "id": "Q07_H2",
+            "category": "weather_semantic_rule",
+            "recall": 1.0,
+            "precision": 0.6363636363636364,
+            "f1": 0.7777777777777778,
+            "perfect_recall": true,
+            "hits": [
+              "column:green_taxi.lpep_pickup_datetime",
+              "column:weather_hourly.has_precipitation",
+              "column:weather_hourly.weather_hour",
+              "dataset:green_taxi",
+              "dataset:weather_hourly",
+              "relationship:green_pickup_weather_hour",
+              "rule:dry_hour"
+            ],
+            "missing": [],
+            "extras": [
+              "column:green_taxi.mta_tax",
+              "column:green_taxi.passenger_count",
+              "column:green_taxi.tolls_amount",
+              "column:green_taxi.trip_type"
+            ],
+            "selected_metadata_count": 11,
+            "context_characters": 2570,
+            "context_words": 339,
+            "context_reduction_percent": 72.94167193093283,
+            "retrieval_seconds": 0.32909984400066605
+          },
+          {
+            "id": "Q08_H1",
+            "category": "three_source_query",
+            "recall": 1.0,
+            "precision": 0.8571428571428571,
+            "f1": 0.923076923076923,
+            "perfect_recall": true,
+            "hits": [
+              "column:taxi_zones.Borough",
+              "column:taxi_zones.LocationID",
+              "column:weather_hourly.has_precipitation",
+              "column:weather_hourly.weather_hour",
+              "column:yellow_taxi.PULocationID",
+              "column:yellow_taxi.tpep_pickup_datetime",
+              "dataset:taxi_zones",
+              "dataset:weather_hourly",
+              "dataset:yellow_taxi",
+              "relationship:yellow_pickup_weather_hour",
+              "relationship:yellow_pickup_zone",
+              "rule:rainy_hour"
+            ],
+            "missing": [],
+            "extras": [
+              "column:yellow_taxi.RatecodeID",
+              "column:yellow_taxi.tolls_amount"
+            ],
+            "selected_metadata_count": 14,
+            "context_characters": 3159,
+            "context_words": 416,
+            "context_reduction_percent": 66.74036639292483,
+            "retrieval_seconds": 0.35191756899985194
+          },
+          {
+            "id": "Q08_H2",
+            "category": "three_source_query",
+            "recall": 0.5,
+            "precision": 0.75,
+            "f1": 0.6,
+            "perfect_recall": false,
+            "hits": [
+              "column:taxi_zones.Borough",
+              "column:taxi_zones.LocationID",
+              "column:yellow_taxi.PULocationID",
+              "dataset:taxi_zones",
+              "dataset:yellow_taxi",
+              "relationship:yellow_pickup_zone"
+            ],
+            "missing": [
+              "column:weather_hourly.has_precipitation",
+              "column:weather_hourly.weather_hour",
+              "column:yellow_taxi.tpep_pickup_datetime",
+              "dataset:weather_hourly",
+              "relationship:yellow_pickup_weather_hour",
+              "rule:rainy_hour"
+            ],
+            "extras": [
+              "column:yellow_taxi.RatecodeID",
+              "column:yellow_taxi.tolls_amount"
+            ],
+            "selected_metadata_count": 8,
+            "context_characters": 2150,
+            "context_words": 300,
+            "context_reduction_percent": 77.3636555064224,
+            "retrieval_seconds": 0.3564623179991031
+          },
+          {
+            "id": "Q09_H1",
+            "category": "weather_only",
+            "recall": 1.0,
+            "precision": 0.6666666666666666,
+            "f1": 0.8,
+            "perfect_recall": true,
+            "hits": [
+              "column:weather_hourly.has_precipitation",
+              "column:weather_hourly.temperature_f",
+              "dataset:weather_hourly",
+              "rule:rainy_hour"
+            ],
+            "missing": [],
+            "extras": [
+              "column:weather_hourly.precipitation_raw",
+              "column:weather_hourly.temperature_f_raw"
+            ],
+            "selected_metadata_count": 6,
+            "context_characters": 2032,
+            "context_words": 272,
+            "context_reduction_percent": 78.60602232048852,
+            "retrieval_seconds": 0.3235461860003852
+          },
+          {
+            "id": "Q09_H2",
+            "category": "weather_only",
+            "recall": 0.75,
+            "precision": 0.6,
+            "f1": 0.6666666666666665,
+            "perfect_recall": false,
+            "hits": [
+              "column:weather_hourly.has_precipitation",
+              "column:weather_hourly.temperature_f",
+              "dataset:weather_hourly"
+            ],
+            "missing": [
+              "rule:rainy_hour"
+            ],
+            "extras": [
+              "column:weather_hourly.precipitation_raw",
+              "column:weather_hourly.temperature_f_raw"
+            ],
+            "selected_metadata_count": 5,
+            "context_characters": 1835,
+            "context_words": 246,
+            "context_reduction_percent": 80.6801431880396,
+            "retrieval_seconds": 0.32305001100030495
+          },
+          {
+            "id": "Q10_H1",
+            "category": "temporal_grouping",
+            "recall": 1.0,
+            "precision": 0.8,
+            "f1": 0.888888888888889,
+            "perfect_recall": true,
+            "hits": [
+              "column:weather_hourly.has_precipitation",
+              "column:weather_hourly.weather_hour",
+              "column:yellow_taxi.tpep_pickup_datetime",
+              "dataset:weather_hourly",
+              "dataset:yellow_taxi",
+              "relationship:yellow_pickup_weather_hour",
+              "rule:rainy_hour",
+              "rule:yellow_pickup_hour_of_day"
+            ],
+            "missing": [],
+            "extras": [
+              "column:yellow_taxi.PULocationID",
+              "column:yellow_taxi.tolls_amount"
+            ],
+            "selected_metadata_count": 10,
+            "context_characters": 2887,
+            "context_words": 388,
+            "context_reduction_percent": 69.60412718467046,
+            "retrieval_seconds": 0.4089135530011845
+          },
+          {
+            "id": "Q10_H2",
+            "category": "temporal_grouping",
+            "recall": 1.0,
+            "precision": 0.8888888888888888,
+            "f1": 0.9411764705882353,
+            "perfect_recall": true,
+            "hits": [
+              "column:weather_hourly.has_precipitation",
+              "column:weather_hourly.weather_hour",
+              "column:yellow_taxi.tpep_pickup_datetime",
+              "dataset:weather_hourly",
+              "dataset:yellow_taxi",
+              "relationship:yellow_pickup_weather_hour",
+              "rule:rainy_hour",
+              "rule:yellow_pickup_hour_of_day"
+            ],
+            "missing": [],
+            "extras": [
+              "column:yellow_taxi.tolls_amount"
+            ],
+            "selected_metadata_count": 9,
+            "context_characters": 2774,
+            "context_words": 373,
+            "context_reduction_percent": 70.7938513371236,
+            "retrieval_seconds": 0.39441089799947804
+          }
+        ]
+      }
+    },
+    "8": {
+      "catalog_counts": {
+        "datasets": 8,
+        "columns": 90,
+        "semantic_concepts": 21,
+        "relationships": 6,
+        "aliases": 39,
+        "semantic_rules": 6
+      },
+      "index": {
+        "qdrant_path": ".qdrant/catalog_scaling/scale_08",
+        "documents": 131,
+        "document_counts": {
+          "column": 90,
+          "concept": 21,
+          "dataset": 8,
+          "relationship": 6,
+          "rule": 6
+        },
+        "vector_size": 768,
+        "embedding_prompt_tokens": 8437,
+        "embedding_wall_seconds": 30.68094239000311,
+        "embedding_api_seconds": 30.642348351,
+        "qdrant_index_seconds": 0.470671343999129,
+        "total_build_seconds": 31.16577197799961,
+        "stored_points": 131
+      },
+      "retrieval": {
+        "full_catalog_characters": 12024,
+        "full_catalog_words": 1310,
+        "full_catalog_lines": 223,
+        "summary": {
+          "queries": 20,
+          "perfect_recall_queries": 14,
+          "macro_recall": 0.825,
+          "macro_precision": 0.6203427128427128,
+          "macro_f1": 0.6825813565519447,
+          "mean_context_characters": 2061.6,
+          "mean_context_reduction_percent": 82.85429141716567,
+          "mean_retrieval_seconds": 0.36347951124998873,
+          "median_retrieval_seconds": 0.3567930580002212
+        },
+        "records": [
+          {
+            "id": "Q01_H1",
+            "category": "single_source_aggregation",
+            "recall": 1.0,
+            "precision": 0.5,
+            "f1": 0.6666666666666666,
+            "perfect_recall": true,
+            "hits": [
+              "column:yellow_taxi.trip_distance",
+              "dataset:yellow_taxi"
+            ],
+            "missing": [],
+            "extras": [
+              "column:yellow_taxi.mta_tax",
+              "column:yellow_taxi.tolls_amount"
+            ],
+            "selected_metadata_count": 4,
+            "context_characters": 1588,
+            "context_words": 230,
+            "context_reduction_percent": 86.79308050565535,
+            "retrieval_seconds": 0.42970028499985347
+          },
+          {
+            "id": "Q01_H2",
+            "category": "single_source_aggregation",
+            "recall": 1.0,
+            "precision": 0.5,
+            "f1": 0.6666666666666666,
+            "perfect_recall": true,
+            "hits": [
+              "column:yellow_taxi.trip_distance",
+              "dataset:yellow_taxi"
+            ],
+            "missing": [],
+            "extras": [
+              "column:yellow_taxi.mta_tax",
+              "column:yellow_taxi.tolls_amount"
+            ],
+            "selected_metadata_count": 4,
+            "context_characters": 1602,
+            "context_words": 231,
+            "context_reduction_percent": 86.67664670658682,
+            "retrieval_seconds": 0.33216312100012146
+          },
+          {
+            "id": "Q02_H1",
+            "category": "single_source_filter_aggregation",
+            "recall": 1.0,
+            "precision": 0.4,
+            "f1": 0.5714285714285715,
+            "perfect_recall": true,
+            "hits": [
+              "column:green_taxi.trip_distance",
+              "dataset:green_taxi"
+            ],
+            "missing": [],
+            "extras": [
+              "column:green_taxi.mta_tax",
+              "column:green_taxi.passenger_count",
+              "column:green_taxi.tolls_amount"
+            ],
+            "selected_metadata_count": 5,
+            "context_characters": 1669,
+            "context_words": 241,
+            "context_reduction_percent": 86.11942781104457,
+            "retrieval_seconds": 0.34236350799983484
+          },
+          {
+            "id": "Q02_H2",
+            "category": "single_source_filter_aggregation",
+            "recall": 1.0,
+            "precision": 0.4,
+            "f1": 0.5714285714285715,
+            "perfect_recall": true,
+            "hits": [
+              "column:green_taxi.trip_distance",
+              "dataset:green_taxi"
+            ],
+            "missing": [],
+            "extras": [
+              "column:green_taxi.mta_tax",
+              "column:green_taxi.passenger_count",
+              "column:green_taxi.tolls_amount"
+            ],
+            "selected_metadata_count": 5,
+            "context_characters": 1654,
+            "context_words": 239,
+            "context_reduction_percent": 86.24417831004656,
+            "retrieval_seconds": 0.31795448299999407
+          },
+          {
+            "id": "Q03_H1",
+            "category": "geographic_pickup_join",
+            "recall": 1.0,
+            "precision": 0.8571428571428571,
+            "f1": 0.923076923076923,
+            "perfect_recall": true,
+            "hits": [
+              "column:taxi_zones.LocationID",
+              "column:taxi_zones.Zone",
+              "column:yellow_taxi.PULocationID",
+              "dataset:taxi_zones",
+              "dataset:yellow_taxi",
+              "relationship:yellow_pickup_zone"
+            ],
+            "missing": [],
+            "extras": [
+              "column:yellow_taxi.DOLocationID"
+            ],
+            "selected_metadata_count": 7,
+            "context_characters": 2161,
+            "context_words": 304,
+            "context_reduction_percent": 82.02761144377911,
+            "retrieval_seconds": 0.37160836400107655
+          },
+          {
+            "id": "Q03_H2",
+            "category": "geographic_pickup_join",
+            "recall": 1.0,
+            "precision": 0.75,
+            "f1": 0.8571428571428571,
+            "perfect_recall": true,
+            "hits": [
+              "column:taxi_zones.LocationID",
+              "column:taxi_zones.Zone",
+              "column:yellow_taxi.PULocationID",
+              "dataset:taxi_zones",
+              "dataset:yellow_taxi",
+              "relationship:yellow_pickup_zone"
+            ],
+            "missing": [],
+            "extras": [
+              "column:yellow_taxi.DOLocationID",
+              "column:yellow_taxi.tolls_amount"
+            ],
+            "selected_metadata_count": 8,
+            "context_characters": 2179,
+            "context_words": 304,
+            "context_reduction_percent": 81.87791084497671,
+            "retrieval_seconds": 0.34397879199968884
+          },
+          {
+            "id": "Q04_H1",
+            "category": "geographic_dropoff_join",
+            "recall": 0.3333333333333333,
+            "precision": 0.4,
+            "f1": 0.3636363636363636,
+            "perfect_recall": false,
+            "hits": [
+              "column:green_taxi.DOLocationID",
+              "dataset:green_taxi"
+            ],
+            "missing": [
+              "column:taxi_zones.Borough",
+              "column:taxi_zones.LocationID",
+              "dataset:taxi_zones",
+              "relationship:green_dropoff_zone"
+            ],
+            "extras": [
+              "column:green_taxi.RatecodeID",
+              "column:green_taxi.tolls_amount",
+              "column:green_taxi.trip_type"
+            ],
+            "selected_metadata_count": 5,
+            "context_characters": 1658,
+            "context_words": 239,
+            "context_reduction_percent": 86.2109115103127,
+            "retrieval_seconds": 0.419499524999992
+          },
+          {
+            "id": "Q04_H2",
+            "category": "geographic_dropoff_join",
+            "recall": 0.3333333333333333,
+            "precision": 0.4,
+            "f1": 0.3636363636363636,
+            "perfect_recall": false,
+            "hits": [
+              "column:green_taxi.DOLocationID",
+              "dataset:green_taxi"
+            ],
+            "missing": [
+              "column:taxi_zones.Borough",
+              "column:taxi_zones.LocationID",
+              "dataset:taxi_zones",
+              "relationship:green_dropoff_zone"
+            ],
+            "extras": [
+              "column:green_taxi.PULocationID",
+              "column:green_taxi.mta_tax",
+              "column:green_taxi.tolls_amount"
+            ],
+            "selected_metadata_count": 5,
+            "context_characters": 1720,
+            "context_words": 247,
+            "context_reduction_percent": 85.69527611443779,
+            "retrieval_seconds": 0.38064835800105357
+          },
+          {
+            "id": "Q05_H1",
+            "category": "cross_service_comparison",
+            "recall": 1.0,
+            "precision": 0.8,
+            "f1": 0.888888888888889,
+            "perfect_recall": true,
+            "hits": [
+              "column:green_taxi.trip_distance",
+              "column:yellow_taxi.trip_distance",
+              "dataset:green_taxi",
+              "dataset:yellow_taxi"
+            ],
+            "missing": [],
+            "extras": [
+              "column:green_taxi.mta_tax"
+            ],
+            "selected_metadata_count": 5,
+            "context_characters": 1862,
+            "context_words": 272,
+            "context_reduction_percent": 84.51430472388556,
+            "retrieval_seconds": 0.37710268499904487
+          },
+          {
+            "id": "Q05_H2",
+            "category": "cross_service_comparison",
+            "recall": 1.0,
+            "precision": 0.5714285714285714,
+            "f1": 0.7272727272727273,
+            "perfect_recall": true,
+            "hits": [
+              "column:green_taxi.trip_distance",
+              "column:yellow_taxi.trip_distance",
+              "dataset:green_taxi",
+              "dataset:yellow_taxi"
+            ],
+            "missing": [],
+            "extras": [
+              "column:green_taxi.tolls_amount",
+              "column:yellow_taxi.Airport_fee",
+              "column:yellow_taxi.tolls_amount"
+            ],
+            "selected_metadata_count": 7,
+            "context_characters": 1928,
+            "context_words": 274,
+            "context_reduction_percent": 83.96540252827678,
+            "retrieval_seconds": 0.38706620000084513
+          },
+          {
+            "id": "Q06_H1",
+            "category": "weather_temporal_join",
+            "recall": 1.0,
+            "precision": 0.8,
+            "f1": 0.888888888888889,
+            "perfect_recall": true,
+            "hits": [
+              "column:weather_hourly.has_precipitation",
+              "column:weather_hourly.weather_hour",
+              "column:yellow_taxi.tpep_pickup_datetime",
+              "column:yellow_taxi.trip_distance",
+              "dataset:weather_hourly",
+              "dataset:yellow_taxi",
+              "relationship:yellow_pickup_weather_hour",
+              "rule:rainy_hour"
+            ],
+            "missing": [],
+            "extras": [
+              "column:yellow_taxi.Airport_fee",
+              "column:yellow_taxi.tolls_amount"
+            ],
+            "selected_metadata_count": 10,
+            "context_characters": 2601,
+            "context_words": 343,
+            "context_reduction_percent": 78.36826347305389,
+            "retrieval_seconds": 0.33668454899998324
+          },
+          {
+            "id": "Q06_H2",
+            "category": "weather_temporal_join",
+            "recall": 0.25,
+            "precision": 0.5,
+            "f1": 0.3333333333333333,
+            "perfect_recall": false,
+            "hits": [
+              "column:yellow_taxi.trip_distance",
+              "dataset:yellow_taxi"
+            ],
+            "missing": [
+              "column:weather_hourly.has_precipitation",
+              "column:weather_hourly.weather_hour",
+              "column:yellow_taxi.tpep_pickup_datetime",
+              "dataset:weather_hourly",
+              "relationship:yellow_pickup_weather_hour",
+              "rule:rainy_hour"
+            ],
+            "extras": [
+              "column:yellow_taxi.mta_tax",
+              "column:yellow_taxi.tolls_amount"
+            ],
+            "selected_metadata_count": 4,
+            "context_characters": 1629,
+            "context_words": 234,
+            "context_reduction_percent": 86.45209580838323,
+            "retrieval_seconds": 0.34302060200025153
+          },
+          {
+            "id": "Q07_H1",
+            "category": "weather_semantic_rule",
+            "recall": 1.0,
+            "precision": 0.6363636363636364,
+            "f1": 0.7777777777777778,
+            "perfect_recall": true,
+            "hits": [
+              "column:green_taxi.lpep_pickup_datetime",
+              "column:weather_hourly.has_precipitation",
+              "column:weather_hourly.weather_hour",
+              "dataset:green_taxi",
+              "dataset:weather_hourly",
+              "relationship:green_pickup_weather_hour",
+              "rule:dry_hour"
+            ],
+            "missing": [],
+            "extras": [
+              "column:green_taxi.mta_tax",
+              "column:green_taxi.passenger_count",
+              "column:green_taxi.tolls_amount",
+              "column:green_taxi.trip_type"
+            ],
+            "selected_metadata_count": 11,
+            "context_characters": 2573,
+            "context_words": 341,
+            "context_reduction_percent": 78.60113107119095,
+            "retrieval_seconds": 0.34773900199979835
+          },
+          {
+            "id": "Q07_H2",
+            "category": "weather_semantic_rule",
+            "recall": 1.0,
+            "precision": 0.6363636363636364,
+            "f1": 0.7777777777777778,
+            "perfect_recall": true,
+            "hits": [
+              "column:green_taxi.lpep_pickup_datetime",
+              "column:weather_hourly.has_precipitation",
+              "column:weather_hourly.weather_hour",
+              "dataset:green_taxi",
+              "dataset:weather_hourly",
+              "relationship:green_pickup_weather_hour",
+              "rule:dry_hour"
+            ],
+            "missing": [],
+            "extras": [
+              "column:green_taxi.mta_tax",
+              "column:green_taxi.passenger_count",
+              "column:green_taxi.tolls_amount",
+              "column:green_taxi.trip_type"
+            ],
+            "selected_metadata_count": 11,
+            "context_characters": 2570,
+            "context_words": 339,
+            "context_reduction_percent": 78.62608117099134,
+            "retrieval_seconds": 0.3196502099999634
+          },
+          {
+            "id": "Q08_H1",
+            "category": "three_source_query",
+            "recall": 0.6666666666666666,
+            "precision": 0.8,
+            "f1": 0.7272727272727272,
+            "perfect_recall": false,
+            "hits": [
+              "column:weather_hourly.has_precipitation",
+              "column:weather_hourly.weather_hour",
+              "column:yellow_taxi.PULocationID",
+              "column:yellow_taxi.tpep_pickup_datetime",
+              "dataset:weather_hourly",
+              "dataset:yellow_taxi",
+              "relationship:yellow_pickup_weather_hour",
+              "rule:rainy_hour"
+            ],
+            "missing": [
+              "column:taxi_zones.Borough",
+              "column:taxi_zones.LocationID",
+              "dataset:taxi_zones",
+              "relationship:yellow_pickup_zone"
+            ],
+            "extras": [
+              "column:yellow_taxi.RatecodeID",
+              "column:yellow_taxi.tolls_amount"
+            ],
+            "selected_metadata_count": 10,
+            "context_characters": 2651,
+            "context_words": 352,
+            "context_reduction_percent": 77.95242847638058,
+            "retrieval_seconds": 0.40306574900023406
+          },
+          {
+            "id": "Q08_H2",
+            "category": "three_source_query",
+            "recall": 0.16666666666666666,
+            "precision": 0.5,
+            "f1": 0.25,
+            "perfect_recall": false,
+            "hits": [
+              "column:yellow_taxi.PULocationID",
+              "dataset:yellow_taxi"
+            ],
+            "missing": [
+              "column:taxi_zones.Borough",
+              "column:taxi_zones.LocationID",
+              "column:weather_hourly.has_precipitation",
+              "column:weather_hourly.weather_hour",
+              "column:yellow_taxi.tpep_pickup_datetime",
+              "dataset:taxi_zones",
+              "dataset:weather_hourly",
+              "relationship:yellow_pickup_weather_hour",
+              "relationship:yellow_pickup_zone",
+              "rule:rainy_hour"
+            ],
+            "extras": [
+              "column:yellow_taxi.RatecodeID",
+              "column:yellow_taxi.tolls_amount"
+            ],
+            "selected_metadata_count": 4,
+            "context_characters": 1659,
+            "context_words": 239,
+            "context_reduction_percent": 86.20259481037924,
+            "retrieval_seconds": 0.36584711400064407
+          },
+          {
+            "id": "Q09_H1",
+            "category": "weather_only",
+            "recall": 1.0,
+            "precision": 0.6666666666666666,
+            "f1": 0.8,
+            "perfect_recall": true,
+            "hits": [
+              "column:weather_hourly.has_precipitation",
+              "column:weather_hourly.temperature_f",
+              "dataset:weather_hourly",
+              "rule:rainy_hour"
+            ],
+            "missing": [],
+            "extras": [
+              "column:weather_hourly.precipitation_raw",
+              "column:weather_hourly.temperature_f_raw"
+            ],
+            "selected_metadata_count": 6,
+            "context_characters": 2032,
+            "context_words": 272,
+            "context_reduction_percent": 83.10046573519627,
+            "retrieval_seconds": 0.3307948059991759
+          },
+          {
+            "id": "Q09_H2",
+            "category": "weather_only",
+            "recall": 0.75,
+            "precision": 0.6,
+            "f1": 0.6666666666666665,
+            "perfect_recall": false,
+            "hits": [
+              "column:weather_hourly.has_precipitation",
+              "column:weather_hourly.temperature_f",
+              "dataset:weather_hourly"
+            ],
+            "missing": [
+              "rule:rainy_hour"
+            ],
+            "extras": [
+              "column:weather_hourly.precipitation_raw",
+              "column:weather_hourly.temperature_f_raw"
+            ],
+            "selected_metadata_count": 5,
+            "context_characters": 1835,
+            "context_words": 246,
+            "context_reduction_percent": 84.73885562208916,
+            "retrieval_seconds": 0.3142881900002976
+          },
+          {
+            "id": "Q10_H1",
+            "category": "temporal_grouping",
+            "recall": 1.0,
+            "precision": 0.8,
+            "f1": 0.888888888888889,
+            "perfect_recall": true,
+            "hits": [
+              "column:weather_hourly.has_precipitation",
+              "column:weather_hourly.weather_hour",
+              "column:yellow_taxi.tpep_pickup_datetime",
+              "dataset:weather_hourly",
+              "dataset:yellow_taxi",
+              "relationship:yellow_pickup_weather_hour",
+              "rule:rainy_hour",
+              "rule:yellow_pickup_hour_of_day"
+            ],
+            "missing": [],
+            "extras": [
+              "column:yellow_taxi.PULocationID",
+              "column:yellow_taxi.tolls_amount"
+            ],
+            "selected_metadata_count": 10,
+            "context_characters": 2887,
+            "context_words": 388,
+            "context_reduction_percent": 75.98968729208251,
+            "retrieval_seconds": 0.4272321939988615
+          },
+          {
+            "id": "Q10_H2",
+            "category": "temporal_grouping",
+            "recall": 1.0,
+            "precision": 0.8888888888888888,
+            "f1": 0.9411764705882353,
+            "perfect_recall": true,
+            "hits": [
+              "column:weather_hourly.has_precipitation",
+              "column:weather_hourly.weather_hour",
+              "column:yellow_taxi.tpep_pickup_datetime",
+              "dataset:weather_hourly",
+              "dataset:yellow_taxi",
+              "relationship:yellow_pickup_weather_hour",
+              "rule:rainy_hour",
+              "rule:yellow_pickup_hour_of_day"
+            ],
+            "missing": [],
+            "extras": [
+              "column:yellow_taxi.tolls_amount"
+            ],
+            "selected_metadata_count": 9,
+            "context_characters": 2774,
+            "context_words": 373,
+            "context_reduction_percent": 76.92947438456422,
+            "retrieval_seconds": 0.37918248799905996
+          }
+        ]
+      }
+    },
+    "16": {
+      "catalog_counts": {
+        "datasets": 16,
+        "columns": 139,
+        "semantic_concepts": 21,
+        "relationships": 6,
+        "aliases": 63,
+        "semantic_rules": 6
+      },
+      "index": {
+        "qdrant_path": ".qdrant/catalog_scaling/scale_16",
+        "documents": 188,
+        "document_counts": {
+          "column": 139,
+          "concept": 21,
+          "dataset": 16,
+          "relationship": 6,
+          "rule": 6
+        },
+        "vector_size": 768,
+        "embedding_prompt_tokens": 11585,
+        "embedding_wall_seconds": 42.43067857800088,
+        "embedding_api_seconds": 42.387336277,
+        "qdrant_index_seconds": 0.6042863450002187,
+        "total_build_seconds": 43.05610746399907,
+        "stored_points": 188
+      },
+      "retrieval": {
+        "full_catalog_characters": 16651,
+        "full_catalog_words": 1789,
+        "full_catalog_lines": 343,
+        "summary": {
+          "queries": 20,
+          "perfect_recall_queries": 14,
+          "macro_recall": 0.825,
+          "macro_precision": 0.6203427128427128,
+          "macro_f1": 0.6825813565519447,
+          "mean_context_characters": 2061.6,
+          "mean_context_reduction_percent": 87.61876163593779,
+          "mean_retrieval_seconds": 0.3766658794999785,
+          "median_retrieval_seconds": 0.3583149145006246
+        },
+        "records": [
+          {
+            "id": "Q01_H1",
+            "category": "single_source_aggregation",
+            "recall": 1.0,
+            "precision": 0.5,
+            "f1": 0.6666666666666666,
+            "perfect_recall": true,
+            "hits": [
+              "column:yellow_taxi.trip_distance",
+              "dataset:yellow_taxi"
+            ],
+            "missing": [],
+            "extras": [
+              "column:yellow_taxi.mta_tax",
+              "column:yellow_taxi.tolls_amount"
+            ],
+            "selected_metadata_count": 4,
+            "context_characters": 1588,
+            "context_words": 230,
+            "context_reduction_percent": 90.46303525313795,
+            "retrieval_seconds": 0.3389125049998256
+          },
+          {
+            "id": "Q01_H2",
+            "category": "single_source_aggregation",
+            "recall": 1.0,
+            "precision": 0.5,
+            "f1": 0.6666666666666666,
+            "perfect_recall": true,
+            "hits": [
+              "column:yellow_taxi.trip_distance",
+              "dataset:yellow_taxi"
+            ],
+            "missing": [],
+            "extras": [
+              "column:yellow_taxi.mta_tax",
+              "column:yellow_taxi.tolls_amount"
+            ],
+            "selected_metadata_count": 4,
+            "context_characters": 1602,
+            "context_words": 231,
+            "context_reduction_percent": 90.37895621884572,
+            "retrieval_seconds": 0.33980342100039707
+          },
+          {
+            "id": "Q02_H1",
+            "category": "single_source_filter_aggregation",
+            "recall": 1.0,
+            "precision": 0.4,
+            "f1": 0.5714285714285715,
+            "perfect_recall": true,
+            "hits": [
+              "column:green_taxi.trip_distance",
+              "dataset:green_taxi"
+            ],
+            "missing": [],
+            "extras": [
+              "column:green_taxi.mta_tax",
+              "column:green_taxi.passenger_count",
+              "column:green_taxi.tolls_amount"
+            ],
+            "selected_metadata_count": 5,
+            "context_characters": 1669,
+            "context_words": 241,
+            "context_reduction_percent": 89.97657798330431,
+            "retrieval_seconds": 0.5005313929996191
+          },
+          {
+            "id": "Q02_H2",
+            "category": "single_source_filter_aggregation",
+            "recall": 1.0,
+            "precision": 0.4,
+            "f1": 0.5714285714285715,
+            "perfect_recall": true,
+            "hits": [
+              "column:green_taxi.trip_distance",
+              "dataset:green_taxi"
+            ],
+            "missing": [],
+            "extras": [
+              "column:green_taxi.mta_tax",
+              "column:green_taxi.passenger_count",
+              "column:green_taxi.tolls_amount"
+            ],
+            "selected_metadata_count": 5,
+            "context_characters": 1654,
+            "context_words": 239,
+            "context_reduction_percent": 90.06666266290313,
+            "retrieval_seconds": 0.34052845499900286
+          },
+          {
+            "id": "Q03_H1",
+            "category": "geographic_pickup_join",
+            "recall": 1.0,
+            "precision": 0.8571428571428571,
+            "f1": 0.923076923076923,
+            "perfect_recall": true,
+            "hits": [
+              "column:taxi_zones.LocationID",
+              "column:taxi_zones.Zone",
+              "column:yellow_taxi.PULocationID",
+              "dataset:taxi_zones",
+              "dataset:yellow_taxi",
+              "relationship:yellow_pickup_zone"
+            ],
+            "missing": [],
+            "extras": [
+              "column:yellow_taxi.DOLocationID"
+            ],
+            "selected_metadata_count": 7,
+            "context_characters": 2161,
+            "context_words": 304,
+            "context_reduction_percent": 87.02180049246292,
+            "retrieval_seconds": 0.41017019100036123
+          },
+          {
+            "id": "Q03_H2",
+            "category": "geographic_pickup_join",
+            "recall": 1.0,
+            "precision": 0.75,
+            "f1": 0.8571428571428571,
+            "perfect_recall": true,
+            "hits": [
+              "column:taxi_zones.LocationID",
+              "column:taxi_zones.Zone",
+              "column:yellow_taxi.PULocationID",
+              "dataset:taxi_zones",
+              "dataset:yellow_taxi",
+              "relationship:yellow_pickup_zone"
+            ],
+            "missing": [],
+            "extras": [
+              "column:yellow_taxi.DOLocationID",
+              "column:yellow_taxi.tolls_amount"
+            ],
+            "selected_metadata_count": 8,
+            "context_characters": 2179,
+            "context_words": 304,
+            "context_reduction_percent": 86.91369887694434,
+            "retrieval_seconds": 0.49533069000062824
+          },
+          {
+            "id": "Q04_H1",
+            "category": "geographic_dropoff_join",
+            "recall": 0.3333333333333333,
+            "precision": 0.4,
+            "f1": 0.3636363636363636,
+            "perfect_recall": false,
+            "hits": [
+              "column:green_taxi.DOLocationID",
+              "dataset:green_taxi"
+            ],
+            "missing": [
+              "column:taxi_zones.Borough",
+              "column:taxi_zones.LocationID",
+              "dataset:taxi_zones",
+              "relationship:green_dropoff_zone"
+            ],
+            "extras": [
+              "column:green_taxi.RatecodeID",
+              "column:green_taxi.tolls_amount",
+              "column:green_taxi.trip_type"
+            ],
+            "selected_metadata_count": 5,
+            "context_characters": 1658,
+            "context_words": 239,
+            "context_reduction_percent": 90.04264008167678,
+            "retrieval_seconds": 0.35732106500108785
+          },
+          {
+            "id": "Q04_H2",
+            "category": "geographic_dropoff_join",
+            "recall": 0.3333333333333333,
+            "precision": 0.4,
+            "f1": 0.3636363636363636,
+            "perfect_recall": false,
+            "hits": [
+              "column:green_taxi.DOLocationID",
+              "dataset:green_taxi"
+            ],
+            "missing": [
+              "column:taxi_zones.Borough",
+              "column:taxi_zones.LocationID",
+              "dataset:taxi_zones",
+              "relationship:green_dropoff_zone"
+            ],
+            "extras": [
+              "column:green_taxi.PULocationID",
+              "column:green_taxi.mta_tax",
+              "column:green_taxi.tolls_amount"
+            ],
+            "selected_metadata_count": 5,
+            "context_characters": 1720,
+            "context_words": 247,
+            "context_reduction_percent": 89.67029007266831,
+            "retrieval_seconds": 0.3412110720000783
+          },
+          {
+            "id": "Q05_H1",
+            "category": "cross_service_comparison",
+            "recall": 1.0,
+            "precision": 0.8,
+            "f1": 0.888888888888889,
+            "perfect_recall": true,
+            "hits": [
+              "column:green_taxi.trip_distance",
+              "column:yellow_taxi.trip_distance",
+              "dataset:green_taxi",
+              "dataset:yellow_taxi"
+            ],
+            "missing": [],
+            "extras": [
+              "column:green_taxi.mta_tax"
+            ],
+            "selected_metadata_count": 5,
+            "context_characters": 1862,
+            "context_words": 272,
+            "context_reduction_percent": 88.81748843913279,
+            "retrieval_seconds": 0.3986957010001788
+          },
+          {
+            "id": "Q05_H2",
+            "category": "cross_service_comparison",
+            "recall": 1.0,
+            "precision": 0.5714285714285714,
+            "f1": 0.7272727272727273,
+            "perfect_recall": true,
+            "hits": [
+              "column:green_taxi.trip_distance",
+              "column:yellow_taxi.trip_distance",
+              "dataset:green_taxi",
+              "dataset:yellow_taxi"
+            ],
+            "missing": [],
+            "extras": [
+              "column:green_taxi.tolls_amount",
+              "column:yellow_taxi.Airport_fee",
+              "column:yellow_taxi.tolls_amount"
+            ],
+            "selected_metadata_count": 7,
+            "context_characters": 1928,
+            "context_words": 274,
+            "context_reduction_percent": 88.42111584889797,
+            "retrieval_seconds": 0.37951893400168046
+          },
+          {
+            "id": "Q06_H1",
+            "category": "weather_temporal_join",
+            "recall": 1.0,
+            "precision": 0.8,
+            "f1": 0.888888888888889,
+            "perfect_recall": true,
+            "hits": [
+              "column:weather_hourly.has_precipitation",
+              "column:weather_hourly.weather_hour",
+              "column:yellow_taxi.tpep_pickup_datetime",
+              "column:yellow_taxi.trip_distance",
+              "dataset:weather_hourly",
+              "dataset:yellow_taxi",
+              "relationship:yellow_pickup_weather_hour",
+              "rule:rainy_hour"
+            ],
+            "missing": [],
+            "extras": [
+              "column:yellow_taxi.Airport_fee",
+              "column:yellow_taxi.tolls_amount"
+            ],
+            "selected_metadata_count": 10,
+            "context_characters": 2601,
+            "context_words": 343,
+            "context_reduction_percent": 84.37931655756411,
+            "retrieval_seconds": 0.3457888449993334
+          },
+          {
+            "id": "Q06_H2",
+            "category": "weather_temporal_join",
+            "recall": 0.25,
+            "precision": 0.5,
+            "f1": 0.3333333333333333,
+            "perfect_recall": false,
+            "hits": [
+              "column:yellow_taxi.trip_distance",
+              "dataset:yellow_taxi"
+            ],
+            "missing": [
+              "column:weather_hourly.has_precipitation",
+              "column:weather_hourly.weather_hour",
+              "column:yellow_taxi.tpep_pickup_datetime",
+              "dataset:weather_hourly",
+              "relationship:yellow_pickup_weather_hour",
+              "rule:rainy_hour"
+            ],
+            "extras": [
+              "column:yellow_taxi.mta_tax",
+              "column:yellow_taxi.tolls_amount"
+            ],
+            "selected_metadata_count": 4,
+            "context_characters": 1629,
+            "context_words": 234,
+            "context_reduction_percent": 90.21680379556784,
+            "retrieval_seconds": 0.344196935000582
+          },
+          {
+            "id": "Q07_H1",
+            "category": "weather_semantic_rule",
+            "recall": 1.0,
+            "precision": 0.6363636363636364,
+            "f1": 0.7777777777777778,
+            "perfect_recall": true,
+            "hits": [
+              "column:green_taxi.lpep_pickup_datetime",
+              "column:weather_hourly.has_precipitation",
+              "column:weather_hourly.weather_hour",
+              "dataset:green_taxi",
+              "dataset:weather_hourly",
+              "relationship:green_pickup_weather_hour",
+              "rule:dry_hour"
+            ],
+            "missing": [],
+            "extras": [
+              "column:green_taxi.mta_tax",
+              "column:green_taxi.passenger_count",
+              "column:green_taxi.tolls_amount",
+              "column:green_taxi.trip_type"
+            ],
+            "selected_metadata_count": 11,
+            "context_characters": 2573,
+            "context_words": 341,
+            "context_reduction_percent": 84.54747462614858,
+            "retrieval_seconds": 0.337525535000168
+          },
+          {
+            "id": "Q07_H2",
+            "category": "weather_semantic_rule",
+            "recall": 1.0,
+            "precision": 0.6363636363636364,
+            "f1": 0.7777777777777778,
+            "perfect_recall": true,
+            "hits": [
+              "column:green_taxi.lpep_pickup_datetime",
+              "column:weather_hourly.has_precipitation",
+              "column:weather_hourly.weather_hour",
+              "dataset:green_taxi",
+              "dataset:weather_hourly",
+              "relationship:green_pickup_weather_hour",
+              "rule:dry_hour"
+            ],
+            "missing": [],
+            "extras": [
+              "column:green_taxi.mta_tax",
+              "column:green_taxi.passenger_count",
+              "column:green_taxi.tolls_amount",
+              "column:green_taxi.trip_type"
+            ],
+            "selected_metadata_count": 11,
+            "context_characters": 2570,
+            "context_words": 339,
+            "context_reduction_percent": 84.56549156206835,
+            "retrieval_seconds": 0.31560362900017935
+          },
+          {
+            "id": "Q08_H1",
+            "category": "three_source_query",
+            "recall": 0.6666666666666666,
+            "precision": 0.8,
+            "f1": 0.7272727272727272,
+            "perfect_recall": false,
+            "hits": [
+              "column:weather_hourly.has_precipitation",
+              "column:weather_hourly.weather_hour",
+              "column:yellow_taxi.PULocationID",
+              "column:yellow_taxi.tpep_pickup_datetime",
+              "dataset:weather_hourly",
+              "dataset:yellow_taxi",
+              "relationship:yellow_pickup_weather_hour",
+              "rule:rainy_hour"
+            ],
+            "missing": [
+              "column:taxi_zones.Borough",
+              "column:taxi_zones.LocationID",
+              "dataset:taxi_zones",
+              "relationship:yellow_pickup_zone"
+            ],
+            "extras": [
+              "column:yellow_taxi.RatecodeID",
+              "column:yellow_taxi.tolls_amount"
+            ],
+            "selected_metadata_count": 10,
+            "context_characters": 2651,
+            "context_words": 352,
+            "context_reduction_percent": 84.0790342922347,
+            "retrieval_seconds": 0.39931059799891955
+          },
+          {
+            "id": "Q08_H2",
+            "category": "three_source_query",
+            "recall": 0.16666666666666666,
+            "precision": 0.5,
+            "f1": 0.25,
+            "perfect_recall": false,
+            "hits": [
+              "column:yellow_taxi.PULocationID",
+              "dataset:yellow_taxi"
+            ],
+            "missing": [
+              "column:taxi_zones.Borough",
+              "column:taxi_zones.LocationID",
+              "column:weather_hourly.has_precipitation",
+              "column:weather_hourly.weather_hour",
+              "column:yellow_taxi.tpep_pickup_datetime",
+              "dataset:taxi_zones",
+              "dataset:weather_hourly",
+              "relationship:yellow_pickup_weather_hour",
+              "relationship:yellow_pickup_zone",
+              "rule:rainy_hour"
+            ],
+            "extras": [
+              "column:yellow_taxi.RatecodeID",
+              "column:yellow_taxi.tolls_amount"
+            ],
+            "selected_metadata_count": 4,
+            "context_characters": 1659,
+            "context_words": 239,
+            "context_reduction_percent": 90.03663443637019,
+            "retrieval_seconds": 0.3823076559983747
+          },
+          {
+            "id": "Q09_H1",
+            "category": "weather_only",
+            "recall": 1.0,
+            "precision": 0.6666666666666666,
+            "f1": 0.8,
+            "perfect_recall": true,
+            "hits": [
+              "column:weather_hourly.has_precipitation",
+              "column:weather_hourly.temperature_f",
+              "dataset:weather_hourly",
+              "rule:rainy_hour"
+            ],
+            "missing": [],
+            "extras": [
+              "column:weather_hourly.precipitation_raw",
+              "column:weather_hourly.temperature_f_raw"
+            ],
+            "selected_metadata_count": 6,
+            "context_characters": 2032,
+            "context_words": 272,
+            "context_reduction_percent": 87.79652873701279,
+            "retrieval_seconds": 0.3593087640001613
+          },
+          {
+            "id": "Q09_H2",
+            "category": "weather_only",
+            "recall": 0.75,
+            "precision": 0.6,
+            "f1": 0.6666666666666665,
+            "perfect_recall": false,
+            "hits": [
+              "column:weather_hourly.has_precipitation",
+              "column:weather_hourly.temperature_f",
+              "dataset:weather_hourly"
+            ],
+            "missing": [
+              "rule:rainy_hour"
+            ],
+            "extras": [
+              "column:weather_hourly.precipitation_raw",
+              "column:weather_hourly.temperature_f_raw"
+            ],
+            "selected_metadata_count": 5,
+            "context_characters": 1835,
+            "context_words": 246,
+            "context_reduction_percent": 88.97964086241068,
+            "retrieval_seconds": 0.3193413799999689
+          },
+          {
+            "id": "Q10_H1",
+            "category": "temporal_grouping",
+            "recall": 1.0,
+            "precision": 0.8,
+            "f1": 0.888888888888889,
+            "perfect_recall": true,
+            "hits": [
+              "column:weather_hourly.has_precipitation",
+              "column:weather_hourly.weather_hour",
+              "column:yellow_taxi.tpep_pickup_datetime",
+              "dataset:weather_hourly",
+              "dataset:yellow_taxi",
+              "relationship:yellow_pickup_weather_hour",
+              "rule:rainy_hour",
+              "rule:yellow_pickup_hour_of_day"
+            ],
+            "missing": [],
+            "extras": [
+              "column:yellow_taxi.PULocationID",
+              "column:yellow_taxi.tolls_amount"
+            ],
+            "selected_metadata_count": 10,
+            "context_characters": 2887,
+            "context_words": 388,
+            "context_reduction_percent": 82.6617019998799,
+            "retrieval_seconds": 0.3958190189987363
+          },
+          {
+            "id": "Q10_H2",
+            "category": "temporal_grouping",
+            "recall": 1.0,
+            "precision": 0.8888888888888888,
+            "f1": 0.9411764705882353,
+            "perfect_recall": true,
+            "hits": [
+              "column:weather_hourly.has_precipitation",
+              "column:weather_hourly.weather_hour",
+              "column:yellow_taxi.tpep_pickup_datetime",
+              "dataset:weather_hourly",
+              "dataset:yellow_taxi",
+              "relationship:yellow_pickup_weather_hour",
+              "rule:rainy_hour",
+              "rule:yellow_pickup_hour_of_day"
+            ],
+            "missing": [],
+            "extras": [
+              "column:yellow_taxi.tolls_amount"
+            ],
+            "selected_metadata_count": 9,
+            "context_characters": 2774,
+            "context_words": 373,
+            "context_reduction_percent": 83.34033991952435,
+            "retrieval_seconds": 0.4320918020002864
+          }
+        ]
+      }
+    }
+  }
+}
