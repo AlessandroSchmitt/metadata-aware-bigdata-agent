@@ -1,5 +1,7 @@
 # Technical Feasibility
 
+> **Note:** this document records the preliminary feasibility configuration. The final frozen Text-to-Spark-SQL evaluation uses an LLM context size of **4096 tokens**. The 2048-token value below is retained because it describes the earlier feasibility test.
+
 The project was initially validated through a local technical feasibility study.
 
 ## Environment
