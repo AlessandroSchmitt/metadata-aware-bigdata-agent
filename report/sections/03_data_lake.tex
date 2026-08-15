@@ -1,1 +1,195 @@
 \section{Data Lake and Datasets}
+\label{sec:data-lake}
+
+\subsection{Data-Lake Scope}
+
+The experimental data lake was constructed around New York City
+urban-mobility analytics for January 2024. The core catalog contains four
+physical datasets: Yellow Taxi trip records, Green Taxi trip records, Taxi
+Zones, and hourly weather observations.
+
+The choice deliberately combines datasets with different analytical roles.
+Yellow and Green Taxi contain high-volume transactional trip records, Taxi
+Zones provides geographic reference data, and the weather source provides a
+temporal environmental dimension. As a consequence, answering cross-source
+questions requires the system to reconcile different schemas and
+granularities rather than querying a single homogeneous table.
+
+All datasets used by Spark were curated into Parquet before the
+Text-to-Spark-SQL experiments. The metadata layer therefore describes a
+stable curated representation rather than exposing the language model
+directly to raw source files.
+
+
+\subsection{Yellow Taxi Trip Records}
+
+The Yellow Taxi dataset is the largest source in the project and represents
+the main data-volume component of the experimental setting. The January 2024
+raw input contained 2,964,624 records. After curation, 2,963,713 records were
+retained with 19 physical columns.
+
+The dataset includes pickup and drop-off timestamps, pickup and drop-off
+location identifiers, trip distance, fare-related attributes, and other
+operational fields. In the metadata catalog, the physical Spark table is
+registered as \texttt{yellow\_taxi}.
+
+The pickup timestamp,
+\texttt{tpep\_pickup\_datetime}, is particularly important for cross-source
+analytics because it provides the temporal reference used to associate a
+trip with the corresponding hourly weather observation. Similarly,
+\texttt{PULocationID} and \texttt{DOLocationID} provide the physical keys
+used to connect taxi trips with geographic information from the Taxi Zones
+dataset.
+
+
+\subsection{Green Taxi Trip Records}
+
+The Green Taxi dataset provides a second trip-record source with a similar
+analytical domain but a different physical schema. The January 2024 raw input
+contained 56,551 records, of which 56,429 remained after curation. The
+curated representation contains 20 physical columns and is registered in
+Spark as \texttt{green\_taxi}.
+
+Although Yellow and Green Taxi describe related events, they cannot be
+treated as a single identical schema. In particular, their pickup and
+drop-off timestamp columns use different physical names. Green Taxi uses
+\texttt{lpep\_pickup\_datetime} for the pickup timestamp, whereas Yellow
+Taxi uses \texttt{tpep\_pickup\_datetime}. This difference illustrates the
+role of semantic metadata: both fields represent the same general concept
+of a pickup time while remaining distinct physical SQL columns.
+
+As for Yellow Taxi, Green Taxi location identifiers can be related to Taxi
+Zones, while the pickup timestamp can be converted to an hourly bucket and
+related to the weather source.
+
+
+\subsection{Taxi Zones}
+
+Taxi Zones is a compact geographic reference dataset containing 265 rows and
+4 physical columns. It maps a numeric \texttt{LocationID} to descriptive
+geographic attributes including zone and borough information.
+
+Despite its small physical size, Taxi Zones is essential for many analytical
+questions. Taxi-trip records store location identifiers rather than
+human-readable geographic names. Therefore, a question such as ``Which
+borough received the largest number of Green Taxi drop-offs?'' requires a
+join between the transactional trip source and the zone reference source.
+
+The project explicitly models four taxi-to-zone relationships: Yellow pickup,
+Yellow drop-off, Green pickup, and Green drop-off. Distinguishing pickup from
+drop-off relationships is necessary because both are represented by location
+identifiers but correspond to different analytical meanings.
+
+
+\subsection{Hourly Weather}
+
+The weather source provides the temporal environmental dimension used for
+questions involving rain, temperature, and hourly conditions. The curated
+January 2024 dataset contains 744 hourly buckets and 23 columns.
+
+Of the 744 expected hourly positions for the month, 743 contain an observed
+weather record. One hourly bucket is explicitly represented as missing rather
+than silently removed. The curated data contains 167 rainy hours and 576 dry
+hours, with one hour whose precipitation status remains unknown because of
+the missing observation.
+
+Weather observations are registered in Spark as
+\texttt{weather\_hourly}. The physical \texttt{weather\_hour} column is the
+temporal key used for joins. Taxi pickup timestamps are converted to hourly
+granularity using \texttt{date\_trunc('hour', ...)} before being compared
+with this field.
+
+Precipitation semantics are normalized during curation. Positive
+precipitation values are treated as rainy conditions. Trace precipitation is
+also considered precipitation even though no positive numeric amount can be
+assigned to it. A zero precipitation amount represents a dry observation,
+while missing precipitation information is kept distinct from both rainy and
+dry conditions.
+
+
+\subsection{Data Curation}
+
+Curation was performed before metadata indexing and query generation so that
+all downstream experiments operate over stable physical datasets.
+
+For the taxi sources, records were restricted to pickups occurring in January
+2024. Rows with missing pickup or drop-off timestamps were removed, and a
+drop-off was required to occur after its corresponding pickup. Pickup and
+drop-off location identifiers were required to correspond to valid taxi-zone
+identifiers. Trip distance was constrained to non-negative values not
+exceeding 1,000 miles.
+
+The curation procedure intentionally avoids applying overly aggressive domain
+assumptions. Zero-distance trips are preserved, as are negative monetary
+values and zero passenger counts when they are present in the source data.
+These values can represent unusual but potentially meaningful operational
+records and were therefore not removed merely because they appear
+counter-intuitive.
+
+For weather data, raw observations were normalized to one record per clock
+hour. When multiple observations were available within the same hourly
+bucket, the preferred observation type was selected when available, with a
+deterministic fallback to the latest suitable observation. The resulting
+representation provides a stable hourly temporal key for cross-source joins.
+
+
+\subsection{Cross-Source Relationships}
+
+The metadata catalog explicitly represents six relationships required by the
+core data lake.
+
+Four relationships connect taxi locations to Taxi Zones:
+
+\begin{itemize}
+
+    \item \texttt{yellow\_taxi.PULocationID} to
+    \texttt{taxi\_zones.LocationID};
+
+    \item \texttt{yellow\_taxi.DOLocationID} to
+    \texttt{taxi\_zones.LocationID};
+
+    \item \texttt{green\_taxi.PULocationID} to
+    \texttt{taxi\_zones.LocationID};
+
+    \item \texttt{green\_taxi.DOLocationID} to
+    \texttt{taxi\_zones.LocationID}.
+
+\end{itemize}
+
+Two additional relationships connect taxi pickup times with hourly weather:
+
+\begin{itemize}
+
+    \item
+    \texttt{date\_trunc('hour',
+    yellow\_taxi.tpep\_pickup\_datetime)}
+    to \texttt{weather\_hourly.weather\_hour};
+
+    \item
+    \texttt{date\_trunc('hour',
+    green\_taxi.lpep\_pickup\_datetime)}
+    to \texttt{weather\_hourly.weather\_hour}.
+
+\end{itemize}
+
+These relationships are stored as metadata rather than being inferred by the
+language model for every request. This allows relation-aware retrieval to
+expand an initially selected dataset or column into the physical join
+endpoints required for execution.
+
+
+\subsection{Volume and Variety in the Experimental Data}
+
+The data lake represents the two Big Data dimensions selected for this
+project.
+
+\emph{Volume} is primarily provided by the taxi-trip datasets and is evaluated
+experimentally using progressively larger subsets of Yellow Taxi data, from
+100,000 records to the complete curated set of 2,963,713 records.
+
+\emph{Variety} arises from the combination of transactional mobility data,
+geographic reference data, and hourly weather observations. The sources have
+different schemas, column naming conventions, row granularities, and
+relationships. This heterogeneity motivates the metadata-aware architecture:
+a natural-language request can refer to one conceptual analytical task while
+its execution requires physical fields distributed across multiple datasets.
