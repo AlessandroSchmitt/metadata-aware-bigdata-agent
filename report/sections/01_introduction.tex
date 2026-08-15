@@ -1,1 +1,157 @@
 \section{Introduction}
+\label{sec:introduction}
+
+\subsection{Motivation}
+
+Modern data analytics increasingly relies on data lakes that integrate
+multiple heterogeneous sources rather than on a single, centrally designed
+relational database. Although this architecture simplifies the storage and
+integration of large and diverse datasets, it also makes analytical access
+more complex. A user who wants to formulate a cross-source query must know
+which datasets are relevant, understand their schemas and semantics, identify
+the relationships between them, and finally express the analysis using the
+query language supported by the processing engine.
+
+Large language models (LLMs) provide a promising interface for reducing this
+complexity by translating natural-language analytical requests into SQL.
+However, applying Text-to-SQL techniques directly to a heterogeneous data lake
+introduces an additional problem: the model needs sufficient metadata to
+identify the correct physical datasets, columns, relationships, and semantic
+rules. Providing the complete metadata catalog for every query is simple, but
+it can introduce large amounts of irrelevant information and causes the prompt
+to grow as the catalog grows. Moreover, a metadata catalog may contain
+semantic concepts, aliases, relationship identifiers, and descriptive rules
+that are useful for retrieval but are not valid physical SQL identifiers.
+
+This project investigates an alternative approach in which the metadata
+provided to the LLM is selected dynamically for each user question. The goal
+is to preserve the information required for correct query generation while
+avoiding the cost and ambiguity of exposing the complete catalog.
+
+
+\subsection{Problem Statement}
+
+The project considers a heterogeneous data lake containing New York City
+urban-mobility and weather data. The core sources are NYC TLC Yellow Taxi trip
+records, NYC TLC Green Taxi trip records, NYC Taxi Zones, and hourly weather
+observations. These datasets differ in schema, granularity, semantics, and
+analytical role, while meaningful user requests may require relationships
+across multiple sources.
+
+For example, a request concerning the borough with the largest number of taxi
+pickups during rainy hours requires more than simply identifying columns whose
+names are similar to words in the question. The system must identify the taxi
+trip dataset, the pickup-location relationship with the Taxi Zones dataset,
+the temporal relationship with hourly weather observations, and the semantic
+condition used to represent a rainy hour. The generated query must then use
+the corresponding physical Spark SQL tables and columns rather than internal
+metadata identifiers.
+
+The central challenge is therefore to determine how much metadata should be
+provided to the language model and how that metadata should be represented.
+Too little information may cause the model to omit a required dataset,
+relationship, or semantic rule. Too much information increases prompt size and
+may expose irrelevant or misleading metadata.
+
+
+\subsection{Proposed Approach}
+
+The implemented system follows a metadata-aware Text-to-Spark-SQL pipeline.
+A structured metadata catalog describes datasets, physical columns, semantic
+concepts, aliases, cross-source relationships, and reusable semantic rules.
+Metadata documents are indexed using vector embeddings so that candidate
+metadata can be retrieved from a natural-language question.
+
+The initial semantic retrieval is then expanded using explicit relationships
+stored in the catalog. This relation-aware expansion makes it possible to add
+the physical endpoints required for joins even when they are not directly
+retrieved by semantic similarity. The selected metadata is subsequently
+rendered into a SQL-safe context that exposes only executable physical table
+and column names, join conditions, and SQL expressions to the language model.
+
+A local LLM generates Spark SQL from this restricted context. The resulting
+query is parsed and validated before execution. If validation fails, the
+system can perform a single repair attempt using the validation error together
+with the same retrieved metadata context. Valid queries are finally executed
+using Apache Spark SQL over the curated data lake.
+
+
+\subsection{Research Question}
+
+The main research question investigated in this work is:
+
+\begin{quote}
+\emph{To what extent can dynamic, relation-aware metadata retrieval improve
+the correctness and efficiency of Text-to-Spark-SQL generation over a
+heterogeneous data lake compared with providing the complete metadata catalog
+to the language model?}
+\end{quote}
+
+The evaluation considers both correctness and efficiency. Correctness is
+measured at the metadata-retrieval and query-result levels, while efficiency is
+evaluated through prompt size, controlled inference latency, catalog growth,
+and Spark execution under increasing data volume.
+
+
+\subsection{Contributions}
+
+The main contributions of the project are the following:
+
+\begin{itemize}
+
+    \item A reproducible metadata-aware Text-to-Spark-SQL prototype for
+    cross-source analytics over a heterogeneous Spark-based data lake.
+
+    \item A structured metadata catalog containing physical schemas, semantic
+    concepts, aliases, cross-source relationships, and SQL-oriented semantic
+    rules.
+
+    \item A relation-aware retrieval strategy that combines semantic retrieval
+    with deterministic metadata expansion and produces a restricted,
+    SQL-safe context for the language model.
+
+    \item A validation and one-shot repair stage that prevents invalid SQL
+    from being executed directly and attempts to recover from generation
+    errors without changing the retrieved metadata.
+
+    \item A frozen held-out evaluation comparing three configurations:
+    complete-catalog prompting, relation-aware metadata retrieval, and
+    relation-aware retrieval with validation and repair.
+
+    \item Separate scalability experiments for metadata-catalog growth and
+    physical data volume, allowing catalog scalability and Spark execution
+    scalability to be analysed independently.
+
+\end{itemize}
+
+
+\subsection{Summary of Results}
+
+On the frozen held-out benchmark, the complete-catalog baseline achieved
+70\% result accuracy. Relation-aware metadata retrieval increased result
+accuracy to 80\%, while the addition of validation and one-shot repair reached
+85\%. At the same time, relation-aware prompting reduced the mean prompt size
+from 2558.45 to 776.35 tokens, corresponding to a 69.66\% reduction.
+
+A separate controlled latency experiment showed that the smaller
+relation-aware prompt reduced mean prompt-evaluation time from 182.58 seconds
+to 54.24 seconds in the evaluated CPU-only local environment, a reduction of
+70.29\%.
+
+The catalog-scaling experiment showed that the full metadata context increased
+from 9,498 characters with four sources to 16,651 characters with sixteen
+sources, whereas the mean retrieved context remained close to 2,100
+characters. This increased compression was accompanied by a measurable
+retrieval trade-off: macro recall decreased from 0.925 to 0.825 after
+semantically related hard-negative sources were introduced and then remained
+stable when the catalog was further expanded.
+
+Finally, Spark data-volume experiments evaluated the same workloads from
+100,000 rows up to the full Yellow Taxi dataset of 2,963,713 curated records.
+These experiments complement the catalog-scale evaluation by measuring the
+system along the physical data-volume dimension rather than the metadata
+dimension.
+
+The remainder of this report describes the data sources, metadata model,
+system architecture, implementation, experimental methodology, results, and
+limitations in detail.
