@@ -1,1 +1,392 @@
 \section{Experimental Results}
+\label{sec:results}
+
+\subsection{Held-Out Text-to-Spark-SQL Performance}
+
+The main held-out evaluation compares the three configurations defined in
+Section~\ref{sec:methodology} over 20 frozen natural-language questions.
+
+Table~\ref{tab:heldout-abc} reports validation rate, execution rate, result
+accuracy, and the absolute number of correct queries.
+
+\input{tables/heldout_abc}
+
+Figure~\ref{fig:heldout-abc} presents the same comparison graphically.
+
+\begin{figure}[htbp]
+    \centering
+    \includegraphics[
+        width=0.82\textwidth
+    ]{heldout_abc_rates.pdf}
+    \caption{
+        Held-out Text-to-Spark-SQL performance for configurations A, B, and C.
+    }
+    \label{fig:heldout-abc}
+\end{figure}
+
+The complete-catalog baseline, Configuration A, achieves a validation rate of
+75\%, an execution rate of 75\%, and a final result accuracy of 70\%. This
+corresponds to 14 correct results out of 20 held-out questions.
+
+Replacing the complete metadata catalog with relation-aware SQL-safe metadata
+retrieval improves all three metrics. Configuration B reaches 85\% validation,
+85\% execution, and 80\% result accuracy, corresponding to 16 correct results
+out of 20.
+
+Configuration C adds validation-driven one-shot repair and obtains the highest
+final performance: 90\% validation, 90\% execution, and 85\% result accuracy,
+or 17 correct results out of 20.
+
+The improvement from A to B is particularly important because both
+configurations use the same language model and deterministic generation
+parameters. The main experimental difference is therefore the metadata context
+supplied before SQL generation.
+
+The results indicate that reducing the catalog to a relation-aware SQL-safe
+subset does not merely reduce prompt size. Under the held-out benchmark, it
+also improves final query correctness.
+
+
+\subsection{Prompt Efficiency}
+
+The metadata-retrieval configuration substantially reduces the amount of
+context supplied to the language model.
+
+Table~\ref{tab:efficiency-latency} summarizes prompt-size and controlled
+latency measurements.
+
+\input{tables/efficiency_latency}
+
+On the 20 held-out questions, Configuration A uses an average of 2558.45 prompt
+tokens, while Configuration B uses 776.35 tokens. The relation-aware approach
+therefore reduces mean prompt size by 69.66\%.
+
+Figure~\ref{fig:prompt-tokens} highlights this reduction.
+
+\begin{figure}[htbp]
+    \centering
+    \includegraphics[
+        width=0.68\textwidth
+    ]{prompt_token_efficiency.pdf}
+    \caption{
+        Mean prompt-token count for complete-catalog and relation-aware
+        prompting on the held-out benchmark.
+    }
+    \label{fig:prompt-tokens}
+\end{figure}
+
+The reduction is achieved without changing the underlying LLM. It results from
+selecting only metadata considered relevant to the current analytical request
+and rendering that metadata using physical SQL-safe identifiers.
+
+This result supports one of the main motivations of the project: as metadata
+catalogs grow, sending the complete catalog for every natural-language request
+is not necessary for the evaluated workload.
+
+
+\subsection{Controlled Inference Latency}
+
+The sequential held-out execution exhibited strong cache effects, especially
+for the complete-catalog prompts that repeatedly share a large common prefix.
+For this reason, the primary latency comparison uses the controlled
+prefix-isolated benchmark described in Section~\ref{sec:methodology}.
+
+The controlled experiment reports a mean prompt-evaluation time of
+182.58 seconds for Configuration A and 54.24 seconds for Configuration B.
+This corresponds to a 70.29\% reduction in prompt-evaluation time.
+
+Mean wall-clock time decreases from 202.31 seconds to 69.29 seconds, a
+65.75\% reduction.
+
+Figure~\ref{fig:controlled-latency} shows the controlled prompt-evaluation
+comparison.
+
+\begin{figure}[htbp]
+    \centering
+    \includegraphics[
+        width=0.68\textwidth
+    ]{controlled_latency_prompt_eval.pdf}
+    \caption{
+        Mean controlled prompt-evaluation latency for complete-catalog and
+        relation-aware prompting.
+    }
+    \label{fig:controlled-latency}
+\end{figure}
+
+These absolute latency values are specific to the CPU-only local execution
+environment and should not be interpreted as general model-performance
+measurements. The relevant result is the relative reduction observed when the
+same model processes the smaller relation-aware prompt.
+
+The experiment therefore links metadata-context reduction to a measurable
+decrease in inference cost under controlled conditions.
+
+
+\subsection{Metadata Retrieval Quality}
+
+Before considering catalog growth, the relation-aware retriever was evaluated
+on the frozen 20-question held-out benchmark using the original four-source
+catalog.
+
+The retriever achieves macro recall of 0.925, macro precision of 0.662, and
+macro F1 of 0.754. Complete required-metadata recall is obtained for 17 of the
+20 held-out questions.
+
+The remaining three queries contain incomplete metadata retrieval. These
+failures are especially informative because downstream Text-to-Spark-SQL
+accuracy is strongly associated with metadata completeness.
+
+Among the 17 perfect-recall questions, Configuration B returns the correct
+result for 15 questions, corresponding to 88.2\% accuracy. Configuration C
+returns the correct result for 16 of the 17, corresponding to 94.1\%.
+
+For the three imperfect-recall questions, both B and C obtain only one correct
+result, corresponding to 33.3\%.
+
+This difference does not prove a causal relationship by itself, but it
+provides strong evidence that missing required metadata is a major downstream
+failure mode. Validation and repair can improve a query when the necessary
+physical information is already present, but they cannot reliably reconstruct
+relationships or schema elements that were absent from the prompt context.
+
+
+\subsection{Repair Behaviour}
+
+Configuration C triggered three repair attempts over the 20 held-out queries.
+One of the three repairs produced a query that passed validation and improved
+the final result, giving a validator-success rate of one third for attempted
+repairs.
+
+The successful case occurred for a Green Taxi geographic query. The initial
+generation referenced an invalid pickup timestamp column. Spark validation
+identified the schema error, and the one-shot repair removed the unnecessary
+date restriction, producing a valid and correct query.
+
+The other repair attempts corresponded to cases in which the retrieval context
+itself lacked required metadata. In those cases, validator feedback alone was
+insufficient to reconstruct the missing physical relationship.
+
+A separate limitation also appears in valid-but-incorrect queries. For one
+cross-taxi comparison, the SQL was executable and produced the correct
+numerical aggregates but generated different categorical labels from those
+required by the benchmark. Since validation checks syntactic and structural
+validity rather than complete semantic equivalence, no repair was triggered.
+
+The results therefore show that repair is useful as a limited recovery
+mechanism for invalid SQL, but it is not a substitute for correct metadata
+grounding or result-level evaluation.
+
+
+\subsection{Catalog Scalability}
+
+The catalog-scale experiment evaluates how retrieval behaves as the number of
+metadata sources grows from 4 to 8 and 16.
+
+Exact measurements are reported in Table~\ref{tab:catalog-scaling}.
+
+\input{tables/catalog_scaling}
+
+The complete rendered catalog grows from 9,498 characters at four sources to
+12,024 characters at eight sources and 16,651 characters at sixteen sources.
+
+In contrast, the mean relation-aware context remains bounded. It decreases
+slightly from 2160.7 characters at four sources to 2061.6 characters at eight
+sources and remains at 2061.6 characters at sixteen sources.
+
+Figure~\ref{fig:catalog-context} illustrates the difference between complete
+catalog growth and retrieved-context size.
+
+\begin{figure}[htbp]
+    \centering
+    \includegraphics[
+        width=0.78\textwidth
+    ]{catalog_scale_context_size.pdf}
+    \caption{
+        Complete catalog size and mean relation-aware context size as the
+        catalog grows from 4 to 16 sources.
+    }
+    \label{fig:catalog-context}
+\end{figure}
+
+The corresponding context reduction increases from 77.25\% at four sources to
+82.85\% at eight sources and 87.62\% at sixteen sources.
+
+However, this increased compression is accompanied by a retrieval-quality
+trade-off. Macro recall decreases from 0.925 at four sources to 0.825 at eight
+sources. Macro precision decreases from 0.662 to 0.620, and macro F1 decreases
+from 0.754 to 0.683.
+
+The number of perfect-recall held-out questions decreases from 17 out of 20 to
+14 out of 20.
+
+Figure~\ref{fig:catalog-recall} shows the recall trend.
+
+\begin{figure}[htbp]
+    \centering
+    \includegraphics[
+        width=0.68\textwidth
+    ]{catalog_scale_recall.pdf}
+    \caption{
+        Mean metadata recall under increasing catalog scale.
+    }
+    \label{fig:catalog-recall}
+\end{figure}
+
+Importantly, no additional degradation is observed when the catalog grows from
+8 to 16 sources. Recall, precision, F1, mean context size, and perfect-recall
+count remain unchanged between these two scales.
+
+The result therefore does not indicate a simple monotonic relationship in
+which every additional source causes further degradation. Instead, particular
+semantically similar hard negatives introduced at the eight-source scale are
+responsible for the observed loss.
+
+
+\subsection{Catalog-Scale Error Analysis}
+
+Post-hoc analysis of the frozen catalog-scale results identifies the specific
+metadata lost when the first hard-negative sources are introduced.
+
+For both held-out variants of the Green Taxi drop-off borough query, retrieval
+is perfect with four sources. At eight sources, the retriever loses:
+
+\begin{itemize}
+
+    \item \texttt{taxi\_zones};
+    \item \texttt{taxi\_zones.Borough};
+    \item \texttt{taxi\_zones.LocationID};
+    \item the Green Taxi drop-off-to-zone relationship.
+
+\end{itemize}
+
+A similar effect appears for one Yellow Taxi pickup-borough query, where the
+retriever loses the Taxi Zones dataset, the borough and location columns, and
+the Yellow pickup-to-zone relationship.
+
+The most difficult three-source paraphrase already had incomplete weather
+retrieval at four sources. After the hard-negative catalog expansion, it also
+loses the geographic Taxi Zones metadata.
+
+These failures are consistent with semantic competition from the added
+domain-related distractors, particularly sources containing borough,
+geographic, weather, or alternative mobility concepts.
+
+The fact that the same failures persist unchanged at sixteen sources suggests
+that the observed degradation is caused mainly by the first set of strongly
+competitive hard negatives rather than by catalog size alone.
+
+
+\subsection{Metadata Index Construction Cost}
+
+Catalog growth also increases the amount of metadata that must be embedded and
+indexed.
+
+With four sources, the index contains 103 metadata documents and requires
+6,472 embedding prompt tokens. Index construction uses 28.54 seconds of
+embedding wall time.
+
+At eight sources, the index contains 131 documents, requires 8,437 embedding
+tokens, and uses 30.68 seconds of embedding wall time.
+
+At sixteen sources, the index grows to 188 documents and 11,585 embedding
+tokens, with 42.43 seconds of embedding wall time.
+
+These measurements represent index-construction cost rather than per-query
+retrieval cost. Since metadata indexes can be reused across many analytical
+requests, this cost is operationally different from the prompt and generation
+cost incurred for each user query.
+
+
+\subsection{Spark Data-Volume Scalability}
+
+The final experiment evaluates the physical execution layer independently from
+metadata-catalog growth.
+
+Table~\ref{tab:data-volume-scaling} reports median Spark runtime across three
+repetitions for each workload and data volume.
+
+\input{tables/data_volume_scaling}
+
+The physical Yellow Taxi benchmark scales from 100,000 rows to the complete
+2,963,713-row curated dataset. The corresponding two-file Parquet
+representation grows from 2.31 MiB to 72.58 MiB.
+
+Figure~\ref{fig:data-volume} presents the runtime curves.
+
+\begin{figure}[htbp]
+    \centering
+    \includegraphics[
+        width=0.80\textwidth
+    ]{spark_data_volume_scaling.pdf}
+    \caption{
+        Median Spark runtime under increasing Yellow Taxi data volume.
+    }
+    \label{fig:data-volume}
+\end{figure}
+
+For the simple scan-and-aggregation workload, median runtime is 0.140 seconds
+at 100,000 rows and 0.199 seconds for the complete dataset. The corresponding
+runtime factor is 1.42 despite an approximately 29.6-fold increase in row
+count.
+
+The pickup-zone grouping workload increases from 0.226 seconds to
+0.492 seconds, corresponding to a 2.18-fold runtime increase.
+
+The temporal taxi--weather join shows the clearest volume-dependent growth.
+Median runtime increases from 0.274 seconds at 100,000 rows to 0.406 seconds
+at 500,000 rows, 0.615 seconds at one million rows, and 1.350 seconds for the
+complete dataset. The full-data runtime is 4.92 times the 100,000-row
+baseline.
+
+The first repetition of several small workloads is substantially slower than
+later repetitions, confirming the presence of JVM, filesystem, and execution
+warm-up effects. For this reason, the pre-defined benchmark reports the median
+of three runs rather than interpreting a single execution.
+
+
+\subsection{Interpretation of the Scaling Results}
+
+The data-volume experiment should not be interpreted as evidence that Spark
+has a universally sub-linear runtime curve. The maximum test dataset is only
+72.58 MiB in its materialized Parquet representation and is executed using two
+local worker threads.
+
+At the smaller scales, fixed costs such as query planning, task scheduling,
+JVM warm-up, and filesystem caching can dominate the actual scan cost. This is
+particularly visible in the simple aggregation workload.
+
+The temporal weather join provides a clearer scaling signal because it
+performs additional timestamp transformation and cross-source matching.
+
+The main conclusion from this experiment is therefore limited and
+implementation-specific: the prototype successfully executes the selected
+analytical workloads from 100,000 rows to the complete 2.96-million-row
+Yellow Taxi dataset, while the measured runtime remains manageable in the
+two-core experimental environment.
+
+
+\subsection{Summary of Main Findings}
+
+The experimental results provide four main findings.
+
+First, relation-aware SQL-safe metadata retrieval improves held-out result
+accuracy from 70\% to 80\% relative to complete-catalog prompting, and
+validation-driven one-shot repair further increases accuracy to 85\%.
+
+Second, the relation-aware context reduces mean prompt size by 69.66\% and
+reduces controlled prompt-evaluation time by 70.29\% in the CPU-only
+experimental environment.
+
+Third, relation-aware retrieval keeps prompt context approximately bounded as
+the metadata catalog grows, but semantically related hard negatives introduce
+a measurable recall trade-off. Macro recall decreases from 0.925 to 0.825
+when the first distractor sources are introduced, then remains stable as the
+catalog grows further.
+
+Fourth, the Spark execution layer successfully handles the evaluated
+data-volume range up to 2,963,713 curated Yellow Taxi records, with the
+temporal weather join exhibiting the clearest increase in runtime as volume
+grows.
+
+These findings are examined further in the discussion of system benefits,
+limitations, and failure modes in Section~\ref{sec:discussion}.
