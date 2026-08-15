@@ -1,1 +1,249 @@
 \section{Reproducibility and Experimental Freeze Protocol}
+\label{sec:reproducibility}
+
+\subsection{Reproducibility Approach}
+
+The project was developed with the objective of separating implementation
+changes, benchmark definition, result observation, and report generation.
+
+This separation is important for experiments involving language models and
+metadata retrieval. If a benchmark is repeatedly inspected while the
+retrieval strategy is still being modified, its final accuracy can no longer
+be interpreted as a clean held-out estimate.
+
+For this reason, the repository uses explicit Git commits and annotated tags
+to preserve the implementation and experimental protocol at important stages.
+
+
+\subsection{Experimental Freeze Chain}
+
+The principal experimental checkpoints are listed below.
+
+\begin{table}[htbp]
+\centering
+\small
+\begin{tabular}{lll}
+\toprule
+Tag & Commit & Purpose \\
+\midrule
+\texttt{development-freeze-v1}
+& \texttt{c13bbff}
+& Freeze final architecture \\
+
+\texttt{heldout-benchmark-v1}
+& \texttt{76bc3a4}
+& Freeze held-out benchmark \\
+
+\texttt{heldout-results-v1}
+& \texttt{d0f3ae1}
+& Freeze A/B/C results \\
+
+\texttt{latency-results-v1}
+& \texttt{2ff1f2a}
+& Freeze controlled latency results \\
+
+\texttt{catalog-scale-benchmark-v1}
+& \texttt{953eacc}
+& Freeze catalog-scale protocol \\
+
+\texttt{catalog-scale-results-v1}
+& \texttt{09a2c2e}
+& Freeze catalog-scale results \\
+
+\texttt{data-volume-benchmark-v1}
+& \texttt{ddb8ab6}
+& Freeze Spark volume protocol \\
+
+\texttt{data-volume-results-v1}
+& \texttt{e9c1f17}
+& Freeze Spark volume results \\
+
+\texttt{report-artifacts-v1}
+& \texttt{b323bcb}
+& Freeze generated report artifacts \\
+\bottomrule
+\end{tabular}
+\caption{Principal Git checkpoints used during experimental evaluation.}
+\label{tab:freeze-chain}
+\end{table}
+
+
+\subsection{Development and Held-Out Separation}
+
+The original ten-query benchmark was used while implementing and tuning the
+retrieval strategy. Once retrieval behaviour had been observed on these
+questions, they were treated as development data.
+
+The architecture was then frozen using
+\texttt{development-freeze-v1}.
+
+A new 20-question held-out benchmark was subsequently created, containing two
+new natural-language paraphrases for each of the ten analytical intents.
+
+The held-out benchmark was itself committed and tagged with
+\texttt{heldout-benchmark-v1} before the final A/B/C Text-to-Spark-SQL
+evaluation was executed.
+
+After results were observed, no retrieval tuning was performed using the
+held-out outcomes.
+
+
+\subsection{Catalog-Scale Freeze}
+
+The catalog-scale experiment introduced metadata-only hard-negative sources
+at three catalog sizes: 4, 8, and 16 sources.
+
+The distractor specification and evaluation harness were frozen using
+\texttt{catalog-scale-benchmark-v1} before the first catalog-scale results
+were observed.
+
+The resulting 4/8/16-source evaluation was then preserved using
+\texttt{catalog-scale-results-v1}.
+
+The post-hoc failure analysis described in the report was performed only after
+this result freeze. It was used to explain the observed behaviour and not to
+modify the retriever.
+
+
+\subsection{Data-Volume Freeze}
+
+The Spark data-volume experiment was handled similarly.
+
+Before execution, the benchmark protocol was committed and tagged with
+\texttt{data-volume-benchmark-v1}. The protocol fixes:
+
+\begin{itemize}
+
+    \item the four physical row-count scales;
+    \item the number of Parquet partitions;
+    \item the three Spark SQL workloads;
+    \item the number of repetitions;
+    \item the use of median runtime as the principal timing statistic.
+
+\end{itemize}
+
+After the benchmark was executed, the resulting JSON artifact was committed
+and tagged with \texttt{data-volume-results-v1}.
+
+
+\subsection{Frozen Benchmark Artifacts}
+
+The principal numerical results used by this report are stored under
+\texttt{artifacts/benchmarks/}.
+
+The final report depends primarily on:
+
+\begin{verbatim}
+artifacts/benchmarks/heldout_abc_summary.json
+artifacts/benchmarks/controlled_latency_benchmark.json
+artifacts/benchmarks/catalog_scale_benchmark.json
+artifacts/benchmarks/data_volume_scaling_benchmark.json
+\end{verbatim}
+
+These files contain the measurements used for the result tables and figures.
+
+The reporting pipeline does not recompute the experiments. It reads these
+frozen JSON files and transforms them into presentation artifacts.
+
+
+\subsection{Report Artifact Generation}
+
+The script
+
+\begin{verbatim}
+scripts/reporting/generate_report_artifacts.py
+\end{verbatim}
+
+generates the figures and tables used in this report.
+
+It produces:
+
+\begin{itemize}
+
+    \item six figures in PDF format for LaTeX inclusion;
+    \item six corresponding PNG files for visual inspection;
+    \item four LaTeX result tables;
+    \item four CSV versions of the same tables.
+
+\end{itemize}
+
+The script uses only previously stored benchmark results. It does not execute
+Spark queries, invoke Ollama, rebuild metadata retrieval results, or run the
+Text-to-Spark-SQL benchmark again.
+
+The generated reporting artifacts were frozen using the tag
+\texttt{report-artifacts-v1}.
+
+
+\subsection{Environment Requirements}
+
+The principal runtime environment used for the final experiments includes:
+
+\begin{itemize}
+
+    \item Python 3.12;
+    \item Java 17;
+    \item PySpark 3.5.8;
+    \item Ollama;
+    \item Qdrant local client;
+    \item SQLGlot;
+    \item Matplotlib 3.11.1.
+
+\end{itemize}
+
+The Text-to-Spark-SQL model is
+\texttt{qwen2.5-coder:3b}, while metadata embeddings are produced using
+\texttt{embeddinggemma}.
+
+Spark experiments use a local two-thread execution environment. The
+data-volume benchmark explicitly launches Spark with
+
+\begin{verbatim}
+--master local[2]
+--driver-memory 1g
+\end{verbatim}
+
+
+\subsection{Generated and Versioned Data}
+
+Large or reproducible physical artifacts are intentionally excluded from Git.
+
+This includes raw data, curated Parquet datasets, generated SQLite catalog
+copies, Qdrant storage, temporary logs, and intermediate Spark artifacts.
+
+Instead, the repository versions:
+
+\begin{itemize}
+
+    \item source code;
+    \item configuration files;
+    \item benchmark definitions;
+    \item evaluation scripts;
+    \item frozen benchmark summaries;
+    \item final figures and tables;
+    \item the LaTeX report.
+
+\end{itemize}
+
+This keeps the repository compact while preserving the information required to
+understand and reproduce the experimental procedure.
+
+
+\subsection{Verification of Repository State}
+
+The Git freeze chain can be inspected using commands such as:
+
+\begin{verbatim}
+git show --no-patch --oneline development-freeze-v1
+git show --no-patch --oneline heldout-benchmark-v1
+git show --no-patch --oneline heldout-results-v1
+git show --no-patch --oneline latency-results-v1
+git show --no-patch --oneline catalog-scale-benchmark-v1
+git show --no-patch --oneline catalog-scale-results-v1
+git show --no-patch --oneline data-volume-benchmark-v1
+git show --no-patch --oneline data-volume-results-v1
+git show --no-patch --oneline report-artifacts-v1
+\end{verbatim}
+
+These checkpoints provide a reproducible history separating experimental
+design from experimental outcomes.
