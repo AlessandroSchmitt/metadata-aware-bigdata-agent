@@ -1,1 +1,308 @@
 \section{Metadata-Aware Architecture}
+\label{sec:architecture}
+
+\subsection{Architecture Overview}
+
+The proposed system transforms a natural-language analytical request into an
+executable Spark SQL query through a sequence of metadata-aware stages. The
+architecture separates metadata selection, language-model generation,
+validation, and physical query execution.
+
+The complete processing flow is:
+
+\begin{enumerate}
+
+    \item receive a natural-language analytical question;
+
+    \item retrieve metadata that is semantically relevant to the question;
+
+    \item expand the initial metadata selection using semantic concepts,
+    aliases, dataset evidence, and explicit cross-source relationships;
+
+    \item render the selected metadata into a restricted SQL-safe context;
+
+    \item ask a local language model to generate one Spark SQL query;
+
+    \item parse and validate the generated SQL against the registered Spark
+    schema and the expected output structure;
+
+    \item if validation fails, optionally perform one repair attempt using the
+    validation feedback and the same metadata context;
+
+    \item execute the valid query using Spark SQL and return the computed
+    result.
+
+\end{enumerate}
+
+The architecture is deliberately not implemented as a multi-agent system.
+Deterministic Python orchestration is used for metadata processing,
+validation, repair control, and Spark execution. The LLM is used only where
+natural-language interpretation and SQL generation are required.
+
+
+\subsection{Structured Metadata Catalog}
+
+The metadata catalog is the central source of structural and semantic
+knowledge used by the system. It is implemented as a relational SQLite
+catalog and describes the curated Spark datasets rather than the original raw
+files.
+
+The core catalog contains four datasets and 66 physical columns. In addition
+to the physical schema, it stores 21 semantic concepts, 29 column-to-concept
+associations, 6 explicit relationships, 27 aliases, and 6 reusable semantic
+rules.
+
+The catalog separates several kinds of information:
+
+\begin{itemize}
+
+    \item \textbf{datasets}, including descriptions, physical paths,
+    granularity, temporal information, and row counts;
+
+    \item \textbf{columns}, representing the physical fields that can appear
+    in executable Spark SQL;
+
+    \item \textbf{semantic concepts}, providing a common vocabulary across
+    heterogeneous physical schemas;
+
+    \item \textbf{aliases}, connecting natural-language variants to datasets,
+    concepts, and schema elements;
+
+    \item \textbf{relationships}, describing executable join conditions
+    between datasets;
+
+    \item \textbf{semantic rules}, representing reusable SQL predicates or
+    expressions associated with analytical concepts.
+
+\end{itemize}
+
+This separation allows semantic knowledge to be used during retrieval without
+assuming that every metadata identifier is also a valid SQL identifier.
+
+
+\subsection{Metadata Vector Index}
+
+To support semantic retrieval, metadata entities are transformed into textual
+documents and embedded using the local \texttt{embeddinggemma} model.
+
+The base catalog produces 103 indexed metadata documents:
+
+\begin{itemize}
+
+    \item 66 column documents;
+    \item 21 semantic-concept documents;
+    \item 4 dataset documents;
+    \item 6 relationship documents;
+    \item 6 semantic-rule documents.
+
+\end{itemize}
+
+The resulting 768-dimensional embeddings are stored in a local Qdrant vector
+index using cosine similarity.
+
+The vector index is not used as an independent knowledge base. Its purpose is
+to identify semantically promising metadata entities from the natural-language
+question. Structural completeness is handled by the subsequent deterministic
+expansion stage.
+
+
+\subsection{Hybrid Metadata Retrieval}
+
+The retrieval procedure combines dense semantic retrieval with deterministic
+lexical and metadata-based evidence.
+
+For each question, the system first retrieves the top five dense metadata
+candidates from the vector index. Dense retrieval is complemented by lexical
+matching against physical names and aliases. Explicit dataset mentions in the
+question are treated as strong evidence and can override unrelated dataset
+candidates returned only by embedding similarity.
+
+Semantic concepts can also be expanded to their associated physical columns.
+For example, a general concept such as pickup time can correspond to
+\texttt{yellow\_taxi.tpep\_pickup\_datetime} or
+\texttt{green\_taxi.lpep\_pickup\_datetime}, depending on the dataset
+identified by the question.
+
+The retrieval stage therefore does not simply select the five nearest vector
+documents. Dense similarity is used as one signal inside a broader
+metadata-grounding procedure.
+
+
+\subsection{Relation-Aware Expansion}
+
+Cross-source analytical queries often require metadata that is not directly
+similar to the wording of the user question. A join key such as
+\texttt{LocationID}, for example, may be essential for execution even if the
+question mentions only a borough name.
+
+To address this issue, the system performs deterministic relationship
+expansion after the initial metadata retrieval. When selected datasets imply a
+known catalog relationship, the relationship and its physical endpoint
+columns can be added to the metadata selection.
+
+Relationship selection also considers the query wording. This is necessary
+when multiple relationships connect the same pair of datasets. Taxi records,
+for example, can be related to Taxi Zones through either pickup or drop-off
+location identifiers. Evidence in the question is therefore used to
+distinguish pickup-oriented and drop-off-oriented relationships.
+
+A similar mechanism is used for temporal relations between taxi pickups and
+hourly weather observations. The catalog stores the executable relationship
+between the hourly bucket derived from the taxi pickup timestamp and
+\texttt{weather\_hourly.weather\_hour}.
+
+This stage is one of the main differences between ordinary semantic retrieval
+and the proposed relation-aware approach.
+
+
+\subsection{Semantic Rules}
+
+Some analytical concepts cannot be represented by selecting a physical column
+alone. The catalog therefore contains semantic rules that associate common
+analytical meanings with executable Spark SQL expressions or predicates.
+
+For example, a rainy hour is represented by the physical predicate
+
+\begin{verbatim}
+weather_hourly.has_precipitation = TRUE
+\end{verbatim}
+
+while the taxi pickup hour is represented using an hourly transformation of
+the corresponding pickup timestamp.
+
+Rules are included in the retrieved context only when the selected metadata
+and question provide evidence that they are relevant. This prevents the model
+from receiving every semantic rule in the catalog for every request.
+
+
+\subsection{SQL-Safe Context Rendering}
+
+The metadata selected by retrieval cannot be passed directly to the language
+model because the internal catalog contains identifiers that are meaningful
+for metadata management but are not executable SQL.
+
+The SQL-safe renderer therefore transforms the selected metadata into a
+restricted prompt context. It exposes:
+
+\begin{itemize}
+
+    \item physical Spark table names;
+
+    \item fully qualified physical column names;
+
+    \item natural-language descriptions of their meaning;
+
+    \item executable physical join conditions;
+
+    \item executable SQL expressions and predicates.
+
+\end{itemize}
+
+Internal semantic-concept identifiers, relationship names, rule identifiers,
+and aliases are not exposed as if they were physical SQL objects.
+
+This distinction is important because the complete-catalog baseline contains
+both physical and semantic metadata. Without SQL-safe rendering, an LLM can
+incorrectly use an internal semantic identifier as a table or column name.
+
+The renderer also provides dataset-level temporal information. Since the
+registered taxi and weather datasets already contain only January 2024 data,
+the context explicitly informs the model that an additional January predicate
+is unnecessary unless the user requests a narrower date range.
+
+
+\subsection{Text-to-Spark-SQL Generation}
+
+The SQL generation component uses the local
+\texttt{qwen2.5-coder:3b} model through Ollama. Generation is deterministic,
+with temperature set to zero and a context window of 4096 tokens.
+
+The model receives the natural-language question together with either the full
+catalog context or the relation-aware SQL-safe context, depending on the
+experimental configuration.
+
+Its task is restricted to generating a Spark SQL query. The model does not
+directly compute the analytical answer. This ensures that final numerical
+results are obtained from the physical datasets through Spark rather than from
+the parametric knowledge of the language model.
+
+
+\subsection{SQL Validation}
+
+Generated SQL is validated before execution using a dedicated validation
+stage.
+
+The validator performs three main checks:
+
+\begin{enumerate}
+
+    \item parse the query using SQLGlot with the Spark SQL dialect;
+
+    \item ensure that the generated statement is a single read-only query and
+    that it references only allowed physical tables;
+
+    \item ask Spark to analyse the query against the registered physical
+    schemas and verify the expected output columns.
+
+\end{enumerate}
+
+This design catches syntactic errors, unknown tables, unknown physical
+columns, and several forms of invalid schema grounding before actual query
+execution.
+
+Validation does not prove semantic correctness. A syntactically valid query
+can still express the wrong analytical intention, which is why final
+evaluation is based on query results rather than validation success alone.
+
+
+\subsection{One-Shot SQL Repair}
+
+When validation fails, the third system configuration allows one repair
+attempt.
+
+The repair model receives the invalid SQL, the validation feedback, the
+original question, and the same retrieved metadata context used during the
+initial generation. No gold SQL or expected answer is provided to the repair
+stage.
+
+Restricting repair to a single attempt keeps the experimental configuration
+simple and prevents an uncontrolled iterative agent loop. If the repaired
+query still fails validation, the system reports the failure instead of
+continuing indefinitely.
+
+The repair mechanism is intended to correct generation errors when the
+required metadata is already available. It cannot recover information that
+was omitted by the retrieval stage. This distinction becomes important in the
+held-out error analysis.
+
+
+\subsection{Spark SQL Execution and Grounded Results}
+
+After successful validation, the query is executed using Apache Spark SQL over
+the curated Parquet datasets.
+
+Spark is therefore the authoritative computational layer of the system.
+Aggregations, filters, joins, grouping operations, and result values are all
+computed from the stored data.
+
+The final architecture separates responsibilities clearly:
+
+\begin{itemize}
+
+    \item the metadata catalog represents structural and semantic knowledge;
+
+    \item the retrieval layer selects the context required for a question;
+
+    \item the LLM translates the grounded request into Spark SQL;
+
+    \item validation checks whether the generated query is executable;
+
+    \item optional repair handles a limited class of generation errors;
+
+    \item Spark computes the final analytical result.
+
+\end{itemize}
+
+This separation also enables the experimental evaluation to analyse retrieval
+quality, SQL correctness, LLM efficiency, catalog scalability, and Spark
+data-volume scalability as distinct components of the overall system.
