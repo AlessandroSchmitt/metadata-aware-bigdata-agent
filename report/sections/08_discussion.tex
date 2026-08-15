@@ -1,1 +1,340 @@
 \section{Discussion}
+\label{sec:discussion}
+
+\subsection{Main Findings}
+
+The experimental results show that metadata selection is not merely a prompt
+compression technique. In the evaluated setting, relation-aware metadata
+retrieval improves both efficiency and final Text-to-Spark-SQL correctness.
+
+The complete-catalog baseline has access to all available metadata, yet it
+achieves lower held-out result accuracy than the relation-aware
+configuration. This indicates that providing more metadata is not necessarily
+beneficial when the additional context contains semantically useful but
+SQL-unsafe identifiers, unrelated schema elements, or competing concepts.
+
+The proposed approach improves the quality of the generation context by
+combining semantic relevance with structural information. The LLM receives
+fewer metadata entities, but those entities are more directly connected to
+the physical Spark SQL query that must be generated.
+
+The improvement from 70\% result accuracy with the complete catalog to 80\%
+with relation-aware retrieval supports this interpretation. The additional
+increase to 85\% with one-shot repair shows that validator feedback can recover
+a limited subset of remaining generation errors.
+
+
+\subsection{Why the Complete Catalog Can Be Worse}
+
+At first sight, the complete catalog should appear advantageous because it
+contains all information needed to answer every benchmark question. However,
+the experiments show that information availability and information usefulness
+are not equivalent.
+
+The full catalog includes physical schema elements together with semantic
+concepts, aliases, relationship identifiers, and rule identifiers. These
+metadata objects are useful internally, but they are not all valid SQL table
+or column names.
+
+An LLM exposed to the complete catalog must therefore distinguish between
+physical identifiers and descriptive metadata while simultaneously solving
+the analytical task. The held-out failures show that the model can incorrectly
+promote an internal semantic identifier into generated SQL.
+
+The SQL-safe relation-aware renderer removes much of this ambiguity. It keeps
+semantic meaning available through descriptions while exposing only physical
+tables, columns, join conditions, and executable expressions as SQL objects.
+
+The advantage of Configuration B therefore comes from both
+\emph{selection} and \emph{representation}: less metadata is shown, and the
+metadata that remains is presented in a form that more directly matches the
+execution language.
+
+
+\subsection{Retrieval Completeness and SQL Accuracy}
+
+One of the clearest findings is the association between metadata recall and
+downstream query correctness.
+
+For held-out questions with perfect metadata recall, the relation-aware
+configuration achieves 88.2\% result accuracy, while the validation-and-repair
+configuration reaches 94.1\%.
+
+For questions with imperfect metadata recall, accuracy drops to 33.3\% for
+both configurations.
+
+This difference is expected from the system architecture. The LLM can only
+generate a correctly grounded cross-source query if its prompt contains the
+physical datasets, columns, relationships, and semantic rules needed to
+express that query.
+
+When required metadata is missing, the model may invent a plausible schema
+element or simplify the query so that an intended source is omitted. Such
+errors cannot always be detected from syntax alone.
+
+This suggests that metadata recall is a critical upstream metric for
+metadata-aware Text-to-SQL systems. High retrieval precision is useful for
+keeping prompts compact, but insufficient recall can directly remove
+information required for executable query construction.
+
+
+\subsection{Limits of Semantic Similarity}
+
+The catalog-scale experiment highlights a limitation of dense semantic
+retrieval.
+
+At four sources, the relation-aware retriever achieves macro recall of 0.925.
+After four domain-related hard-negative sources are introduced, macro recall
+drops to 0.825.
+
+The error analysis shows that the new failures are not random. They are
+concentrated around geographic metadata, especially Taxi Zones relationships
+and borough-related fields.
+
+This result illustrates a general challenge in metadata retrieval:
+semantically similar sources can compete for a small Top-\(k\) retrieval
+budget even when only one source has the correct structural relationship
+required for execution.
+
+The deterministic relation-expansion stage mitigates this problem only after
+the relevant dataset or concept has been selected. If dense and lexical
+retrieval fail to provide enough evidence for the correct dataset in the
+first place, later relationship expansion cannot reliably recover it.
+
+The experiment therefore shows that semantic similarity and structural
+correctness are complementary rather than interchangeable.
+
+
+\subsection{Catalog Growth and Bounded Context}
+
+A positive scalability result is that relation-aware context size remains
+approximately bounded while the full catalog grows substantially.
+
+The complete catalog grows from 9,498 to 16,651 characters between four and
+sixteen sources. The retrieved context remains near 2,100 characters.
+
+This behaviour is desirable because the per-query prompt does not need to
+scale linearly with total metadata volume.
+
+However, the corresponding increase in context reduction must not be
+interpreted in isolation. At eight and sixteen sources, part of the greater
+compression is associated with missing required metadata.
+
+The correct interpretation is therefore a trade-off: relation-aware retrieval
+successfully decouples prompt size from catalog size, but aggressive selection
+can reduce recall when hard negatives compete with the correct metadata.
+
+A production system would need to manage this trade-off explicitly, for
+example by using adaptive retrieval depth, stronger structural reranking, or
+confidence-aware expansion.
+
+
+\subsection{Why the 8-to-16 Source Result Matters}
+
+An interesting aspect of the catalog-scale experiment is that performance does
+not continue to degrade when the catalog increases from eight to sixteen
+sources.
+
+Macro recall, precision, F1, perfect-recall count, and mean context size are
+identical at these two scales.
+
+This suggests that catalog size alone is not the main cause of the observed
+failure. Instead, the first group of hard negatives contains metadata that is
+particularly competitive with the intended sources.
+
+The additional eight sources increase the total catalog substantially but do
+not introduce new retrieval errors for the frozen benchmark.
+
+This distinction matters because it prevents an overly broad conclusion such
+as ``retrieval quality decreases as the number of sources increases.'' The
+results support a more precise statement: retrieval quality can degrade when
+new sources are semantically similar enough to displace structurally required
+metadata.
+
+
+\subsection{Effectiveness and Limits of Validation}
+
+SQL validation provides a useful safety boundary between the language model
+and Spark execution.
+
+The validator can detect unknown physical columns, invalid relations,
+syntactic problems, incompatible expressions, and unexpected output
+structures before a query is executed.
+
+This protects the execution layer from a class of common LLM generation
+errors. It also provides actionable feedback that can be passed to the repair
+stage.
+
+However, validation cannot establish full semantic correctness.
+
+A valid query may still use the wrong filter, choose the wrong dataset,
+produce a different categorical convention, or express a related but
+incorrect analytical computation. These queries may pass parsing and Spark
+analysis while returning an incorrect benchmark result.
+
+For this reason, the project treats result accuracy as the primary correctness
+metric rather than validation rate.
+
+
+\subsection{Effectiveness and Limits of One-Shot Repair}
+
+The repair stage provides a measurable but limited improvement.
+
+Three held-out queries triggered repair, and one repair produced a validated
+and correct result. This raises overall result accuracy from 80\% to 85\%.
+
+The successful case demonstrates the intended role of repair: the necessary
+metadata was already available, the generated query contained a physical
+schema error, and validator feedback gave the model enough information to
+correct the query.
+
+The failed repair cases reveal the opposite condition. When retrieval omitted
+essential weather or relationship metadata, the repair model was given no new
+source of structural knowledge. A validation error can identify that a column
+does not exist, but it cannot reliably reconstruct an omitted multi-source
+relationship.
+
+One-shot repair is therefore best understood as a local correction mechanism,
+not as a substitute for metadata retrieval.
+
+
+\subsection{Prompt Reduction and Latency}
+
+The relation-aware context reduces mean held-out prompt size by 69.66\%.
+
+The controlled latency benchmark shows a similar reduction in prompt
+evaluation cost: mean prompt-evaluation time decreases by 70.29\% under the
+prefix-isolated protocol.
+
+The similarity between these reductions is consistent with the expectation
+that shorter prompts require less input processing by the language model.
+
+The original sequential held-out timings, however, show why LLM latency must
+be measured carefully. Repeated complete-catalog prompts share a large common
+prefix and can benefit substantially from runtime cache behaviour.
+
+Without the controlled benchmark, these cache effects could lead to the
+incorrect conclusion that the larger full-catalog prompt is intrinsically
+faster.
+
+The separate prefix-isolated and natural-cache measurements therefore improve
+the reliability of the efficiency analysis.
+
+
+\subsection{Interpretation of the Spark Scaling Experiment}
+
+The Spark data-volume experiment confirms that the complete analytical
+pipeline can execute over progressively larger physical datasets, up to
+2,963,713 curated Yellow Taxi records.
+
+The temporal weather join shows the clearest runtime growth, increasing from
+0.274 seconds at 100,000 rows to 1.350 seconds at full scale.
+
+The simpler workloads show weaker monotonic behaviour because the experimental
+datasets remain small enough for fixed execution costs and local caching
+effects to be significant.
+
+The results therefore demonstrate feasibility and relative behaviour within
+the selected environment, but they should not be used to claim general Spark
+scalability properties.
+
+A distributed cluster experiment with substantially larger physical data
+would be required to evaluate network shuffle, executor scaling, partitioning
+strategy, and cluster-level resource utilisation.
+
+
+\subsection{Big Data Perspective}
+
+The project addresses the Big Data dimensions of Volume and Variety in
+different parts of the system.
+
+Volume is handled by Spark and evaluated by increasing the number of taxi
+records processed by the physical execution layer.
+
+Variety is handled primarily by the metadata architecture. Different physical
+schemas, naming conventions, source roles, geographic joins, and temporal
+granularities are represented explicitly in the catalog.
+
+The experiments show that these two dimensions create different engineering
+problems. Increasing row volume affects execution cost, whereas increasing
+metadata variety affects grounding ambiguity and prompt construction.
+
+Separating catalog scale from data scale is therefore useful when analysing
+data-centric generative-AI systems: a system can scale well in physical query
+execution while still failing because metadata grounding becomes ambiguous.
+
+
+\subsection{Threats to Validity}
+
+Several factors limit the generality of the experimental results.
+
+First, the held-out benchmark contains 20 questions derived from ten analytical
+intents. Although the natural-language paraphrases were frozen before final
+evaluation, the benchmark remains small compared with large public
+Text-to-SQL datasets.
+
+Second, all core data comes from a single application domain: New York City
+mobility and weather. The architecture may behave differently with metadata
+from unrelated enterprise domains.
+
+Third, the local language model is relatively small and executed without a
+GPU. Larger models may have different sensitivity to metadata noise and may
+require different retrieval depths.
+
+Fourth, the catalog-scale distractors are synthetic metadata-only sources.
+They are deliberately designed as hard negatives, but they do not reproduce
+all characteristics of a large production catalog.
+
+Fifth, the physical Spark evaluation is local rather than distributed and
+reaches approximately three million rows. It therefore demonstrates prototype
+behaviour rather than cluster-scale performance.
+
+Finally, result correctness depends on the benchmark's expected-result and
+comparison procedure. Some analytically equivalent outputs may differ in
+labels or formatting, as observed in one cross-taxi comparison.
+
+
+\subsection{Possible Improvements}
+
+Several extensions could address the observed limitations without changing the
+core design.
+
+Retrieval could use an adaptive Top-\(k\) rather than a fixed value of five,
+increasing metadata coverage when retrieval confidence is low.
+
+A structural reranking stage could explicitly favour datasets connected by
+catalog relationships required by the candidate analytical intent.
+
+Retrieval confidence could also be exposed to the downstream pipeline. When
+required metadata is uncertain, the system could request additional metadata
+before generation rather than relying on repair after SQL failure.
+
+The metadata catalog could be expanded with richer type constraints,
+cardinality information, data-quality statistics, and source-level
+provenance.
+
+For larger deployments, the local SQLite and embedded Qdrant components could
+be replaced by distributed metadata and vector services while preserving the
+same logical interfaces.
+
+Finally, repair could be extended beyond one attempt, although any iterative
+strategy would require careful control to avoid uncontrolled agent loops and
+to preserve reproducibility.
+
+
+\subsection{Overall Assessment}
+
+The prototype demonstrates that a relatively small local language model can
+perform useful cross-source Spark SQL generation when it is supported by
+explicit metadata grounding.
+
+The key result is not that retrieval always succeeds. The catalog-scale
+experiment shows clear cases in which hard negatives reduce recall.
+
+Rather, the project demonstrates that the way metadata is selected and
+rendered has a measurable effect on correctness, prompt size, and inference
+cost.
+
+The architecture therefore supports a data-centric interpretation of
+Text-to-SQL: improving the representation and delivery of metadata can be as
+important as changing the language model itself.
