@@ -204,7 +204,10 @@ PYTHONPATH=src python scripts/experiments/run_heldout_abc_benchmark.py
 ```bash
 PYTHONPATH=src python scripts/experiments/run_controlled_latency_benchmark.py
 PYTHONPATH=src python scripts/experiments/run_catalog_scale_benchmark.py
-PYTHONPATH=src python scripts/experiments/run_data_volume_scaling_benchmark.py
+PYTHONPATH=src spark-submit \
+  --master 'local[2]' \
+  --driver-memory 1g \
+  scripts/experiments/run_data_volume_scaling_benchmark.py
 ```
 
 ## Report Artifact Generation
@@ -232,9 +235,35 @@ Important Git tags include:
 
 The held-out results were not used to retune the frozen retrieval architecture.
 
+### Experimental Artifact Workflow
+
+The main held-out A/B/C runner writes provisional outputs under
+`artifacts/results/`, which is intentionally excluded from version control.
+
+Official experimental results are stored under `artifacts/benchmarks/` and
+are the authoritative recorded artifacts used by the reporting pipeline.
+
+For the held-out A/B/C evaluation, the intended workflow is:
+
+1. run the experiment and generate the provisional result;
+2. inspect and validate the generated artifact;
+3. promote the approved artifact to `artifacts/benchmarks/`;
+4. commit the frozen benchmark artifact;
+5. create the corresponding annotated Git tag.
+
+Some controlled scaling experiments use dedicated output files directly under
+`artifacts/benchmarks/`. Their official results are protected by the Git freeze
+protocol and corresponding tags.
+
+Frozen benchmark artifacts should not be overwritten by exploratory reruns.
+New exploratory experiments should use a separate branch, a distinct output
+filename, or `artifacts/results/` where applicable.
+
 ## Interpretation Limits
 
 The held-out benchmark contains 20 questions derived from ten analytical intents, the catalog-scale distractors are controlled metadata-only hard negatives, and the Spark data-volume benchmark runs locally on a two-core environment.
+
+The data-volume benchmark uses progressively larger physical subsets of the curated Yellow Taxi data and is intended to characterize prototype execution behaviour in the local environment, not to establish general Spark scalability properties.
 
 The results therefore characterize this prototype and experimental setting; they are not universal performance claims for Spark, Qwen, Qdrant, or metadata retrieval systems in general.
 
