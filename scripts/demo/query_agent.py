@@ -68,8 +68,10 @@ def build_prompt(
     metadata_context,
 ):
     """
-    Keep the generation prompt aligned with the frozen
-    A/B/C benchmark configuration.
+    Build the application-demo generation prompt.
+
+    It preserves the frozen benchmark generation rules while
+    restricting table grounding to the retrieved metadata context.
     """
 
     return f"""
@@ -78,13 +80,8 @@ You are an expert Spark SQL generator.
 You must answer the user question using ONLY the metadata
 context supplied below.
 
-The datasets are already registered in Spark SQL using
-exactly these table names:
-
-- yellow_taxi
-- green_taxi
-- taxi_zones
-- weather_hourly
+The physical datasets shown in the metadata context are
+registered Spark SQL table names.
 
 Important instructions:
 
@@ -381,6 +378,12 @@ def main():
         retrieved["context"]
     )
 
+    if not retrieved["selection"]["datasets"]:
+        raise RuntimeError(
+            "Metadata retrieval did not identify "
+            "any physical dataset for this question."
+        )
+
     if args.show_context:
         print()
         print("=" * 78)
@@ -435,7 +438,7 @@ def main():
 
         validator = SparkSQLValidator(
             allowed_tables=set(
-                DATASETS.keys()
+                retrieved["selection"]["datasets"]
             )
         )
 
