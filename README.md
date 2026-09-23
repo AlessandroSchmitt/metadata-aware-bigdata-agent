@@ -185,6 +185,49 @@ PYTHONPATH=src python scripts/retrieval/build_metadata_index.py
 PYTHONPATH=src python scripts/retrieval/test_relation_aware_retrieval.py
 ```
 
+## Interactive Query Demo
+
+The repository includes an end-to-end command-line demo for natural-language
+analytics over the curated data lake.
+
+The demo performs relation-aware metadata retrieval, renders a SQL-safe metadata
+context, generates Spark SQL with the local language model, validates the query
+against the retrieved physical datasets, optionally performs one-shot repair,
+and executes the validated query with Spark.
+
+Example:
+
+```bash
+PYTHONPATH=src spark-submit \
+  --master 'local[2]' \
+  --driver-memory 1g \
+  scripts/demo/query_agent.py \
+  --question "What was the average trip distance for Yellow Taxi trips during rainy hours? Return exactly one column named average_trip_distance." \
+  --expected-columns average_trip_distance
+```
+
+The optional `--expected-columns` argument enables an explicit output-column
+contract. When it is supplied, validation checks the exact output schema and
+the same contract can be used by the one-shot repair stage.
+
+For arbitrary questions, the demo can also be run without an external output
+contract:
+
+```bash
+PYTHONPATH=src spark-submit \
+  --master 'local[2]' \
+  --driver-memory 1g \
+  scripts/demo/query_agent.py \
+  --question "How many Yellow Taxi trips are in the curated January 2024 dataset? Return one column named trip_count."
+```
+
+Without `--expected-columns`, the validator still checks SQL parsing,
+read-only structure, retrieved-table grounding, and Spark schema analysis, but
+does not enforce an externally supplied output schema.
+
+Use `--show-context` to display the complete SQL-safe retrieved metadata
+context and `--max-rows N` to control the number of result rows printed.
+
 ## Benchmark Validation
 
 ```bash
